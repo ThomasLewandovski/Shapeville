@@ -2,6 +2,7 @@ package com.shapeville.ui;
 
 import com.shapeville.manager.ScoreManager;
 import com.shapeville.tasks.Task1ShapeIdentification;
+import com.shapeville.tasks.Task2AngleIdentification;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,6 +11,14 @@ import java.awt.event.ActionListener;
 
 public class Main {
     public static void main(String[] args) {
+        // 禁用输入法特殊处理
+        System.setProperty("java.awt.im.useInputMethodKeys", "false");
+        System.setProperty("apple.awt.im.disable", "true"); // 新增 macOS 专用属性
+        int result = 0;
+        int[] is_played = new int[7];
+        for (int i = 0; i < 7; i++) {
+            is_played[i] = 0;
+        }
         // 创建主窗口
         JFrame frame = new JFrame("Shapeville");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -23,12 +32,11 @@ public class Main {
         JPanel mainpanel = new JPanel(null);
         //积分器
 
-        JLabel counter = new JLabel("积分：");
-        counter.setBounds(10, 10, 60, 30);
-        mainpanel.add(counter);
+        final JLabel counter1 = new JLabel("积分："+result);
+        counter1.setBounds(10, 10, 60, 30);
+        mainpanel.add(counter1);
         //更新积分方法：setText，在每次结束tasks时使用
-        int result = 0;
-        counter.setText("积分："+result);
+        counter1.setText("积分："+result);
 
         //开始按钮
         JButton startButton = new JButton("Start!");
@@ -37,6 +45,10 @@ public class Main {
 
         // 创建第二个界面：关卡选择，管理进入各个task的通道及积分器
         JPanel startpanel = new JPanel(null);
+        final JLabel counter2 = new JLabel("积分："+result);
+        counter2.setBounds(10, 10, 60, 30);
+        startpanel.add(counter2);
+        counter2.setText("积分："+result);
         //回到主界面按钮
         JButton homeButton = new JButton("Home");
         homeButton.setBounds(600, 470, 100, 30);
@@ -67,8 +79,6 @@ public class Main {
         cardPanel.add(startpanel, "startPanel");
 
         ScoreManager scoremanager = new ScoreManager();
-        Task1ShapeIdentification n = new Task1ShapeIdentification(scoremanager);
-        cardPanel.add(n.task1,"task1");
 
         // 添加按钮点击事件监听器
         //切换至开始界面
@@ -77,8 +87,33 @@ public class Main {
         homeButton.addActionListener(e -> cardLayout.show(cardPanel, "mainPanel"));
 
         task1Button.addActionListener(e ->{
+            Task1ShapeIdentification task1 = new Task1ShapeIdentification(scoremanager);
+            cardPanel.add(task1.task1,"task1");
+            task1.onReturnHome = () -> {
+                cardLayout.show(cardPanel, "startPanel");
+                counter1.setText("积分：" + scoremanager.getScore());
+                counter2.setText("积分：" + scoremanager.getScore());
+            };
             cardLayout.show(cardPanel,"task1");
-            n.start();
+            task1.start();
+        });
+
+        task2Button.addActionListener(e -> {
+            if(is_played[2]==0){
+                is_played[2] = 1;
+                Task2AngleIdentification task2 = new Task2AngleIdentification(scoremanager);
+                cardPanel.add(task2.task2, "task2");
+                task2.onReturnHome = () -> {
+                    cardLayout.show(cardPanel, "startPanel");
+                    counter1.setText("积分：" + scoremanager.getScore());
+                    counter2.setText("积分：" + scoremanager.getScore());
+                };
+                cardLayout.show(cardPanel, "task2");
+                task2.start();
+            }else{
+                JOptionPane.showMessageDialog(null, "you have played this module,please try other modules", "提示", JOptionPane.INFORMATION_MESSAGE);
+            }
+
         });
 
 //        task2Button.addActionListener(e -> );

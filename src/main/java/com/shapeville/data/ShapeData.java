@@ -1,9 +1,6 @@
 package com.shapeville.data;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class ShapeData {
     // 内部类：封装一个图形（名字 + 图片）
@@ -25,49 +22,51 @@ public class ShapeData {
         }
     }
 
+    public static class Shape2D extends ShapeItem {
+        public Shape2D(String name, String imageFilename) {
+            super(name, imageFilename);
+        }
+    }
+
+    public static class Shape3D extends ShapeItem {
+        public Shape3D(String name, String imageFilename) {
+            super(name, imageFilename);
+        }
+    }
+
     // ✅ 2D 图形（中文识图训练）
-    private static final List<ShapeItem> shapes2D = Arrays.asList(
-            new ShapeItem("Circle", "circle.png"),
-            new ShapeItem("Rectangle", "rectangle.png"),
-            new ShapeItem("Triangle", "triangle.png"),
-            new ShapeItem("Oval", "oval.png"),
-            new ShapeItem("Octagon", "octagon.png"),
-            new ShapeItem("Square", "square.png"),
-            new ShapeItem("Heptagon", "heptagon.png"),
-            new ShapeItem("Rhombus", "rhombus.png"),
-            new ShapeItem("Pentagon", "pentagon.png"),
-            new ShapeItem("Hexagon", "hexagon.png"),
-            new ShapeItem("Kite", "kite.png")
+    private static final List<Shape2D> shapes2D = Arrays.asList(
+            new Shape2D("Circle", "circle.png"),
+            new Shape2D("Rectangle", "rectangle.png"),
+            new Shape2D("Triangle", "triangle.png"),
+            new Shape2D("Oval", "oval.png"),
+            new Shape2D("Octagon", "octagon.png"),
+            new Shape2D("Square", "square.png"),
+            new Shape2D("Heptagon", "heptagon.png"),
+            new Shape2D("Rhombus", "rhombus.png"),
+            new Shape2D("Pentagon", "pentagon.png"),
+            new Shape2D("Hexagon", "hexagon.png"),
+            new Shape2D("Kite", "kite.png")
     );
 
     // ✅ 3D 图形（全为高清彩色模型）
-    private static final List<ShapeItem> shapes3D = Arrays.asList(
-            new ShapeItem("Cube", "cube.png"),
-            new ShapeItem("Sphere", "sphere.png"),
-            new ShapeItem("Cylinder", "cylinder.png"),
-            new ShapeItem("Cone", "cone.png"),
-            new ShapeItem("Pyramid", "pyramid.png"),
-            new ShapeItem("Rectangular Prism", "rectangular_prism.png"),
-            new ShapeItem("Triangular Prism", "triangular_prism.png"),
-            new ShapeItem("Torus", "torus.png"),
-            new ShapeItem("Tetrahedron", "tetrahedron.png")
+    private static final List<Shape3D> shapes3D = Arrays.asList(
+            new Shape3D("Cube", "cube.png"),
+            new Shape3D("Sphere", "sphere.png"),
+            new Shape3D("Cylinder", "cylinder.png"),
+            new Shape3D("Cone", "cone.png"),
+            new Shape3D("Pyramid", "pyramid.png"),
+            new Shape3D("Cuboid", "cuboid.png"),
+            new Shape3D("Triangular Prism", "triangular_prism.png"),
+            new Shape3D("Tetrahedron", "tetrahedron.png")
     );
 
-    private static final Random random = new Random();
-
-    public static ShapeItem getRandom2DShape() {
-        return shapes2D.get(random.nextInt(shapes2D.size()));
-    }
-
-    public static ShapeItem getRandom3DShape() {
-        return shapes3D.get(random.nextInt(shapes3D.size()));
-    }
-
-    public static List<ShapeItem> getAll2DShapes() {
+    public static List<Shape2D> getAll2DShapes() {
         return Collections.unmodifiableList(shapes2D);
     }
 
-    public static List<ShapeItem> getAll3DShapes() {
+    public static List<Shape3D> getAll3DShapes() {
         return Collections.unmodifiableList(shapes3D);
     }
+
 }
