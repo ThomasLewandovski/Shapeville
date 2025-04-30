@@ -1,5 +1,6 @@
 package com.shapeville.tasks;
 
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,6 +38,7 @@ public class Task1ShapeIdentification {
     public void start() {
         q.setText("\n📐 Task 1: Identify 2D / 3D Shapes" + "1. 2D Shapes (Basic Level)" + "2. 3D Shapes (Advanced Level)" + "Choose an option: ");
         final String[] choice = new String[1];
+        resetInputListeners();
         input.addActionListener(e -> {
             choice[0] = input.getText();
             switch (choice[0]) {
@@ -69,7 +71,7 @@ public class Task1ShapeIdentification {
     private void askShape(ShapeItem shape, boolean advancedLevel) {
         int maxAttempts = 3;
         final int[] points = {0}; // 使用数组
-        String imgPath = "main/resources/images" + shape + ".png";
+        String imgPath = "src/main/resources/images/" + shape.getImageFilename();
         ImageIcon imageIcon = new ImageIcon(imgPath);
         img.setIcon(imageIcon);
         img.repaint();
@@ -79,6 +81,7 @@ public class Task1ShapeIdentification {
             input.setText("");
             CountDownLatch latch = new CountDownLatch(1);
             int finalAttempt = attempt;
+            resetInputListeners();
             input.addActionListener(e -> {
                 String answer = input.getText();
                 if (checkAnswer(answer, shape.getName())) {
@@ -114,6 +117,12 @@ public class Task1ShapeIdentification {
         // 3次都错了
         if (points[0] == 0) {
             q.setText("⚠️ The correct answer was: " + shape.getName());
+        }
+    }
+
+    private void resetInputListeners() {
+        for (ActionListener al : input.getActionListeners()) {
+            input.removeActionListener(al);
         }
     }
 
