@@ -5,6 +5,7 @@
 ---
 
 ## 📁 目录结构简介
+```
 shapeville/
 ├── src/main/java/com/shapeville/  # 所有 Java 包结构
 ├── src/main/resources/images/     # 所有图形图像
@@ -13,7 +14,7 @@ shapeville/
 ├── README.md
 └── CONTRIBUTING.md
 ---
-
+```
 ## 🚀 Git 协作流程
 
 ### ✅ 1. 克隆项目
@@ -21,23 +22,27 @@ shapeville/
 ```bash
 git clone git@github.com:ThomasLewandovski/Shapeville.git
 cd Shapeville
-
+```
 ### ✅ 2. 每人创建自己的开发分支（不要直接在 master 改）
-
+```
 git checkout -b feature-你的名字-模块名
 
 git checkout -b feature-xiaoming-angle-task
+```
 
 ### ✅ 3. 正常编码后，提交并推送
+```
 git add .
 git commit -m "✨ 完成角度任务面板逻辑"
 git push -u origin feature-mkh-angle-task
+```
 
 ###✅ 4. 发起 Pull Request（PR）合并代码
 
    在 GitHub 上点击绿色按钮「Compare & pull request」提交合并申请。组长或大家评审后通过。
 
 ✅ 提交信息规范（建议使用 Emoji）
+```
 - ✨ 新功能
 - 🐛 修复 bug
 - 📚 文档更新
@@ -53,13 +58,14 @@ git push -u origin feature-mkh-angle-task
 - 🔧 构建脚本
 - 🔧 配置文件
 - 📝 日志
-
+```
 示例
+```
 ✨ 添加图形识别面板
 🐛 修复得分无法更新问题
 🎨 美化主界面字体和按钮
 📝 补充 README 与协作说明
-
+```
 
 ### 🧪 测试 & 提交注意事项
 	•	每次 push 前请确认能正常运行
@@ -68,4 +74,6 @@ git push -u origin feature-mkh-angle-task
 
 ### 👨‍👩‍👧‍👦 当前组员（可补充）
 姓名
+```
 ThomasLewandovski
+```
