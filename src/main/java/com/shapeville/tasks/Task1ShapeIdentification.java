@@ -1,24 +1,31 @@
 package com.shapeville.tasks;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Scanner;
-import javax.swing.*;
-import java.awt.*;
-import java.util.concurrent.CountDownLatch;
-
 import com.shapeville.data.ShapeData;
 import com.shapeville.data.ShapeData.ShapeItem;
 import com.shapeville.manager.ScoreManager;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionListener;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class Task1ShapeIdentification {
     private ScoreManager scoreManager;
+    public Runnable onReturnHome;
+    public JButton goHomeButton;
     public JPanel task1;
     public JLabel img;
     public JLabel q;
     public JTextField input;
+
+    private List<ShapeItem> currentShapes;
+    private ShapeItem currentShape;
+    private int currentIndex = 0;
+    private int attempt = 1;
+    private boolean isAdvanced = false;
 
     public Task1ShapeIdentification(ScoreManager scoreManager) {
         this.scoreManager = scoreManager;
@@ -32,88 +39,102 @@ public class Task1ShapeIdentification {
         task1.add(img);
         task1.add(q);
         task1.add(input);
+
+        //加入返回主界面按钮
+        goHomeButton = new JButton("🏠 Return to Home");
+        goHomeButton.setBounds(100, 500, 200, 30);
+        goHomeButton.setVisible(false);
+        task1.add(goHomeButton);
+
+        goHomeButton.addActionListener(e -> {
+            if (onReturnHome != null) onReturnHome.run();
+        });
     }
 
     public void start() {
-        q.setText("\n📐 Task 1: Identify 2D / 3D Shapes" + "1. 2D Shapes (Basic Level)" + "2. 3D Shapes (Advanced Level)" + "Choose an option: ");
-        final String[] choice = new String[1];
+        q.setText("📐 Task 1 - Choose Mode: 1 = 2D, 2 = 3D");
+        input.setText("");
+        resetInputListeners();
         input.addActionListener(e -> {
-            choice[0] = input.getText();
-            switch (choice[0]) {
-                case "1":
-                    runSubtask("2D");
-                    break;
-                case "2":
-                    runSubtask("3D");
-                    break;
-                default:
-                    System.out.println("Invalid choice. Returning to home.");
+            String userInput = input.getText().trim();
+            if ("1".equals(userInput)) {
+                runSubtask("2D");
+            } else if ("2".equals(userInput)) {
+                runSubtask("3D");
+            } else {
+                q.setText("❌ Invalid input. Enter 1 or 2.");
             }
         });
     }
 
     private void runSubtask(String type) {
-        List<ShapeItem> shapes = new ArrayList<>((type.equals("2D") ? ShapeData.getAll2DShapes() : ShapeData.getAll3DShapes()));
-        boolean isAdvanced = type.equals("3D");
-
-        // 打乱顺序
-        Collections.shuffle(shapes);
-
-        for (ShapeItem shape : shapes) {
-            askShape(shape, isAdvanced);
-        }
-
-        q.setText("\n🎉 You've completed the " + type + " shape task!");
+        currentShapes = new ArrayList<>(type.equals("2D") ? ShapeData.getAll2DShapes() : ShapeData.getAll3DShapes());
+        isAdvanced = type.equals("3D");
+        Collections.shuffle(currentShapes);
+        currentIndex = 0;
+        showNextShape();
     }
 
-    private void askShape(ShapeItem shape, boolean advancedLevel) {
-        int maxAttempts = 3;
-        final int[] points = {0}; // 使用数组
-        String imgPath = "main/resources/images" + shape + ".png";
-        ImageIcon imageIcon = new ImageIcon(imgPath);
-        img.setIcon(imageIcon);
-        img.repaint();
+    private void showNextShape() {
+        if (currentIndex >= currentShapes.size()) {
+            q.setText("🎉 Task Complete!");
+            input.setVisible(false);
+            goHomeButton.setVisible(true); // ✅ 显示按钮
+            resetInputListeners();
+            return;
+        }
+        currentShape = currentShapes.get(currentIndex++);
+        attempt = 1;
+        displayShape(currentShape);
+    }
 
-        for (int attempt = 1; attempt <= maxAttempts; attempt++) {
-            q.setText("\nWhat is the name of this shape?" + "Your answer: ");
-            input.setText("");
-            CountDownLatch latch = new CountDownLatch(1);
-            int finalAttempt = attempt;
-            input.addActionListener(e -> {
-                String answer = input.getText();
-                if (checkAnswer(answer, shape.getName())) {
-                    // 计算分数（按任务书规则）
-                    if (finalAttempt == 1) {
-                        points[0] = advancedLevel? 6 : 3; // 修改数组元素值
-                    } else if (finalAttempt == 2) {
-                        points[0] = advancedLevel? 4 : 2;
-                    } else if (finalAttempt == 3) {
-                        points[0] = advancedLevel? 2 : 1;
-                    } else {
-                        points[0] = 0;
-                    }
-                    scoreManager.addScore(points[0]);
-                    latch.countDown();
-                } else {
-                    q.setText("❌ Incorrect. Try again.");
-                    if (finalAttempt == maxAttempts) {
-                        latch.countDown();
-                    }
-                }
-            });
-            try {
-                latch.await();
-            } catch (InterruptedException ex) {
-                ex.printStackTrace();
+    private void displayShape(ShapeItem shape) {
+        q.setText("🔍 What is the name of this shape?");
+        input.setText("");
+
+        // Load image from resources
+        try {
+            URL imageUrl = getClass().getClassLoader().getResource("images/" + shape.getImageFilename());
+            if (imageUrl != null) {
+                img.setIcon(new ImageIcon(imageUrl));
+            } else {
+                img.setText("[Image not found: " + shape.getImageFilename() + "]");
             }
-            if (points[0] > 0) {
-                break;
-            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-        // 3次都错了
-        if (points[0] == 0) {
-            q.setText("⚠️ The correct answer was: " + shape.getName());
+        resetInputListeners();
+        input.addActionListener(e -> handleAnswer());
+    }
+
+    private void handleAnswer() {
+        String answer = input.getText().trim();
+        if (checkAnswer(answer, currentShape.getName())) {
+            int points = switch (attempt) {
+                case 1 -> isAdvanced ? 6 : 3;
+                case 2 -> isAdvanced ? 4 : 2;
+                case 3 -> isAdvanced ? 2 : 1;
+                default -> 0;
+            };
+            scoreManager.addScore(points);
+            q.setText("✅ Correct! +" + points + " points.");
+            showNextShape();
+        } else {
+            attempt++;
+            if (attempt > 3) {
+                q.setText("❌ The correct answer was: " + currentShape.getName());
+                showNextShape();
+            } else {
+                q.setText("❌ Incorrect, try again.");
+                input.setText("");
+            }
+        }
+    }
+
+    private void resetInputListeners() {
+        for (ActionListener al : input.getActionListeners()) {
+            input.removeActionListener(al);
         }
     }
 

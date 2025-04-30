@@ -10,6 +10,10 @@ import java.awt.event.ActionListener;
 
 public class Main {
     public static void main(String[] args) {
+        // 禁用输入法特殊处理
+        System.setProperty("java.awt.im.useInputMethodKeys", "false");
+        System.setProperty("apple.awt.im.disable", "true"); // 新增 macOS 专用属性
+
         // 创建主窗口
         JFrame frame = new JFrame("Shapeville");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -23,7 +27,7 @@ public class Main {
         JPanel mainpanel = new JPanel(null);
         //积分器
 
-        JLabel counter = new JLabel("积分：");
+        final JLabel counter = new JLabel("积分：");
         counter.setBounds(10, 10, 60, 30);
         mainpanel.add(counter);
         //更新积分方法：setText，在每次结束tasks时使用
@@ -69,6 +73,12 @@ public class Main {
         ScoreManager scoremanager = new ScoreManager();
         Task1ShapeIdentification n = new Task1ShapeIdentification(scoremanager);
         cardPanel.add(n.task1,"task1");
+
+        // 设置返回主页回调
+        n.onReturnHome = () -> {
+            cardLayout.show(cardPanel, "startPanel");
+            counter.setText("积分：" + scoremanager.getScore());
+        };
 
         // 添加按钮点击事件监听器
         //切换至开始界面
