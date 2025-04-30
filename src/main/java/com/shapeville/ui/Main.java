@@ -66,6 +66,10 @@ public class Main {
         cardPanel.add(mainpanel, "mainPanel");
         cardPanel.add(startpanel, "startPanel");
 
+        ScoreManager scoremanager = new ScoreManager();
+        Task1ShapeIdentification n = new Task1ShapeIdentification(scoremanager);
+        cardPanel.add(n.task1,"task1");
+
         // 添加按钮点击事件监听器
         //切换至开始界面
         startButton.addActionListener(e -> cardLayout.show(cardPanel, "startPanel"));
@@ -73,10 +77,10 @@ public class Main {
         homeButton.addActionListener(e -> cardLayout.show(cardPanel, "mainPanel"));
 
         task1Button.addActionListener(e ->{
-            ScoreManager scoremanager = new ScoreManager();
-            Task1ShapeIdentification n = new Task1ShapeIdentification(scoremanager);
+            cardLayout.show(cardPanel,"task1");
             n.start();
         });
+
 //        task2Button.addActionListener(e -> );
 //        task3Button.addActionListener(e -> );
 //        task4Button.addActionListener(e -> );

@@ -1,5 +1,6 @@
 package com.shapeville.tasks;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -16,16 +17,18 @@ import javax.swing.*;
 public class Task1ShapeIdentification {
     private ScoreManager scoreManager;
     private Scanner scanner;
+    public JPanel task1;
+    public JLabel img;
 
     public Task1ShapeIdentification(ScoreManager scoreManager) {
         this.scoreManager = scoreManager;
         this.scanner = new Scanner(System.in);
+        this.task1 = new JPanel();
+        this.img = new JLabel();
+        task1.add(img);
     }
 
     public void start() {
-        JPanel task1 = new JPanel(null);
-        JLabel
-
 
         System.out.println("\n📐 Task 1: Identify 2D / 3D Shapes");
         System.out.println("1. 2D Shapes (Basic Level)");
@@ -63,7 +66,9 @@ public class Task1ShapeIdentification {
     private void askShape(ShapeItem shape, boolean advancedLevel) {
         int maxAttempts = 3;
         int points = 0;
-    
+        String imgPath = "main/resources/images" + shape + ".png";
+        ImageIcon imageIcon = new ImageIcon(imgPath);
+        JLabel imageLabel = new JLabel(imageIcon);
         for (int attempt = 1; attempt <= maxAttempts; attempt++) {
             System.out.println("\nWhat is the name of this shape?");
             System.out.println("[Image: " + shape.getImageFilename() + "]");
