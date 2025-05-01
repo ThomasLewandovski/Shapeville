@@ -15,11 +15,11 @@ import java.util.List;
 public class Task1ShapeIdentification {
     private ScoreManager scoreManager;
     public Runnable onReturnHome;
-    public JButton goHomeButton;
     public JPanel task1;
     public JLabel img;
     public JLabel q;
     public JTextField input;
+    public JButton goHomeButton;
 
     private List<ShapeItem> currentShapes;
     private ShapeItem currentShape;
@@ -33,27 +33,29 @@ public class Task1ShapeIdentification {
         this.img = new JLabel();
         this.q = new JLabel();
         this.input = new JTextField();
+
         img.setBounds(100, 10, 400, 400);
+        q.setBounds(100, 420, 600, 20);
         input.setBounds(100, 450, 400, 20);
-        q.setBounds(100, 420, 400, 20);
+
         task1.add(img);
         task1.add(q);
         task1.add(input);
 
-        //加入返回主界面按钮
         goHomeButton = new JButton("🏠 Return to Home");
         goHomeButton.setBounds(100, 500, 200, 30);
         goHomeButton.setVisible(false);
-        task1.add(goHomeButton);
-
         goHomeButton.addActionListener(e -> {
             if (onReturnHome != null) onReturnHome.run();
         });
+        task1.add(goHomeButton);
     }
 
     public void start() {
         q.setText("📐 Task 1 - Choose Mode: 1 = 2D, 2 = 3D");
         input.setText("");
+        input.setVisible(true);
+        goHomeButton.setVisible(false);
         resetInputListeners();
         input.addActionListener(e -> {
             String userInput = input.getText().trim();
@@ -79,10 +81,11 @@ public class Task1ShapeIdentification {
         if (currentIndex >= currentShapes.size()) {
             q.setText("🎉 Task Complete!");
             input.setVisible(false);
-            goHomeButton.setVisible(true); // ✅ 显示按钮
+            goHomeButton.setVisible(true);
             resetInputListeners();
             return;
         }
+
         currentShape = currentShapes.get(currentIndex++);
         attempt = 1;
         displayShape(currentShape);
@@ -92,11 +95,11 @@ public class Task1ShapeIdentification {
         q.setText("🔍 What is the name of this shape?");
         input.setText("");
 
-        // Load image from resources
         try {
             URL imageUrl = getClass().getClassLoader().getResource("images/" + shape.getImageFilename());
             if (imageUrl != null) {
                 img.setIcon(new ImageIcon(imageUrl));
+                img.setText("");
             } else {
                 img.setText("[Image not found: " + shape.getImageFilename() + "]");
             }
@@ -123,7 +126,7 @@ public class Task1ShapeIdentification {
         } else {
             attempt++;
             if (attempt > 3) {
-                q.setText("❌ The correct answer was: " + currentShape.getName());
+                q.setText("⚠️ The correct answer was: " + currentShape.getName());
                 showNextShape();
             } else {
                 q.setText("❌ Incorrect, try again.");
