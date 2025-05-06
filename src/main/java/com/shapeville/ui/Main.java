@@ -6,6 +6,7 @@ import com.shapeville.tasks.Task2AngleIdentification;
 import com.shapeville.tasks.Task3VolumeSurfaceCalculator;
 import com.shapeville.tasks.Task4CircleArea;
 import com.shapeville.tasks.Bonus1CompoundShapeArea;
+import com.shapeville.tasks.Bonus2SectorAreaCalculator;
 
 import javax.swing.*;
 import java.awt.*;
@@ -173,6 +174,17 @@ public class Main {
         };
         bonus1Button.addActionListener(e -> {
             cardLayout.show(cardPanel, "bonus1");
+        });
+
+        Bonus2SectorAreaCalculator bonus2 = new Bonus2SectorAreaCalculator(scoremanager);
+        cardPanel.add(bonus2.taskPanel, "bonus2");
+        bonus2.onReturnHome = () -> {
+            cardLayout.show(cardPanel, "startPanel");
+            counter1.setText("积分：" + scoremanager.getScore());
+            counter2.setText("积分：" + scoremanager.getScore());
+        };
+        bonus2Button.addActionListener(e -> {
+            cardLayout.show(cardPanel, "bonus2");
         });
 
 //        task2Button.addActionListener(e -> );
