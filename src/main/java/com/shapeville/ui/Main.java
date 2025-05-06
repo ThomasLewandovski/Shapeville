@@ -3,6 +3,9 @@ package com.shapeville.ui;
 import com.shapeville.manager.ScoreManager;
 import com.shapeville.tasks.Task1ShapeIdentification;
 import com.shapeville.tasks.Task2AngleIdentification;
+import com.shapeville.tasks.Task3VolumeSurfaceCalculator;
+import com.shapeville.tasks.Task4CircleArea;
+import com.shapeville.tasks.Bonus1CompoundShapeTask;
 
 import javax.swing.*;
 import java.awt.*;
@@ -114,6 +117,51 @@ public class Main {
                 JOptionPane.showMessageDialog(null, "you have played this module,please try other modules", "提示", JOptionPane.INFORMATION_MESSAGE);
             }
 
+        });
+
+        task3Button.addActionListener(e -> {
+            if (is_played[3] == 0) {
+                is_played[3] = 1;
+                Task3VolumeSurfaceCalculator task3 = new Task3VolumeSurfaceCalculator(scoremanager);
+                cardPanel.add(task3.task3, "task3");
+                task3.onReturnHome = () -> {
+                    cardLayout.show(cardPanel, "startPanel");
+                    counter1.setText("积分：" + scoremanager.getScore());
+                    counter2.setText("积分：" + scoremanager.getScore());
+                };
+                cardLayout.show(cardPanel, "task3");
+                task3.start();
+            } else {
+                JOptionPane.showMessageDialog(null, "you have played this module, please try other modules", "提示", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
+
+        task4Button.addActionListener(e -> {
+            if (is_played[4] == 0) {
+                is_played[4] = 1;
+                Task4CircleArea task4 = new Task4CircleArea(scoremanager);
+                cardPanel.add(task4.task4, "task4");
+                task4.onReturnHome = () -> {
+                    cardLayout.show(cardPanel, "startPanel");
+                    counter1.setText("积分：" + scoremanager.getScore());
+                    counter2.setText("积分：" + scoremanager.getScore());
+                };
+                cardLayout.show(cardPanel, "task4");
+                task4.start();  // 启动任务流程
+            } else {
+                JOptionPane.showMessageDialog(null, "You have already played this module. Please try another one.", "提示", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
+
+        Bonus1CompoundShapeTask bonus1 = new Bonus1CompoundShapeTask(scoremanager);
+        cardPanel.add(bonus1.mainPanel, "bonus1");
+        bonus1.onReturnHome = () -> {
+            cardLayout.show(cardPanel, "startPanel");
+            counter1.setText("积分：" + scoremanager.getScore());
+            counter2.setText("积分：" + scoremanager.getScore());
+        };
+        bonus1Button.addActionListener(e -> {
+            cardLayout.show(cardPanel, "bonus1");
         });
 
 //        task2Button.addActionListener(e -> );
