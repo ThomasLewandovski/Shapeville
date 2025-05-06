@@ -93,7 +93,7 @@ public class Bonus1CompoundShapeArea {
             }
         }
 
-        JButton homeButton = new JButton("Home");
+        JButton homeButton = new JButton("taskPanel");
         homeButton.setBounds(600, 470, 100, 30);
         homeButton.addActionListener(e -> {
             if (onReturnHome != null) onReturnHome.run();
@@ -125,7 +125,7 @@ public class Bonus1CompoundShapeArea {
         feedbackLabel.setBounds(450, 180, 300, 30);
         questionPanel.add(feedbackLabel);
 
-        JButton homeButton = new JButton("Home");
+        JButton homeButton = new JButton("Back");
         homeButton.setBounds(600, 470, 100, 30);
         homeButton.addActionListener(e -> {
             answerField.setText("");
@@ -133,7 +133,6 @@ public class Bonus1CompoundShapeArea {
             imageLabel.setIcon(null);
             attemptCount = 0;
             ((CardLayout) taskPanel.getLayout()).show(taskPanel, "select");
-            if (onReturnHome != null) onReturnHome.run();
         });
         questionPanel.add(homeButton);
     }
