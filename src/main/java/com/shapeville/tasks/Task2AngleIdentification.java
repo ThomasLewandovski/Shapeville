@@ -17,6 +17,8 @@ public class Task2AngleIdentification {
     private JButton submitButton;
     public JButton goHomeButton;
     public Runnable onReturnHome;
+    private JLabel score;
+    private int result = 0;
 
     private int currentAngle = -1;
     private int attempt = 1;
@@ -29,24 +31,29 @@ public class Task2AngleIdentification {
         this.scoreManager = scoreManager;
         this.task2 = new JPanel(null);
 
+        this.score = new JLabel();
+        score.setBounds(10, 0, 200, 40);
+        score.setText("points: 0");
+        task2.add(score);
+
         q = new JLabel("Enter an angle (0-360, multiple of 10):");
-        q.setBounds(50, 20, 600, 30);
+        q.setBounds(100, 20, 600, 30);
         task2.add(q);
 
         input = new JTextField();
-        input.setBounds(50, 60, 400, 25);
+        input.setBounds(100, 60, 400, 25);
         task2.add(input);
 
         submitButton = new JButton("Submit");
-        submitButton.setBounds(470, 60, 100, 25);
+        submitButton.setBounds(500, 60, 100, 25);
         task2.add(submitButton);
 
         angleCanvas = new AngleCanvas();
-        angleCanvas.setBounds(100, 100, 300, 300);
+        angleCanvas.setBounds(200, 100, 300, 300);
         task2.add(angleCanvas);
 
         goHomeButton = new JButton("🏠 Return to Home");
-        goHomeButton.setBounds(100, 420, 200, 30);
+        goHomeButton.setBounds(200, 420, 200, 30);
         goHomeButton.setVisible(false);
         task2.add(goHomeButton);
         goHomeButton.addActionListener(e -> {
@@ -101,6 +108,8 @@ public class Task2AngleIdentification {
                     default -> 0;
                 };
                 scoreManager.addScore(points);
+                result += points;
+                score.setText("points: " + result);
                 identifiedTypes.add(correct.toLowerCase());
                 checkCompletion();
             } else {
@@ -118,7 +127,7 @@ public class Task2AngleIdentification {
     }
 
     private void checkCompletion() {
-        if (identifiedTypes.size() >= 1) {
+        if (identifiedTypes.size() >= 3) {
             q.setText("🎉 You have identified all 4 types of angles! Task Complete!");
             input.setVisible(false);
             submitButton.setVisible(false);

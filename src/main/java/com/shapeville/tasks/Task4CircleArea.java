@@ -16,6 +16,7 @@ public class Task4CircleArea {
     private JLabel feedbackLabel;
     private JLabel formulaLabel;
     private DrawCirclePanel drawPanel;
+    private JLabel score;
 
     private ScoreManager scoreManager;
     public Runnable onReturnHome;
@@ -50,6 +51,11 @@ public class Task4CircleArea {
         drawPanel = new DrawCirclePanel();
         drawPanel.setBounds(400, 20, 300, 300);
         task4.add(drawPanel);
+
+        score = new JLabel();
+        score.setText("Score: 0");
+        score.setBounds(10, 0, 200, 40);
+        task4.add(score);
 
         homeButton = new JButton("Home");
         homeButton.setBounds(650, 500, 100, 30);
@@ -88,6 +94,7 @@ public class Task4CircleArea {
                     default -> 0;
                 };
                 scoreManager.addScore(points);
+                score.setText("Score: " + scoreManager.getScore());
                 feedbackLabel.setText("✅ Correct! You earned " + points + " points.");
                 start();
             } else {

@@ -22,6 +22,11 @@ public class Main {
         for (int i = 0; i < 7; i++) {
             is_played[i] = 0;
         }
+        var ref = new Object() {
+            int[] is_played_task1 = new int[2];
+        };
+        ref.is_played_task1[0] = 0;
+        ref.is_played_task1[1] = 0;
         // 创建主窗口
         JFrame frame = new JFrame("Shapeville");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -36,7 +41,7 @@ public class Main {
         //积分器
 
         final JLabel counter1 = new JLabel("积分："+result);
-        counter1.setBounds(10, 10, 60, 30);
+        counter1.setBounds(10, 0, 60, 30);
         mainpanel.add(counter1);
         //更新积分方法：setText，在每次结束tasks时使用
         counter1.setText("积分："+result);
@@ -49,7 +54,7 @@ public class Main {
         // 创建第二个界面：关卡选择，管理进入各个task的通道及积分器
         JPanel startpanel = new JPanel(null);
         final JLabel counter2 = new JLabel("积分："+result);
-        counter2.setBounds(10, 10, 60, 30);
+        counter2.setBounds(10, 0, 60, 30);
         startpanel.add(counter2);
         counter2.setText("积分："+result);
         //回到主界面按钮
@@ -61,10 +66,10 @@ public class Main {
         JButton task2Button = new JButton("task2:");
         JButton task3Button = new JButton("task3:");
         JButton task4Button = new JButton("task4:");
-        task1Button.setBounds(100, 50, 100, 30);
-        task2Button.setBounds(250, 50, 100, 30);
-        task3Button.setBounds(400, 50, 100, 30);
-        task4Button.setBounds(550, 50, 100, 30);
+        task1Button.setBounds(100, 100, 150, 100);
+        task2Button.setBounds(250, 100, 150, 100);
+        task3Button.setBounds(400, 100, 150, 100);
+        task4Button.setBounds(550, 100, 150, 100);
         startpanel.add(task1Button);
         startpanel.add(task2Button);
         startpanel.add(task3Button);
@@ -72,8 +77,8 @@ public class Main {
         //bonus按钮
         JButton bonus1Button = new JButton("bonus1");
         JButton bonus2Button = new JButton("bonus2");
-        bonus1Button.setBounds(400, 200, 100, 30);
-        bonus2Button.setBounds(200, 200, 100, 30);
+        bonus1Button.setBounds(150, 200, 250, 100);
+        bonus2Button.setBounds(400, 200, 250, 100);
         startpanel.add(bonus1Button);
         startpanel.add(bonus2Button);
 
@@ -90,15 +95,20 @@ public class Main {
         homeButton.addActionListener(e -> cardLayout.show(cardPanel, "mainPanel"));
 
         task1Button.addActionListener(e ->{
-            Task1ShapeIdentification task1 = new Task1ShapeIdentification(scoremanager);
-            cardPanel.add(task1.task1,"task1");
-            task1.onReturnHome = () -> {
-                cardLayout.show(cardPanel, "startPanel");
-                counter1.setText("积分：" + scoremanager.getScore());
-                counter2.setText("积分：" + scoremanager.getScore());
-            };
-            cardLayout.show(cardPanel,"task1");
-            task1.start();
+            if(ref.is_played_task1[0] == 0||ref.is_played_task1[1] == 0) {
+                Task1ShapeIdentification task1 = new Task1ShapeIdentification(scoremanager,ref.is_played_task1);
+                cardPanel.add(task1.task1,"task1");
+                task1.onReturnHome = () -> {
+                    cardLayout.show(cardPanel, "startPanel");
+                    counter1.setText("积分：" + scoremanager.getScore());
+                    counter2.setText("积分：" + scoremanager.getScore());
+                };
+                cardLayout.show(cardPanel,"task1");
+                task1.start();
+                ref.is_played_task1 = task1.getIs_played_task1();
+            }
+
+
         });
 
         task2Button.addActionListener(e -> {
@@ -149,6 +159,7 @@ public class Main {
                 cardLayout.show(cardPanel, "task4");
                 task4.start();  // 启动任务流程
             } else {
+
                 JOptionPane.showMessageDialog(null, "You have already played this module. Please try another one.", "提示", JOptionPane.INFORMATION_MESSAGE);
             }
         });

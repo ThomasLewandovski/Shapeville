@@ -13,6 +13,7 @@ public class Task3VolumeSurfaceCalculator {
     public JPanel task3;
     public Runnable onReturnHome;
     private ScoreManager scoreManager;
+    public JLabel score;
 
     private JLabel questionLabel;
     private JTextField inputField;
@@ -63,6 +64,11 @@ public class Task3VolumeSurfaceCalculator {
         homeButton = new JButton("Home");
         homeButton.setBounds(600, 470, 100, 30);
         task3.add(homeButton);
+
+        score = new JLabel();
+        score.setText("Score: 0");
+        score.setBounds(10, 0, 200, 40);
+        task3.add(score);
 
         drawingPanel = new JPanel() {
             @Override
@@ -162,6 +168,7 @@ public class Task3VolumeSurfaceCalculator {
         } catch (Exception e) {
             questionLabel.setText("Please enter a valid number");
         }
+        score.setText("Score: " + scoreManager.getScore());
     }
 
     private void showExplanation() {
