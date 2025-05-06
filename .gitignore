@@ -14,4 +14,4 @@ out/
 .vscode/
 
 # Mac 系统文件
-.DS_Store
+.DS_Storetarget/

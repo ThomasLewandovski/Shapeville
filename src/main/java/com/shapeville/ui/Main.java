@@ -5,7 +5,7 @@ import com.shapeville.tasks.Task1ShapeIdentification;
 import com.shapeville.tasks.Task2AngleIdentification;
 import com.shapeville.tasks.Task3VolumeSurfaceCalculator;
 import com.shapeville.tasks.Task4CircleArea;
-import com.shapeville.tasks.Bonus1CompoundShapeTask;
+import com.shapeville.tasks.Bonus1CompoundShapeArea;
 
 import javax.swing.*;
 import java.awt.*;
@@ -164,8 +164,8 @@ public class Main {
             }
         });
 
-        Bonus1CompoundShapeTask bonus1 = new Bonus1CompoundShapeTask(scoremanager);
-        cardPanel.add(bonus1.mainPanel, "bonus1");
+        Bonus1CompoundShapeArea bonus1 = new Bonus1CompoundShapeArea(scoremanager);
+        cardPanel.add(bonus1.taskPanel, "bonus1");
         bonus1.onReturnHome = () -> {
             cardLayout.show(cardPanel, "startPanel");
             counter1.setText("积分：" + scoremanager.getScore());

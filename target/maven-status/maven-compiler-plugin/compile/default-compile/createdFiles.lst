@@ -1,9 +1,0 @@
-com/shapeville/manager/GameManager.class
-com/shapeville/ui/ShapeTaskPanel.class
-com/shapeville/manager/ScoreManager.class
-com/shapeville/data/ShapeData.class
-com/shapeville/ui/ShapeTaskPanel$SubmitListener.class
-com/shapeville/data/AngleData.class
-com/shapeville/tasks/Task2AngleIdentification.class
-com/shapeville/tasks/Task1ShapeIdentification.class
-com/shapeville/data/ShapeData$ShapeItem.class
