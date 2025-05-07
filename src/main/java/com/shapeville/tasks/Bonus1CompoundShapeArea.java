@@ -13,6 +13,7 @@ public class Bonus1CompoundShapeArea {
     public JPanel taskPanel;
     public Runnable onReturnHome;
     private ScoreManager scoreManager;
+    private JLabel score;
 
     private JPanel shapeSelectPanel;
     private JPanel questionPanel;
@@ -29,6 +30,9 @@ public class Bonus1CompoundShapeArea {
     public Bonus1CompoundShapeArea(ScoreManager scoreManager) {
         this.scoreManager = scoreManager;
         this.taskPanel = new JPanel(new CardLayout());
+        this.score = new JLabel();
+        score.setText("Score: 0");
+        score.setBounds(10,0,60,30);
         initializeAnswerData();
         initShapeSelectPanel();
         initQuestionPanel();
@@ -41,10 +45,10 @@ public class Bonus1CompoundShapeArea {
         explanations = new HashMap<>();
 
         correctAnswers.put(1, 231.0);
-        explanations.put(1, "Area = 14×14 = 196 + ½×5×14 = 35 → 231 cm²");
+        explanations.put(1, "Area = 14×14 + ½×5×14 = 196 + 35 → 231 cm²");
 
-        correctAnswers.put(2, 320.0);
-        explanations.put(2, "Area = 21×20 = 420 – 10×10 = 100 → 320 cm²");
+        correctAnswers.put(2, 120.0);
+        explanations.put(2, "Area = 21×20 – 11×10 = 420 -110 → 310 cm²");
 
         correctAnswers.put(3, 310.0);
         explanations.put(3, "Area = 18×3 = 54 + 16×16 = 256 → 310 cm²");
@@ -70,7 +74,7 @@ public class Bonus1CompoundShapeArea {
 
     private void initShapeSelectPanel() {
         shapeSelectPanel = new JPanel(null);
-
+        shapeSelectPanel.add(score);
         JLabel title = new JLabel("Select a Compound Shape:");
         title.setFont(new Font("Arial", Font.BOLD, 16));
         title.setBounds(300, 20, 300, 30);
@@ -94,7 +98,7 @@ public class Bonus1CompoundShapeArea {
         }
 
         JButton homeButton = new JButton("Home");
-        homeButton.setBounds(600, 470, 100, 30);
+        homeButton.setBounds(600, 500, 100, 30);
         homeButton.addActionListener(e -> {
             if (onReturnHome != null) onReturnHome.run();
         });
@@ -103,7 +107,6 @@ public class Bonus1CompoundShapeArea {
 
     private void initQuestionPanel() {
         questionPanel = new JPanel(null);
-
         imageLabel = new JLabel();
         imageLabel.setBounds(100, 40, 300, 250);
         questionPanel.add(imageLabel);
@@ -122,10 +125,10 @@ public class Bonus1CompoundShapeArea {
         questionPanel.add(submitButton);
 
         feedbackLabel = new JLabel("");
-        feedbackLabel.setBounds(450, 180, 300, 30);
+        feedbackLabel.setBounds(450, 180, 300, 60);
         questionPanel.add(feedbackLabel);
 
-        JButton homeButton = new JButton("Home");
+        JButton homeButton = new JButton("Back");
         homeButton.setBounds(600, 470, 100, 30);
         homeButton.addActionListener(e -> {
             answerField.setText("");
@@ -133,7 +136,7 @@ public class Bonus1CompoundShapeArea {
             imageLabel.setIcon(null);
             attemptCount = 0;
             ((CardLayout) taskPanel.getLayout()).show(taskPanel, "select");
-            if (onReturnHome != null) onReturnHome.run();
+//            if (onReturnHome != null) onReturnHome.run();
         });
         questionPanel.add(homeButton);
     }
@@ -177,5 +180,6 @@ public class Bonus1CompoundShapeArea {
         } catch (Exception ex) {
             feedbackLabel.setText("❌ Please enter a valid number.");
         }
+        score.setText("Score: " + scoreManager.getScore());
     }
 }

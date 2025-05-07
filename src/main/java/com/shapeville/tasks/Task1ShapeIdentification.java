@@ -32,7 +32,6 @@ public class Task1ShapeIdentification {
     public JLabel img;
     public JLabel output;
     public JTextField input;
-    public int result = 0;
     public JLabel score;
     // 修改变量名首字母为小写，遵循 Java 命名规范
     private KeyAdapter keyAdapter;

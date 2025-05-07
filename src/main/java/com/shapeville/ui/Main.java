@@ -187,13 +187,6 @@ public class Main {
             cardLayout.show(cardPanel, "bonus2");
         });
 
-//        task2Button.addActionListener(e -> );
-//        task3Button.addActionListener(e -> );
-//        task4Button.addActionListener(e -> );
-//        bonus1Button.addActionListener(e -> );
-//        bonus2Button.addActionListener(e -> );
-
-
         // 将卡片面板添加到主窗口
         frame.add(cardPanel);
 

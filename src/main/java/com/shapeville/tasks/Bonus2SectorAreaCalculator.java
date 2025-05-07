@@ -82,12 +82,12 @@ public class Bonus2SectorAreaCalculator {
                 ImageIcon rawIcon = new ImageIcon(getClass().getClassLoader().getResource("images/circle" + i + ".png"));
                 Image scaledImg = rawIcon.getImage().getScaledInstance(160, 120, Image.SCALE_SMOOTH);
                 JButton btn = new JButton(new ImageIcon(scaledImg));
-                btn.setBounds(100 + ((i - 1) % 4) * 180, 70 + ((i - 1) / 4) * 160, 160, 120);
+                btn.setBounds(50 + ((i - 1) % 4) * 180, 70 + ((i - 1) / 4) * 160, 160, 120);
                 btn.addActionListener(e -> showQuestion(id));
                 selectPanel.add(btn);
             } catch (Exception ex) {
                 JButton btn = new JButton("circle" + i);
-                btn.setBounds(100 + ((i - 1) % 4) * 180, 70 + ((i - 1) / 4) * 160, 160, 120);
+                btn.setBounds(50 + ((i - 1) % 4) * 180, 70 + ((i - 1) / 4) * 160, 160, 120);
                 btn.addActionListener(e -> showQuestion(id));
                 selectPanel.add(btn);
             }
