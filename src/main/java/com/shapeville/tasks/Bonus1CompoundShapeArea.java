@@ -45,16 +45,16 @@ public class Bonus1CompoundShapeArea {
         explanations = new HashMap<>();
 
         correctAnswers.put(1, 231.0);
-        explanations.put(1, "Area = 14×14 + ½×5×14 = 196 + 35 → 231 cm²");
+        explanations.put(1, "Area = 14×14 + ½×5×14 = 196 + 35 = 231 cm²");
 
-        correctAnswers.put(2, 120.0);
-        explanations.put(2, "Area = 21×20 – 11×10 = 420 -110 → 310 cm²");
+        correctAnswers.put(2, 310.0);
+        explanations.put(2, "Area = 21×20 – 11×10 = 420 -110 = 310 cm²");
 
-        correctAnswers.put(3, 310.0);
-        explanations.put(3, "Area = 18×3 = 54 + 16×16 = 256 → 310 cm²");
+        correctAnswers.put(3, 598.0);
+        explanations.put(3, "Area = 18×19 + 16×16 =342 + 256 = 598 cm²");
 
-        correctAnswers.put(4, 216.0);
-        explanations.put(4, "Area = 12×2 = 24 + 10×12 = 120 + 6×12 = 72 → 216 cm²");
+        correctAnswers.put(4, 288.0);
+        explanations.put(4, "Area = 12×12 + 24×6  = 144 + 144 = 288 cm²");
 
         correctAnswers.put(5, 76.0);
         explanations.put(5, "Area = 16×4 = 64 + ½×(4+2)×4 = 12 → 76 cm²");
@@ -65,11 +65,11 @@ public class Bonus1CompoundShapeArea {
         correctAnswers.put(7, 196.0);
         explanations.put(7, "Area = 14×12 = 168 + ½×14×4 = 28 → 196 cm²");
 
-        correctAnswers.put(8, 3888.0);
-        explanations.put(8, "Area = 36×36 × 3 = 3888 cm²");
+        correctAnswers.put(8, 3456.0);
+        explanations.put(8, "Area = 36×36 + 36×60 = 3456 cm²");
 
-        correctAnswers.put(9, 198.0);
-        explanations.put(9, "Area = 10×11 = 110 + 8×3 = 24 + 8×8 = 64 → 198 cm²");
+        correctAnswers.put(9, 174.0);
+        explanations.put(9, "Area = 10×11 + 8×8 = 110 + 64 = 174 cm²");
     }
 
     private void initShapeSelectPanel() {
