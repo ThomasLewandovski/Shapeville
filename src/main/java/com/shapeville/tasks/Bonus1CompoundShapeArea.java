@@ -6,6 +6,7 @@ import com.shapeville.manager.ScoreManager;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,6 +23,9 @@ public class Bonus1CompoundShapeArea {
     private JLabel feedbackLabel;
     private JTextField answerField;
 
+    // 存储原始图像，用于缩放
+    private Map<Integer, Image> originalImages = new HashMap<>();
+
     private int currentShapeId;
     private int attemptCount = 0;
     private Map<Integer, Double> correctAnswers;
@@ -32,12 +36,18 @@ public class Bonus1CompoundShapeArea {
         this.taskPanel = new JPanel(new CardLayout());
         this.score = new JLabel();
         score.setText("Score: 0");
-        score.setBounds(10,0,60,30);
         initializeAnswerData();
         initShapeSelectPanel();
         initQuestionPanel();
         taskPanel.add(shapeSelectPanel, "select");
         taskPanel.add(questionPanel, "question");
+
+        // 添加组件监听器，处理窗口大小变化
+        taskPanel.addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentResized(java.awt.event.ComponentEvent evt) {
+                resizeCurrentImage();
+            }
+        });
     }
 
     private void initializeAnswerData() {
@@ -73,80 +83,128 @@ public class Bonus1CompoundShapeArea {
     }
 
     private void initShapeSelectPanel() {
-        shapeSelectPanel = new JPanel(null);
-        shapeSelectPanel.add(score);
+        // 使用BorderLayout作为主布局
+        shapeSelectPanel = new JPanel(new BorderLayout());
+
+        // 顶部面板 - 标题和分数
+        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        topPanel.add(score);
         JLabel title = new JLabel("Select a Compound Shape:");
         title.setFont(new Font("Arial", Font.BOLD, 16));
-        title.setBounds(300, 20, 300, 30);
-        shapeSelectPanel.add(title);
+        topPanel.add(title);
+        shapeSelectPanel.add(topPanel, BorderLayout.NORTH);
+
+        // 中间面板 - 形状选择按钮
+        JPanel buttonPanel = new JPanel(new GridLayout(0, 3, 10, 10));
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         for (int i = 1; i <= 9; i++) {
             int shapeId = i;
             try {
+                // 加载图像并保存原始图像
                 ImageIcon rawIcon = new ImageIcon(getClass().getClassLoader().getResource("images/Shape" + i + ".png"));
-                Image scaledImg = rawIcon.getImage().getScaledInstance(200, 130, Image.SCALE_SMOOTH);
-                JButton btn = new JButton(new ImageIcon(scaledImg));
-                btn.setBounds(80 + ((i - 1) % 3) * 210, 70 + ((i - 1) / 3) * 150, 200, 130);
+                originalImages.put(shapeId, rawIcon.getImage());
+
+                // 创建可缩放的图像按钮
+                JButton btn = new JButton(new ImageIcon(getScaledImage(rawIcon.getImage(), 200, 130)));
                 btn.addActionListener(e -> showQuestion(shapeId));
-                shapeSelectPanel.add(btn);
+                buttonPanel.add(btn);
             } catch (Exception ex) {
                 JButton btn = new JButton("Shape " + i);
-                btn.setBounds(80 + ((i - 1) % 3) * 210, 70 + ((i - 1) / 3) * 150, 200, 130);
                 btn.addActionListener(e -> showQuestion(shapeId));
-                shapeSelectPanel.add(btn);
+                buttonPanel.add(btn);
             }
         }
 
+        // 使用JScrollPane支持滚动
+        JScrollPane scrollPane = new JScrollPane(buttonPanel);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        shapeSelectPanel.add(scrollPane, BorderLayout.CENTER);
+
+        // 底部面板 - 主页按钮
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton homeButton = new JButton("Home");
-        homeButton.setBounds(600, 500, 100, 30);
         homeButton.addActionListener(e -> {
             if (onReturnHome != null) onReturnHome.run();
         });
-        shapeSelectPanel.add(homeButton);
+        bottomPanel.add(homeButton);
+        shapeSelectPanel.add(bottomPanel, BorderLayout.SOUTH);
     }
 
     private void initQuestionPanel() {
-        questionPanel = new JPanel(null);
+        // 使用GridBagLayout作为主布局
+        questionPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+
+        // 图像标签
         imageLabel = new JLabel();
-        imageLabel.setBounds(100, 40, 300, 250);
-        questionPanel.add(imageLabel);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridheight = 4;
+        gbc.weighty = 1.0;
+        questionPanel.add(imageLabel, gbc);
 
+        // 提示标签
         JLabel prompt = new JLabel("Enter the calculated area:");
-        prompt.setBounds(450, 80, 200, 30);
-        questionPanel.add(prompt);
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.gridheight = 1;
+        gbc.weighty = 0.0;
+        questionPanel.add(prompt, gbc);
 
+        // 答案输入框
         answerField = new JTextField();
-        answerField.setBounds(450, 120, 100, 30);
-        questionPanel.add(answerField);
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        questionPanel.add(answerField, gbc);
 
+        // 提交按钮
         JButton submitButton = new JButton("Submit");
-        submitButton.setBounds(560, 120, 80, 30);
         submitButton.addActionListener(this::handleSubmit);
-        questionPanel.add(submitButton);
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.LINE_START;
+        questionPanel.add(submitButton, gbc);
+        gbc.fill = GridBagConstraints.BOTH;
 
+        // 反馈标签
         feedbackLabel = new JLabel("");
-        feedbackLabel.setBounds(450, 180, 300, 60);
-        questionPanel.add(feedbackLabel);
+        gbc.gridx = 1;
+        gbc.gridy = 3;
+        questionPanel.add(feedbackLabel, gbc);
 
+        // 主页按钮
         JButton homeButton = new JButton("Back");
-        homeButton.setBounds(600, 470, 100, 30);
         homeButton.addActionListener(e -> {
             answerField.setText("");
             feedbackLabel.setText("");
             imageLabel.setIcon(null);
             attemptCount = 0;
             ((CardLayout) taskPanel.getLayout()).show(taskPanel, "select");
-//            if (onReturnHome != null) onReturnHome.run();
         });
-        questionPanel.add(homeButton);
+        gbc.gridx = 1;
+        gbc.gridy = 4;
+        gbc.anchor = GridBagConstraints.LINE_END;
+        questionPanel.add(homeButton, gbc);
     }
 
     private void showQuestion(int shapeId) {
         currentShapeId = shapeId;
         try {
-            ImageIcon rawIcon = new ImageIcon(getClass().getClassLoader().getResource("images/Shape" + shapeId + ".png"));
-            Image scaledImage = rawIcon.getImage().getScaledInstance(300, 250, Image.SCALE_SMOOTH);
-            imageLabel.setIcon(new ImageIcon(scaledImage));
+            // 获取原始图像
+            Image originalImage = originalImages.getOrDefault(shapeId, null);
+            if (originalImage != null) {
+                // 根据当前容器大小缩放图像
+                imageLabel.setIcon(new ImageIcon(getScaledImage(originalImage,
+                        imageLabel.getWidth(), imageLabel.getHeight())));
+            } else {
+                imageLabel.setText("❌ Image not found");
+            }
         } catch (Exception ex) {
             imageLabel.setText("❌ Image not found");
         }
@@ -181,5 +239,41 @@ public class Bonus1CompoundShapeArea {
             feedbackLabel.setText("❌ Please enter a valid number.");
         }
         score.setText("Score: " + scoreManager.getScore());
+    }
+
+    // 缩放图像方法
+    private Image getScaledImage(Image srcImg, int w, int h) {
+        if (w <= 0 || h <= 0) {
+            // 设置默认大小
+            w = 300;
+            h = 250;
+        }
+
+        // 保持图像比例
+        int originalWidth = srcImg.getWidth(null);
+        int originalHeight = srcImg.getHeight(null);
+
+        double ratio = (double) originalWidth / originalHeight;
+        if (w / h > ratio) {
+            w = (int) (h * ratio);
+        } else {
+            h = (int) (w / ratio);
+        }
+
+        BufferedImage resizedImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2 = resizedImg.createGraphics();
+        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g2.drawImage(srcImg, 0, 0, w, h, null);
+        g2.dispose();
+        return resizedImg;
+    }
+
+    // 处理窗口大小变化时的图像缩放
+    private void resizeCurrentImage() {
+        if (currentShapeId > 0 && originalImages.containsKey(currentShapeId)) {
+            Image originalImage = originalImages.get(currentShapeId);
+            imageLabel.setIcon(new ImageIcon(getScaledImage(originalImage,
+                    imageLabel.getWidth(), imageLabel.getHeight())));
+        }
     }
 }
