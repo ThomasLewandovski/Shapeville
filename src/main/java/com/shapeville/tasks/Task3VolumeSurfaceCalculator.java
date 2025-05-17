@@ -3,8 +3,8 @@ package com.shapeville.tasks;
 import com.shapeville.manager.ScoreManager;
 
 import javax.swing.*;
-import javax.swing.Timer;
 import java.awt.*;
+import javax.swing.Timer;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
@@ -21,8 +21,7 @@ public class Task3VolumeSurfaceCalculator {
     private JComboBox<String> shapeSelector;
     private Timer countdownTimer;
     private JLabel timerLabel;
-    //三次失败后把图形绘制出来的面板
-    private JPanel drawingPanel;
+    private DrawingPanel drawingPanel;
 
     private String currentShape;
     private int param1, param2, param3;
@@ -34,59 +33,91 @@ public class Task3VolumeSurfaceCalculator {
 
     public Task3VolumeSurfaceCalculator(ScoreManager scoreManager) {
         this.scoreManager = scoreManager;
-        this.task3 = new JPanel(null);
         this.completedShapes = new HashSet<>();
 
+        // 使用BorderLayout作为主面板布局
+        task3 = new JPanel(new BorderLayout(10, 10));
+        task3.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        // 顶部面板 - 包含分数和标题
+        JPanel topPanel = new JPanel(new BorderLayout());
+        score = new JLabel("Score: 0");
+        score.setFont(new Font("Arial", Font.BOLD, 16));
+        topPanel.add(score, BorderLayout.NORTH);
+
         questionLabel = new JLabel("Choose a shape:");
-        questionLabel.setBounds(100, 30, 500, 30);
-        task3.add(questionLabel);
+        questionLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+        questionLabel.setVerticalAlignment(JLabel.TOP);
+        questionLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        topPanel.add(questionLabel, BorderLayout.CENTER);
+
+        task3.add(topPanel, BorderLayout.NORTH);
+
+        // 中间面板 - 包含形状选择和输入区域
+        JPanel centerPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
         shapeSelector = new JComboBox<>(new String[]{"Rectangle", "Parallelogram", "Triangle", "Trapezium"});
-        shapeSelector.setBounds(100, 70, 200, 30);
-        task3.add(shapeSelector);
+        shapeSelector.setFont(new Font("Arial", Font.PLAIN, 14));
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 0.5;
+        centerPanel.add(shapeSelector, gbc);
 
         JButton generateButton = new JButton("Generate Problem");
-        generateButton.setBounds(320, 70, 200, 30);
-        task3.add(generateButton);
-
-        inputField = new JTextField();
-        inputField.setBounds(100, 150, 200, 30);
-        task3.add(inputField);
-
-        submitButton = new JButton("Submit");
-        submitButton.setBounds(320, 150, 100, 30);
-        task3.add(submitButton);
+        generateButton.setFont(new Font("Arial", Font.PLAIN, 14));
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.weightx = 0.5;
+        centerPanel.add(generateButton, gbc);
 
         timerLabel = new JLabel("Time left: 180s");
-        timerLabel.setBounds(100, 110, 200, 30);
-        task3.add(timerLabel);
+        timerLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 2;
+        centerPanel.add(timerLabel, gbc);
+
+        inputField = new JTextField();
+        inputField.setFont(new Font("Arial", Font.PLAIN, 14));
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.gridwidth = 1;
+        gbc.weightx = 0.7;
+        centerPanel.add(inputField, gbc);
+
+        submitButton = new JButton("Submit");
+        submitButton.setFont(new Font("Arial", Font.PLAIN, 14));
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        gbc.weightx = 0.3;
+        centerPanel.add(submitButton, gbc);
+
+        task3.add(centerPanel, BorderLayout.CENTER);
+
+        // 底部面板 - 包含绘图区域和返回按钮
+        JPanel bottomPanel = new JPanel(new BorderLayout(10, 10));
+
+        drawingPanel = new DrawingPanel();
+        drawingPanel.setPreferredSize(new Dimension(400, 200));
+        drawingPanel.setMinimumSize(new Dimension(300, 150));
+        drawingPanel.setBackground(Color.WHITE);
+        bottomPanel.add(drawingPanel, BorderLayout.CENTER);
 
         homeButton = new JButton("Home");
-        homeButton.setBounds(600, 470, 100, 30);
-        task3.add(homeButton);
+        homeButton.setFont(new Font("Arial", Font.PLAIN, 14));
+        homeButton.setAlignmentX(Component.RIGHT_ALIGNMENT);
+        JPanel homeButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        homeButtonPanel.add(homeButton);
+        bottomPanel.add(homeButtonPanel, BorderLayout.SOUTH);
 
-        score = new JLabel();
-        score.setText("Score: 0");
-        score.setBounds(10, 0, 200, 40);
-        task3.add(score);
+        task3.add(bottomPanel, BorderLayout.SOUTH);
 
-        drawingPanel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                if (currentShape != null && attemptsLeft <= 0) {
-                    drawShapeWithLabel(g);
-                }
-            }
-        };
-        drawingPanel.setBounds(100, 200, 400, 200);
-        drawingPanel.setBackground(Color.WHITE);
-        task3.add(drawingPanel);
-
+        // 按钮事件处理
         generateButton.addActionListener(e -> start());
-
         submitButton.addActionListener(e -> checkAnswer());
-
         homeButton.addActionListener(e -> {
             if (countdownTimer != null) countdownTimer.stop();
             if (onReturnHome != null) onReturnHome.run();
@@ -180,62 +211,98 @@ public class Task3VolumeSurfaceCalculator {
             default -> "Unknown shape.";
         };
         completedShapes.add(currentShape);
-        //questionLabel.setText("❗ Correct Answer: " + formula);
         drawingPanel.repaint();
     }
 
-    private void drawShapeWithLabel(Graphics g) {
-        g.setColor(Color.BLUE);
-        g.setFont(new Font("Arial", Font.PLAIN, 12));
-        switch (currentShape) {
-            case "Rectangle" -> {
-                g.drawRect(50, 50, 100, 60);
-                g.drawString("length: " + param1, 100, 45);
-                g.drawString("width: " + param2, 160, 85);
-            }
-            case "Parallelogram" -> {
-                int[] xPoints = {50, 90, 140, 100};
-                int[] yPoints = {100, 50, 50, 100};
-                g.drawPolygon(xPoints, yPoints, 4);
-                g.drawString("base: " + param1, 90, 45);
-                g.drawString("height: " + param2, 30, 75);
-            }
-            case "Triangle" -> {
-                int[] xPoints = {50, 150, 100};
-                int[] yPoints = {150, 150, 70};
-                g.drawPolygon(xPoints, yPoints, 3);
-                g.drawString("base: " + param1, 80, 160);
-                g.drawString("height: " + param2, 105, 110);
-            }
-            case "Trapezium" -> {
-                int topLeftX = 100;
-                int topRightX = 200;
-                int bottomRightX = 230;
-                int bottomLeftX = 70;
-                int topY = 60;
-                int bottomY = 110;
-
-                // 梯形四个点
-                int[] xPoints = {topLeftX, topRightX, bottomRightX, bottomLeftX};
-                int[] yPoints = {topY, topY, bottomY, bottomY};
-
-                g.setColor(Color.BLUE);
-                g.drawPolygon(xPoints, yPoints, 4);
-
-                // 标注上底 a 和下底 b
-                g.drawString("a: " + param1, (topLeftX + topRightX) / 2 - 15, topY - 10);
-                g.drawString("b: " + param2, (bottomLeftX + bottomRightX) / 2 - 15, bottomY + 20);
-
-                // 绘制高度线 + 标注
-                int midX = (topLeftX + bottomLeftX) / 2;
-                g.setColor(Color.GRAY);
-                g.drawLine(midX, topY, midX, bottomY); // 高度线
-                g.setColor(Color.BLUE);
-                g.drawString("height: " + param3, midX - 45, (topY + bottomY) / 2);
+    class DrawingPanel extends JPanel {
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            if (currentShape != null && attemptsLeft <= 0) {
+                drawShapeWithLabel(g);
             }
         }
-        g.setColor(Color.RED);
-        g.drawString("Formula + Answer: " + getFormulaExplanation(), 10, 190);
+
+        private void drawShapeWithLabel(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setFont(new Font("Arial", Font.PLAIN, 12));
+
+            int width = getWidth();
+            int height = getHeight();
+            int padding = 20;
+            int shapeWidth = width - 2 * padding;
+            int shapeHeight = height - 40; // 为底部文本留出空间
+
+            g2.setColor(Color.BLUE);
+
+            switch (currentShape) {
+                case "Rectangle" -> {
+                    int rectWidth = Math.min(shapeWidth, shapeHeight * 2 / 3);
+                    int rectHeight = rectWidth * 3 / 5;
+                    int x = (width - rectWidth) / 2;
+                    int y = (height - rectHeight - 30) / 2;
+
+                    g2.drawRect(x, y, rectWidth, rectHeight);
+                    g2.drawString("length: " + param1, x + rectWidth/2 - 20, y - 5);
+                    g2.drawString("width: " + param2, x + rectWidth + 5, y + rectHeight/2);
+                }
+                case "Parallelogram" -> {
+                    int paraWidth = Math.min(shapeWidth, shapeHeight * 2 / 3);
+                    int paraHeight = paraWidth * 3 / 5;
+                    int x = (width - paraWidth) / 2;
+                    int y = (height - paraHeight - 30) / 2;
+                    int skew = paraWidth / 5;
+
+                    int[] xPoints = {x, x + skew, x + paraWidth, x + paraWidth - skew};
+                    int[] yPoints = {y + paraHeight, y, y, y + paraHeight};
+
+                    g2.drawPolygon(xPoints, yPoints, 4);
+                    g2.drawString("base: " + param1, x + paraWidth/2 - 15, y - 5);
+                    g2.drawString("height: " + param2, x - 25, y + paraHeight/2);
+                }
+                case "Triangle" -> {
+                    int triWidth = Math.min(shapeWidth, shapeHeight);
+                    int triHeight = triWidth * 3 / 4;
+                    int x = (width - triWidth) / 2;
+                    int y = (height - triHeight - 30) / 2;
+
+                    int[] xPoints = {x, x + triWidth, x + triWidth/2};
+                    int[] yPoints = {y + triHeight, y + triHeight, y};
+
+                    g2.drawPolygon(xPoints, yPoints, 3);
+                    g2.drawString("base: " + param1, x + triWidth/2 - 15, y + triHeight + 15);
+                    g2.drawString("height: " + param2, x + triWidth/2 + 10, y + triHeight/2);
+                }
+                case "Trapezium" -> {
+                    int trapWidth = Math.min(shapeWidth, shapeHeight * 2 / 3);
+                    int trapHeight = trapWidth * 3 / 5;
+                    int x = (width - trapWidth) / 2;
+                    int y = (height - trapHeight - 30) / 2;
+
+                    // 梯形的上底和下底
+                    int topBase = trapWidth * 3 / 5;
+                    int bottomBase = trapWidth;
+
+                    int[] xPoints = {x + (bottomBase - topBase)/2, x + (bottomBase - topBase)/2 + topBase, x + bottomBase, x};
+                    int[] yPoints = {y, y, y + trapHeight, y + trapHeight};
+
+                    g2.drawPolygon(xPoints, yPoints, 4);
+                    g2.drawString("a: " + param1, x + bottomBase/2 - 10, y - 10);
+                    g2.drawString("b: " + param2, x + bottomBase/2 - 10, y + trapHeight + 20);
+
+                    // 绘制高度线
+                    int midX = x + bottomBase/2;
+                    g2.setColor(Color.GRAY);
+                    g2.drawLine(midX, y, midX, y + trapHeight);
+                    g2.setColor(Color.BLUE);
+                    g2.drawString("height: " + param3, midX - 40, y + trapHeight/2);
+                }
+            }
+
+            g2.setColor(Color.RED);
+            g2.drawString("Formula + Answer: " + getFormulaExplanation(), padding, height - 10);
+        }
     }
 
     private String getFormulaExplanation() {

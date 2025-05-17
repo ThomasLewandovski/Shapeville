@@ -5,7 +5,8 @@ import com.shapeville.tasks.Task1ShapeIdentification;
 import com.shapeville.tasks.Task2AngleIdentification;
 import com.shapeville.tasks.Task3VolumeSurfaceCalculator;
 import com.shapeville.tasks.Task4CircleArea;
-import com.shapeville.tasks.Bonus1CompoundShapeTask;
+import com.shapeville.tasks.Bonus1CompoundShapeArea;
+import com.shapeville.tasks.Bonus2SectorAreaCalculator;
 
 import javax.swing.*;
 import java.awt.*;
@@ -48,7 +49,7 @@ public class Main {
 
         //开始按钮
         JButton startButton = new JButton("Start!");
-        startButton.setBounds(300, 10, 100, 30);
+        startButton.setBounds(300, 400, 100, 30);
         mainpanel.add(startButton);
 
         // 创建第二个界面：关卡选择，管理进入各个task的通道及积分器
@@ -93,6 +94,7 @@ public class Main {
         startButton.addActionListener(e -> cardLayout.show(cardPanel, "startPanel"));
         //回到主界面
         homeButton.addActionListener(e -> cardLayout.show(cardPanel, "mainPanel"));
+
 
         task1Button.addActionListener(e ->{
             if(ref.is_played_task1[0] == 0||ref.is_played_task1[1] == 0) {
@@ -164,8 +166,8 @@ public class Main {
             }
         });
 
-        Bonus1CompoundShapeTask bonus1 = new Bonus1CompoundShapeTask(scoremanager);
-        cardPanel.add(bonus1.mainPanel, "bonus1");
+        Bonus1CompoundShapeArea bonus1 = new Bonus1CompoundShapeArea(scoremanager);
+        cardPanel.add(bonus1.taskPanel, "bonus1");
         bonus1.onReturnHome = () -> {
             cardLayout.show(cardPanel, "startPanel");
             counter1.setText("积分：" + scoremanager.getScore());
@@ -175,12 +177,16 @@ public class Main {
             cardLayout.show(cardPanel, "bonus1");
         });
 
-//        task2Button.addActionListener(e -> );
-//        task3Button.addActionListener(e -> );
-//        task4Button.addActionListener(e -> );
-//        bonus1Button.addActionListener(e -> );
-//        bonus2Button.addActionListener(e -> );
-
+        Bonus2SectorAreaCalculator bonus2 = new Bonus2SectorAreaCalculator(scoremanager);
+        cardPanel.add(bonus2.taskPanel, "bonus2");
+        bonus2.onReturnHome = () -> {
+            cardLayout.show(cardPanel, "startPanel");
+            counter1.setText("积分：" + scoremanager.getScore());
+            counter2.setText("积分：" + scoremanager.getScore());
+        };
+        bonus2Button.addActionListener(e -> {
+            cardLayout.show(cardPanel, "bonus2");
+        });
 
         // 将卡片面板添加到主窗口
         frame.add(cardPanel);
