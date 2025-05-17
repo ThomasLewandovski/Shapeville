@@ -4,6 +4,7 @@ import com.shapeville.manager.ScoreManager;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Random;
 
@@ -26,47 +27,85 @@ public class Task4CircleArea {
 
     public Task4CircleArea(ScoreManager scoreManager) {
         this.scoreManager = scoreManager;
-        task4 = new JPanel(null);
+
+        // 使用BorderLayout作为主面板布局
+        task4 = new JPanel(new BorderLayout(10, 10));
+        task4.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        // 顶部面板 - 包含分数和问题描述
+        JPanel topPanel = new JPanel(new BorderLayout());
+        score = new JLabel("Score: 0");
+        score.setFont(new Font("Arial", Font.BOLD, 16));
+        topPanel.add(score, BorderLayout.NORTH);
 
         questionLabel = new JLabel();
-        questionLabel.setBounds(50, 30, 400, 30);
-        task4.add(questionLabel);
+        questionLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+        questionLabel.setVerticalAlignment(JLabel.TOP);
+        questionLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        topPanel.add(questionLabel, BorderLayout.CENTER);
+
+        task4.add(topPanel, BorderLayout.NORTH);
+
+        // 中间面板 - 包含输入区域和反馈
+        JPanel middlePanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
         input = new JTextField();
-        input.setBounds(50, 70, 200, 30);
-        task4.add(input);
+        input.setFont(new Font("Arial", Font.PLAIN, 14));
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 0.7;
+        middlePanel.add(input, gbc);
 
         submitButton = new JButton("Submit");
-        submitButton.setBounds(270, 70, 100, 30);
-        task4.add(submitButton);
+        submitButton.setFont(new Font("Arial", Font.PLAIN, 14));
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.weightx = 0.3;
+        middlePanel.add(submitButton, gbc);
 
         feedbackLabel = new JLabel();
-        feedbackLabel.setBounds(50, 110, 500, 30);
-        task4.add(feedbackLabel);
+        feedbackLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 2;
+        middlePanel.add(feedbackLabel, gbc);
 
         formulaLabel = new JLabel();
-        formulaLabel.setBounds(50, 140, 600, 30);
-        task4.add(formulaLabel);
+        formulaLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        middlePanel.add(formulaLabel, gbc);
+
+        task4.add(middlePanel, BorderLayout.CENTER);
+
+        // 底部面板 - 包含绘图区域和返回按钮
+        JPanel bottomPanel = new JPanel(new BorderLayout(10, 10));
 
         drawPanel = new DrawCirclePanel();
-        drawPanel.setBounds(400, 20, 300, 300);
-        task4.add(drawPanel);
-
-        score = new JLabel();
-        score.setText("Score: 0");
-        score.setBounds(10, 0, 200, 40);
-        task4.add(score);
+        drawPanel.setPreferredSize(new Dimension(300, 300));
+        drawPanel.setMinimumSize(new Dimension(200, 200));
+        drawPanel.setBackground(Color.WHITE);
+        bottomPanel.add(drawPanel, BorderLayout.CENTER);
 
         homeButton = new JButton("Home");
-        homeButton.setBounds(650, 500, 100, 30);
+        homeButton.setFont(new Font("Arial", Font.PLAIN, 14));
+        homeButton.setAlignmentX(Component.RIGHT_ALIGNMENT);
+        JPanel homeButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        homeButtonPanel.add(homeButton);
+        bottomPanel.add(homeButtonPanel, BorderLayout.SOUTH);
+
+        task4.add(bottomPanel, BorderLayout.SOUTH);
+
+        // 按钮事件处理
+        submitButton.addActionListener(e->checkAnswer());
         homeButton.addActionListener(e -> {
             if (onReturnHome != null) {
                 onReturnHome.run();
             }
         });
-        task4.add(homeButton);
-
-        submitButton.addActionListener(e -> checkAnswer());
     }
 
     public void start() {
@@ -79,7 +118,7 @@ public class Task4CircleArea {
         questionLabel.setText("🟢 Given a circle with radius = " + radius + ", calculate its area (π≈3.14)");
     }
 
-    private void checkAnswer() {
+    public void checkAnswer() {
         String userInput = input.getText().trim();
         double correctArea = 3.14 * radius * radius;
 
@@ -96,7 +135,11 @@ public class Task4CircleArea {
                 scoreManager.addScore(points);
                 score.setText("Score: " + scoreManager.getScore());
                 feedbackLabel.setText("✅ Correct! You earned " + points + " points.");
-                start();
+
+                // 延迟重新开始，让用户有时间看到正确反馈
+                Timer timer = new Timer(1500, e -> start());
+                timer.setRepeats(false);
+                timer.start();
             } else {
                 if (attempts == 3) {
                     feedbackLabel.setText("❌ You've used all attempts.");
@@ -113,7 +156,7 @@ public class Task4CircleArea {
         }
     }
 
-    // 自定义面板绘制圆和半径
+    // 自定义面板绘制圆和半径，支持自适应大小
     static class DrawCirclePanel extends JPanel {
         private int radius = 0;
 
@@ -126,20 +169,30 @@ public class Task4CircleArea {
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             Graphics2D g2 = (Graphics2D) g;
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2.setStroke(new BasicStroke(2));
 
             int centerX = getWidth() / 2;
             int centerY = getHeight() / 2;
-            int drawRadius = 80;
+            // 使用面板尺寸的一半作为最大圆半径，留出边距
+            int maxRadius = Math.min(getWidth(), getHeight()) / 2 - 20;
 
             // 画圆
-            g2.drawOval(centerX - drawRadius, centerY - drawRadius, drawRadius * 2, drawRadius * 2);
+            g2.setColor(Color.BLUE);
+            g2.drawOval(centerX - maxRadius, centerY - maxRadius, maxRadius * 2, maxRadius * 2);
 
             // 画半径
-            g2.drawLine(centerX, centerY, centerX + drawRadius, centerY);
+            g2.setColor(Color.RED);
+            g2.drawLine(centerX, centerY, centerX + maxRadius, centerY);
 
             // 标注半径值
-            g2.drawString("r = " + radius, centerX + drawRadius + 10, centerY);
+            g2.setFont(new Font("Arial", Font.PLAIN, 14));
+            g2.drawString("r = " + radius, centerX + maxRadius + 10, centerY + 5);
+
+            // 标注面积公式和结果
+            g2.setColor(Color.BLACK);
+            g2.drawString("Area = π×r² = " + String.format("%.2f", 3.14 * radius * radius),
+                    centerX - maxRadius, centerY + maxRadius + 20);
         }
     }
 }

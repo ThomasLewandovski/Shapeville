@@ -69,73 +69,117 @@ public class Bonus2SectorAreaCalculator {
     }
 
     private void initSelectPanel() {
-        selectPanel = new JPanel(null);
+        selectPanel = new JPanel(new BorderLayout());
+        selectPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 30, 30));
 
+        // 标题面板
+        JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JLabel title = new JLabel("Select a Sector Shape:");
         title.setFont(new Font("Arial", Font.BOLD, 16));
-        title.setBounds(300, 20, 300, 30);
-        selectPanel.add(title);
+        titlePanel.add(title);
+        selectPanel.add(titlePanel, BorderLayout.NORTH);
+
+        // 图像按钮面板 - 使用 GridBagLayout 实现响应式布局
+        JPanel buttonPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 0.25; // 四列平均分布
+        gbc.weighty = 0.5;  // 两行平均分布
 
         for (int i = 1; i <= 8; i++) {
+            int row = (i - 1) / 4;
+            int col = (i - 1) % 4;
+            gbc.gridx = col;
+            gbc.gridy = row;
+
             int id = i;
+            JButton btn;
             try {
                 ImageIcon rawIcon = new ImageIcon(getClass().getClassLoader().getResource("images/circle" + i + ".png"));
                 Image scaledImg = rawIcon.getImage().getScaledInstance(160, 120, Image.SCALE_SMOOTH);
-                JButton btn = new JButton(new ImageIcon(scaledImg));
-                btn.setBounds(50 + ((i - 1) % 4) * 180, 70 + ((i - 1) / 4) * 160, 160, 120);
-                btn.addActionListener(e -> showQuestion(id));
-                selectPanel.add(btn);
+                btn = new JButton(new ImageIcon(scaledImg));
             } catch (Exception ex) {
-                JButton btn = new JButton("circle" + i);
-                btn.setBounds(50 + ((i - 1) % 4) * 180, 70 + ((i - 1) / 4) * 160, 160, 120);
-                btn.addActionListener(e -> showQuestion(id));
-                selectPanel.add(btn);
+                btn = new JButton("circle" + i);
             }
+            btn.addActionListener(e -> showQuestion(id));
+            buttonPanel.add(btn, gbc);
         }
 
+        selectPanel.add(buttonPanel, BorderLayout.CENTER);
+
+        // 底部按钮面板
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton homeButton = new JButton("Home");
-        homeButton.setBounds(600, 470, 100, 30);
         homeButton.addActionListener(e -> {
             if (onReturnHome != null) onReturnHome.run();
         });
-        selectPanel.add(homeButton);
+        bottomPanel.add(homeButton);
+        selectPanel.add(bottomPanel, BorderLayout.SOUTH);
     }
 
     private void initQuestionPanel() {
-        questionPanel = new JPanel(null);
+        questionPanel = new JPanel(new BorderLayout());
+        questionPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 30, 10));
 
-        imageLabel = new JLabel();
-        imageLabel.setBounds(100, 40, 300, 250);
-        questionPanel.add(imageLabel);
-
-        JLabel prompt = new JLabel("Enter the calculated area (2 decimals):");
-        prompt.setBounds(450, 80, 250, 30);
-        questionPanel.add(prompt);
-
-        answerField = new JTextField();
-        answerField.setBounds(450, 120, 100, 30);
-        questionPanel.add(answerField);
-
-        JButton submitButton = new JButton("Submit");
-        submitButton.setBounds(560, 120, 80, 30);
-        submitButton.addActionListener(this::handleSubmit);
-        questionPanel.add(submitButton);
-
-        feedbackLabel = new JLabel("");
-        feedbackLabel.setBounds(450, 180, 400, 30);
-        questionPanel.add(feedbackLabel);
-
+        // 顶部计分板
         scoreLabel = new JLabel("Score: " + scoreManager.getScore());
-        scoreLabel.setBounds(10, 10, 200, 30);
-        questionPanel.add(scoreLabel);
+        scoreLabel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
+        questionPanel.add(scoreLabel, BorderLayout.NORTH);
 
+        // 主内容面板 - 使用 GridBagLayout
+        JPanel contentPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.BOTH;
+
+        // 图像区域
+        imageLabel = new JLabel();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridheight = 4;
+        gbc.weightx = 0.4;
+        gbc.weighty = 1.0;
+        contentPanel.add(imageLabel, gbc);
+
+        // 问题区域
+        JLabel prompt = new JLabel("Enter the calculated area (2 decimals):");
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.gridheight = 1;
+        gbc.weightx = 0.6;
+        gbc.weighty = 0.1;
+        contentPanel.add(prompt, gbc);
+
+        // 输入区域
+        JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        answerField = new JTextField(10);
+        JButton submitButton = new JButton("Submit");
+        submitButton.addActionListener(this::handleSubmit);
+        inputPanel.add(answerField);
+        inputPanel.add(submitButton);
+
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        contentPanel.add(inputPanel, gbc);
+
+        // 反馈区域
+        feedbackLabel = new JLabel("");
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        contentPanel.add(feedbackLabel, gbc);
+
+        questionPanel.add(contentPanel, BorderLayout.CENTER);
+
+        // 底部按钮面板
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton homeButton = new JButton("Home");
-        homeButton.setBounds(600, 470, 100, 30);
         homeButton.addActionListener(e -> {
             ((CardLayout) taskPanel.getLayout()).show(taskPanel, "select");
             if (onReturnHome != null) onReturnHome.run();
         });
-        questionPanel.add(homeButton);
+        bottomPanel.add(homeButton);
+        questionPanel.add(bottomPanel, BorderLayout.SOUTH);
     }
 
     private void showQuestion(int shapeId) {
