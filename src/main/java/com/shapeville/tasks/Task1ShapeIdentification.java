@@ -114,7 +114,7 @@ public class Task1ShapeIdentification {
     public void start() {
         // 添加 <br> 标签，使文本换行显示
         output.setText("<html>📐 Task 1: Identify 2D / 3D Shapes<br>" +
-                "1. 2D Shapes (Basic Level)" +
+                "1. 2D Shapes (Basic Level)<br>" +
                 "2. 3D Shapes (Advanced Level)</html>");
     }
 

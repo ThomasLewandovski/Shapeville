@@ -49,7 +49,7 @@ public class Main {
 
         //开始按钮
         JButton startButton = new JButton("Start!");
-        startButton.setBounds(300, 10, 100, 30);
+        startButton.setBounds(300, 400, 100, 30);
         mainpanel.add(startButton);
 
         // 创建第二个界面：关卡选择，管理进入各个task的通道及积分器
@@ -94,6 +94,7 @@ public class Main {
         startButton.addActionListener(e -> cardLayout.show(cardPanel, "startPanel"));
         //回到主界面
         homeButton.addActionListener(e -> cardLayout.show(cardPanel, "mainPanel"));
+
 
         task1Button.addActionListener(e ->{
             if(ref.is_played_task1[0] == 0||ref.is_played_task1[1] == 0) {
