@@ -245,31 +245,66 @@ public class Task3VolumeSurfaceCalculator {
 
             switch (currentShape) {
                 case "Rectangle" -> {
-                    // ✅ 保持长宽比例真实反映 param1:length 与 param2:width
-                    double scale = Math.min(shapeWidth / (double)param1, shapeHeight / (double)param2);
-                    int rectWidth = (int)(param1 * scale);
-                    int rectHeight = (int)(param2 * scale);
+                    // 👉 原始逻辑：基于参数决定比例
+                    double baseScale = 15.0;  // 默认每单位显示 15px（可调节）
+
+                    int rectWidth = (int) (param1 * baseScale);
+                    int rectHeight = (int) (param2 * baseScale);
+
+                    // 🛑 溢出检查：如果长宽有一项超出画板最大尺寸，缩放
+                    double overflowScale = Math.min(
+                        shapeWidth / (double) rectWidth,
+                        shapeHeight / (double) rectHeight
+                    );
+                    if (overflowScale < 1.0) {
+                        rectWidth = (int) (rectWidth * overflowScale);
+                        rectHeight = (int) (rectHeight * overflowScale);
+                    }
+
                     int x = (width - rectWidth) / 2;
                     int y = (height - rectHeight - 30) / 2;
 
                     g2.drawRect(x, y, rectWidth, rectHeight);
+                    g2.setFont(new Font("Arial", Font.PLAIN, 12));
                     g2.drawString("length: " + param1, x + rectWidth / 2 - 20, y - 5);
                     g2.drawString("width: " + param2, x + rectWidth + 5, y + rectHeight / 2);
                 }
                 case "Parallelogram" -> {
-                    double scale = Math.min(shapeWidth / (double)param1, shapeHeight / (double)param2);
-                    int baseLength = (int)(param1 * scale);
-                    int heightVal = (int)(param2 * scale);
-                    int x = (width - baseLength) / 2;
-                    int y = (height - heightVal - 30) / 2;
-                    int skew = baseLength / 4; // 左右倾斜量
+                    // 预留底部文字空间
+                    int reservedBottomSpace = 40;
+                    int availableHeight = height - reservedBottomSpace;
 
-                    int[] xPoints = {x, x + skew, x + baseLength, x + baseLength - skew};
-                    int[] yPoints = {y + heightVal, y, y, y + heightVal};
+                    // 使用基础比例（像素/单位）
+                    double baseScale = 15.0;
+                    int rawWidth = (int) (param1 * baseScale);
+                    int rawHeight = (int) (param2 * baseScale);
+                    int rawSkew = Math.max(rawWidth / 5, 10); // 倾斜宽度
 
+                    // 判断是否需要缩放
+                    double overflowScale = Math.min(
+                        shapeWidth / (double) (rawWidth + rawSkew), // 宽度包括倾斜偏移
+                        availableHeight / (double) rawHeight
+                    );
+
+                    if (overflowScale < 1.0) {
+                        rawWidth = (int) (rawWidth * overflowScale);
+                        rawHeight = (int) (rawHeight * overflowScale);
+                        rawSkew = (int) (rawSkew * overflowScale);
+                    }
+
+                    int x = (width - rawWidth) / 2;
+                    int y = (availableHeight - rawHeight) / 2;
+
+                    int[] xPoints = {x, x + rawSkew, x + rawWidth, x + rawWidth - rawSkew};
+                    int[] yPoints = {y + rawHeight, y, y, y + rawHeight};
+
+                    g2.setColor(Color.BLUE);
                     g2.drawPolygon(xPoints, yPoints, 4);
-                    g2.drawString("base: " + param1, x + baseLength / 2 - 15, y - 5);
-                    g2.drawString("height: " + param2, x - 30, y + heightVal / 2);
+
+                    // 标签绘制
+                    g2.setFont(new Font("Arial", Font.PLAIN, 12));
+                    g2.drawString("base: " + param1, x + rawWidth / 2 - 15, y - 5);
+                    g2.drawString("height: " + param2, x - 40, y + rawHeight / 2);
                 }
                 case "Triangle" -> {
                     // 计算比例缩放
