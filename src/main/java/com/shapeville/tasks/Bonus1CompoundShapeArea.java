@@ -171,6 +171,7 @@ public class Bonus1CompoundShapeArea {
         gbc.anchor = GridBagConstraints.LINE_START;
         questionPanel.add(submitButton, gbc);
         gbc.fill = GridBagConstraints.BOTH;
+//        submitButton.setVisible(false);
 
         // 反馈标签
         feedbackLabel = new JLabel("");
@@ -191,6 +192,7 @@ public class Bonus1CompoundShapeArea {
         gbc.gridy = 4;
         gbc.anchor = GridBagConstraints.LINE_END;
         questionPanel.add(homeButton, gbc);
+        homeButton.setVisible(false);
     }
 
     private void showQuestion(int shapeId) {
@@ -227,10 +229,12 @@ public class Bonus1CompoundShapeArea {
                 };
                 feedbackLabel.setText("✅ Correct! +" + score + " points");
                 scoreManager.addScore(score);
+                showbackButton();
             } else {
                 attemptCount++;
                 if (attemptCount >= 3) {
                     feedbackLabel.setText("❌ Incorrect. " + explanations.get(currentShapeId));
+                    showbackButton();
                 } else {
                     feedbackLabel.setText("❌ Try again. Attempts left: " + (3 - attemptCount));
                 }
@@ -239,6 +243,17 @@ public class Bonus1CompoundShapeArea {
             feedbackLabel.setText("❌ Please enter a valid number.");
         }
         score.setText("Score: " + scoreManager.getScore());
+    }
+
+    private void showbackButton() {
+        // 查找并显示"Back"按钮（在GridBagLayout的位置）
+        Component[] components = questionPanel.getComponents();
+        for (Component comp : components) {
+            if (comp instanceof JButton && ((JButton) comp).getText().equals("Back")) {
+                comp.setVisible(true);
+                break;
+            }
+        }
     }
 
     // 缩放图像方法
