@@ -173,10 +173,10 @@ public class Bonus2SectorAreaCalculator {
 
         // 底部按钮面板
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JButton homeButton = new JButton("Home");
+        JButton homeButton = new JButton("Back");
         homeButton.addActionListener(e -> {
-            ((CardLayout) taskPanel.getLayout()).show(taskPanel, "select");
-            if (onReturnHome != null) onReturnHome.run();
+            ((CardLayout)taskPanel.getLayout()).show(taskPanel, "select");
+//            if (onReturnHome != null) onReturnHome.run();
         });
         bottomPanel.add(homeButton);
         questionPanel.add(bottomPanel, BorderLayout.SOUTH);
