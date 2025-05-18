@@ -81,13 +81,50 @@ public class Main {
         startpanel.add(task2Button);
         startpanel.add(task3Button);
         startpanel.add(task4Button);
+        //进度条
+        JProgressBar task1ProgressBar = new JProgressBar(0, 8); // 4个小题
+        task1ProgressBar.setBounds(100, 200, 150, 20); // 位于按钮下方
+        task1ProgressBar.setStringPainted(true); // 显示百分比
+        task1ProgressBar.setValue(0); // 初始值
+        startpanel.add(task1ProgressBar);
+
+        JProgressBar task2ProgressBar = new JProgressBar(0, 4); // 4个小题
+        task2ProgressBar.setBounds(250, 200, 150, 20); // 位于按钮下方
+        task2ProgressBar.setStringPainted(true); // 显示百分比
+        task2ProgressBar.setValue(0); // 初始值
+        startpanel.add(task2ProgressBar);
+
+        JProgressBar task3ProgressBar = new JProgressBar(0, 4); // 4个小题
+        task3ProgressBar.setBounds(400, 200, 150, 20); // 位于按钮下方
+        task3ProgressBar.setStringPainted(true); // 显示百分比
+        task3ProgressBar.setValue(0); // 初始值
+        startpanel.add(task3ProgressBar);
+
+        JProgressBar task4ProgressBar = new JProgressBar(0, 2); // 4个小题
+        task4ProgressBar.setBounds(550, 200, 150, 20); // 位于按钮下方
+        task4ProgressBar.setStringPainted(true); // 显示百分比
+        task4ProgressBar.setValue(0); // 初始值
+        startpanel.add(task4ProgressBar);
+
         //bonus按钮
         JButton bonus1Button = new JButton("bonus1");
         JButton bonus2Button = new JButton("bonus2");
-        bonus1Button.setBounds(150, 200, 250, 100);
-        bonus2Button.setBounds(400, 200, 250, 100);
+        bonus1Button.setBounds(150, 300, 250, 100);
+        bonus2Button.setBounds(400, 300, 250, 100);
         startpanel.add(bonus1Button);
         startpanel.add(bonus2Button);
+
+        JProgressBar bonus1ProgressBar = new JProgressBar(0, 6); // 4个小题
+        bonus1ProgressBar.setBounds(150, 400, 250, 20); // 位于按钮下方
+        bonus1ProgressBar.setStringPainted(true); // 显示百分比
+        bonus1ProgressBar.setValue(0); // 初始值
+        startpanel.add(bonus1ProgressBar);
+
+        JProgressBar bonus2ProgressBar = new JProgressBar(0, 8); // 4个小题
+        bonus2ProgressBar.setBounds(400, 400, 250, 20); // 位于按钮下方
+        bonus2ProgressBar.setStringPainted(true); // 显示百分比
+        bonus2ProgressBar.setValue(0); // 初始值
+        startpanel.add(bonus2ProgressBar);
 
 
         // 在创建按钮后添加样式设置
@@ -125,6 +162,8 @@ public class Main {
             counter1.setText("积分：" + scoremanager.getScore());
             counter2.setText("积分：" + scoremanager.getScore());
             ref.is_played_task1 = task1.getIs_played_task1(); // 更新游戏状态
+
+            task1ProgressBar.setValue(task1.isIdentifiedShapes);
         };
 
         task1Button.addActionListener(e -> {
@@ -141,13 +180,17 @@ public class Main {
             taskCompletionStatus[1] = true;
             task2Button.setBackground(new Color(144, 238, 144));
             task2Button.setEnabled(false);
+
         };
 
         task2.onReturnHome = () -> {
             cardLayout.show(cardPanel, "startPanel");
             counter1.setText("积分：" + scoremanager.getScore());
             counter2.setText("积分：" + scoremanager.getScore());
+
+            task2ProgressBar.setValue(task2.identifiedTypes.size());
         };
+
         task2Button.addActionListener(e -> {
             if (!taskCompletionStatus[1]) {
 
@@ -164,6 +207,8 @@ public class Main {
             taskCompletionStatus[2] = true;
             task3Button.setBackground(new Color(144, 238, 144)); // 浅绿色
             task3Button.setEnabled(false);
+
+            task3ProgressBar.setValue(task3.CompletedShapes.size());
         };
 
         task3.onReturnHome = () -> {
@@ -215,6 +260,8 @@ public class Main {
             cardLayout.show(cardPanel, "startPanel");
             counter1.setText("积分：" + scoremanager.getScore());
             counter2.setText("积分：" + scoremanager.getScore());
+
+            bonus1ProgressBar.setValue(bonus1.completedTasks);
         };
         bonus1Button.addActionListener(e -> {
             cardLayout.show(cardPanel, "bonus1");
@@ -226,6 +273,8 @@ public class Main {
             cardLayout.show(cardPanel, "startPanel");
             counter1.setText("积分：" + scoremanager.getScore());
             counter2.setText("积分：" + scoremanager.getScore());
+
+            bonus2ProgressBar.setValue(bonus2.completedTasks);
         };
         bonus2Button.addActionListener(e -> {
             cardLayout.show(cardPanel, "bonus2");

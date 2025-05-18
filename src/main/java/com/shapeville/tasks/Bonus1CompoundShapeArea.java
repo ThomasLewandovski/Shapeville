@@ -15,6 +15,7 @@ public class Bonus1CompoundShapeArea {
     public Runnable onReturnHome;
     private ScoreManager scoreManager;
     private JLabel score;
+    public int completedTasks = 0;
 
     private JPanel shapeSelectPanel;
     private JPanel questionPanel;
@@ -230,11 +231,13 @@ public class Bonus1CompoundShapeArea {
                 feedbackLabel.setText("✅ Correct! +" + score + " points");
                 scoreManager.addScore(score);
                 showbackButton();
+                completedTasks+=1;
             } else {
                 attemptCount++;
                 if (attemptCount >= 3) {
                     feedbackLabel.setText("❌ Incorrect. " + explanations.get(currentShapeId));
                     showbackButton();
+                    completedTasks+=1;
                 } else {
                     feedbackLabel.setText("❌ Try again. Attempts left: " + (3 - attemptCount));
                 }

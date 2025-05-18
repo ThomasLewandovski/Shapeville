@@ -17,6 +17,7 @@ import java.util.List;
 
 public class Task1ShapeIdentification {
     private final int[] is_played_task1;
+    public int isIdentifiedShapes;
     private final String[] encouragements = {
             "🎉 Well done!",
             "👏 Excellent!",
@@ -278,15 +279,18 @@ public class Task1ShapeIdentification {
             output.setText("<html>✅ Correct! +" + points + " points.<br>" +
                     getRandomEncouragement() + "</html>");
             input.setEnabled(false);
+            isIdentifiedShapes+=1;
             nextButton.setVisible(true);
         } else {
             attempt++;
             if (attempt <= 3) {
                 output.setText("❌ Incorrect. Try again.");
+
             } else {
                 output.setText("⚠️ The correct answer was: " + currentShape.getName());
                 input.setEnabled(false);
                 nextButton.setVisible(true);
+                isIdentifiedShapes+=1;
             }
         }
     }

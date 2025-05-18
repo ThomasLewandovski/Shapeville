@@ -13,6 +13,7 @@ public class Bonus2SectorAreaCalculator {
     public JPanel taskPanel;
     public Runnable onReturnHome;
     private ScoreManager scoreManager;
+    public int completedTasks = 0;
 
     private JPanel selectPanel;
     private JPanel questionPanel;
@@ -218,11 +219,13 @@ public class Bonus2SectorAreaCalculator {
                 feedbackLabel.setText("✅ Correct! +" + score + " points");
                 scoreLabel.setText("Score: " + scoreManager.getScore());
                 showBackButton(); // 显示返回按钮
+                completedTasks+=1;
             } else {
                 attemptCount++;
                 if (attemptCount >= 3) {
                     feedbackLabel.setText("❌ Incorrect. " + explanations.get(currentShapeId));
                     showBackButton(); // 显示返回按钮
+                    completedTasks+=1;
                 } else {
                     feedbackLabel.setText("❌ Try again. Attempts left: " + (3 - attemptCount));
                 }

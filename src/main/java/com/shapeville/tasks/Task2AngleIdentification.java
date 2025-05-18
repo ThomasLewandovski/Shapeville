@@ -33,7 +33,7 @@ public class Task2AngleIdentification {
 
     private int currentAngle = -1;
     private int attempt = 1;
-    private final Set<String> identifiedTypes = new HashSet<>();
+    public final Set<String> identifiedTypes = new HashSet<>();
     private boolean waitingForAngleInput = true;
 
     private AngleCanvas angleCanvas;

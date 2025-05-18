@@ -14,6 +14,7 @@ public class Task3VolumeSurfaceCalculator {
     public Runnable onReturnHome;
     private ScoreManager scoreManager;
     public JLabel score;
+    public Set<String> CompletedShapes;
 
     private JLabel questionLabel;
     private JTextField inputField;
@@ -188,7 +189,7 @@ public class Task3VolumeSurfaceCalculator {
                     default -> 0;
                 };
                 scoreManager.addScore(score);
-                completedShapes.add(currentShape);
+                CompletedShapes.add(currentShape);
                 checkAllShapesCompleted(); // 新增完成检测
                 questionLabel.setText("✅ Great job! +" + score + " points");
             } else {
@@ -196,6 +197,7 @@ public class Task3VolumeSurfaceCalculator {
                 if (attemptsLeft <= 0) {
                     countdownTimer.stop();
                     showExplanation();
+                    CompletedShapes.add(currentShape);
                 } else {
                     questionLabel.setText("❌ Incorrect. Attempts left: " + attemptsLeft);
                 }
