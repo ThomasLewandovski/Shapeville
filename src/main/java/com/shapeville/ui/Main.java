@@ -96,73 +96,83 @@ public class Main {
         homeButton.addActionListener(e -> cardLayout.show(cardPanel, "mainPanel"));
 
 
-        task1Button.addActionListener(e ->{
-            if(ref.is_played_task1[0] == 0||ref.is_played_task1[1] == 0) {
-                Task1ShapeIdentification task1 = new Task1ShapeIdentification(scoremanager,ref.is_played_task1);
-                cardPanel.add(task1.task1,"task1");
-                task1.onReturnHome = () -> {
-                    cardLayout.show(cardPanel, "startPanel");
-                    counter1.setText("积分：" + scoremanager.getScore());
-                    counter2.setText("积分：" + scoremanager.getScore());
-                };
-                cardLayout.show(cardPanel,"task1");
-                task1.start();
-                ref.is_played_task1 = task1.getIs_played_task1();
+        Task1ShapeIdentification task1 = new Task1ShapeIdentification(scoremanager, ref.is_played_task1);
+        cardPanel.add(task1.task1, "task1");
+        task1.onReturnHome = () -> {
+            cardLayout.show(cardPanel, "startPanel");
+            counter1.setText("积分：" + scoremanager.getScore());
+            counter2.setText("积分：" + scoremanager.getScore());
+            ref.is_played_task1 = task1.getIs_played_task1(); // 更新游戏状态
+        };
+
+        task1Button.addActionListener(e -> {
+            if (ref.is_played_task1[0] == 0 || ref.is_played_task1[1] == 0) {
+                cardLayout.show(cardPanel, "task1");
+                task1.start(); // 启动任务
             }
-
-
         });
+
+        Task2AngleIdentification task2 = new Task2AngleIdentification(scoremanager);
+        cardPanel.add(task2.task2, "task2"); // 使用taskPanel而非task2
+        task2.onReturnHome = () -> {
+            cardLayout.show(cardPanel, "startPanel");
+            counter1.setText("积分：" + scoremanager.getScore());
+            counter2.setText("积分：" + scoremanager.getScore());
+        };
 
         task2Button.addActionListener(e -> {
-            if(is_played[2]==0){
-                is_played[2] = 1;
-                Task2AngleIdentification task2 = new Task2AngleIdentification(scoremanager);
-                cardPanel.add(task2.task2, "task2");
-                task2.onReturnHome = () -> {
-                    cardLayout.show(cardPanel, "startPanel");
-                    counter1.setText("积分：" + scoremanager.getScore());
-                    counter2.setText("积分：" + scoremanager.getScore());
-                };
+            if (is_played[1] == 0) {
+                is_played[1] = 1;
                 cardLayout.show(cardPanel, "task2");
                 task2.start();
-            }else{
-                JOptionPane.showMessageDialog(null, "you have played this module,please try other modules", "提示", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(null,
+                        "You have played this module, please try other modules",
+                        "提示",
+                        JOptionPane.INFORMATION_MESSAGE);
             }
-
         });
 
+        Task3VolumeSurfaceCalculator task3 = new Task3VolumeSurfaceCalculator(scoremanager);
+        cardPanel.add(task3.task3, "task3"); // 使用taskPanel而非task3
+        task3.onReturnHome = () -> {
+            cardLayout.show(cardPanel, "startPanel");
+            counter1.setText("积分：" + scoremanager.getScore());
+            counter2.setText("积分：" + scoremanager.getScore());
+        };
+
+// 任务状态标记和按钮事件
         task3Button.addActionListener(e -> {
             if (is_played[3] == 0) {
                 is_played[3] = 1;
-                Task3VolumeSurfaceCalculator task3 = new Task3VolumeSurfaceCalculator(scoremanager);
-                cardPanel.add(task3.task3, "task3");
-                task3.onReturnHome = () -> {
-                    cardLayout.show(cardPanel, "startPanel");
-                    counter1.setText("积分：" + scoremanager.getScore());
-                    counter2.setText("积分：" + scoremanager.getScore());
-                };
                 cardLayout.show(cardPanel, "task3");
                 task3.start();
             } else {
-                JOptionPane.showMessageDialog(null, "you have played this module, please try other modules", "提示", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null,
+                        "You have played this module, please try other modules",
+                        "提示",
+                        JOptionPane.INFORMATION_MESSAGE);
             }
         });
+
+        Task4CircleArea task4 = new Task4CircleArea(scoremanager);
+        cardPanel.add(task4.task4, "task4"); // 使用taskPanel而非task4
+        task4.onReturnHome = () -> {
+            cardLayout.show(cardPanel, "startPanel");
+            counter1.setText("积分：" + scoremanager.getScore());
+            counter2.setText("积分：" + scoremanager.getScore());
+        };
 
         task4Button.addActionListener(e -> {
             if (is_played[4] == 0) {
                 is_played[4] = 1;
-                Task4CircleArea task4 = new Task4CircleArea(scoremanager);
-                cardPanel.add(task4.task4, "task4");
-                task4.onReturnHome = () -> {
-                    cardLayout.show(cardPanel, "startPanel");
-                    counter1.setText("积分：" + scoremanager.getScore());
-                    counter2.setText("积分：" + scoremanager.getScore());
-                };
                 cardLayout.show(cardPanel, "task4");
                 task4.start();  // 启动任务流程
             } else {
-
-                JOptionPane.showMessageDialog(null, "You have already played this module. Please try another one.", "提示", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null,
+                        "You have already played this module. Please try another one.",
+                        "提示",
+                        JOptionPane.INFORMATION_MESSAGE);
             }
         });
 
