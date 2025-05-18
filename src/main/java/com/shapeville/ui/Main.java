@@ -118,18 +118,33 @@ public class Main {
         homeButton.addActionListener(e -> cardLayout.show(cardPanel, "mainPanel"));
 
 
-        Task1ShapeIdentification task1 = new Task1ShapeIdentification(scoremanager, ref.is_played_task1);
-        cardPanel.add(task1.task1, "task1");
-        task1.onReturnHome = () -> {
-            cardLayout.show(cardPanel, "startPanel");
-            counter1.setText("积分：" + scoremanager.getScore());
-            counter2.setText("积分：" + scoremanager.getScore());
-            ref.is_played_task1 = task1.getIs_played_task1(); // 更新游戏状态
-        };
-
+        // 修改task1的初始化方式
         task1Button.addActionListener(e -> {
-            if (ref.is_played_task1[0] == 0 || ref.is_played_task1[1] == 0) {
+            if (!taskCompletionStatus[0]) {
+                Task1ShapeIdentification task1 = new Task1ShapeIdentification(scoremanager, ref.is_played_task1);
+                cardPanel.add(task1.task1, "task1");
+
+                // 添加onComplete回调
+                task1.onComplete = () -> {
+                    taskCompletionStatus[0] = true;
+                    task1Button.setBackground(new Color(10, 200, 200));
+                    task1Button.setEnabled(false);
+                };
+
+                task1.onReturnHome = () -> {
+                    cardLayout.show(cardPanel, "startPanel");
+                    counter1.setText("积分：" + scoremanager.getScore());
+                    counter2.setText("积分：" + scoremanager.getScore());
+                    ref.is_played_task1 = task1.getIs_played_task1();
+                };
+
                 cardLayout.show(cardPanel, "task1");
+                task1.start();
+            } else {
+                JOptionPane.showMessageDialog(null,
+                        "该模块已完成，无法再次进入",
+                        "提示",
+                        JOptionPane.INFORMATION_MESSAGE);
             }
         });
 

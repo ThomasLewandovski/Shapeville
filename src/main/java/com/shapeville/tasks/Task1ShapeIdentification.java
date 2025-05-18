@@ -36,6 +36,7 @@ public class Task1ShapeIdentification {
     public JTextField input;
     public JLabel score;
     private KeyAdapter keyAdapter;
+    public Runnable onComplete;
 
     private List<ShapeItem> currentShapes;
     private ShapeItem currentShape;
@@ -317,5 +318,9 @@ public class Task1ShapeIdentification {
         nextButton.setVisible(false);
         isSubtaskCompleted = true; // 标记任务完成
         goBackButton.setVisible(true); // 仅完成后显示返回按钮
+
+        if (onComplete != null) {
+            onComplete.run();
+        }
     }
 }
