@@ -9,6 +9,12 @@ import java.awt.event.ActionListener;
 import java.util.Random;
 
 public class   Task4CircleArea {
+    // 在类顶部新增常量
+    private static final String[] MODES = {"Area", "Perimeter"};
+    private JPanel modeSelectionPanel;
+    private boolean[] completedModes = new boolean[2];
+
+
     public JPanel task4;
     private JLabel questionLabel;
     private JTextField input;
@@ -22,16 +28,27 @@ public class   Task4CircleArea {
     private ScoreManager scoreManager;
     public Runnable onReturnHome;
     public Runnable onComplete;
+    private int currentMode;
 
-    private int radius;
-    private int attempts;
+    public int radius;
+    public int attempts;
 
     public Task4CircleArea(ScoreManager scoreManager) {
         this.scoreManager = scoreManager;
+        this.completedModes = new boolean[2];
+        this.currentMode = 0;
 
-        // 使用BorderLayout作为主面板布局
-        task4 = new JPanel(new BorderLayout(10, 10));
-        task4.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        // 主面板改为卡片布局
+        task4 = new JPanel(new CardLayout());
+
+        // 创建模式选择面板
+        createModeSelectionPanel();
+        // 创建计算面板（稍后通过模式选择触发）
+        createCalculationPanel();
+
+        task4.add(modeSelectionPanel, "modeSelection");
+        ((CardLayout) task4.getLayout()).show(task4, "modeSelection");
+
 
         // 顶部面板 - 包含分数和问题描述
         JPanel topPanel = new JPanel(new BorderLayout());
@@ -101,7 +118,7 @@ public class   Task4CircleArea {
         task4.add(bottomPanel, BorderLayout.SOUTH);
 
         // 按钮事件处理
-        submitButton.addActionListener(e->checkAnswer());
+        submitButton.addActionListener(e -> checkAnswer());
         homeButton.addActionListener(e -> {
             if (onReturnHome != null) {
                 onReturnHome.run();
@@ -111,6 +128,43 @@ public class   Task4CircleArea {
         start();
     }
 
+    // 新增方法：创建模式选择界面
+    private void createModeSelectionPanel() {
+        modeSelectionPanel = new JPanel(new BorderLayout());
+
+        // 替换原有的图片面板为文字说明面板
+        JPanel formulaPanel = createGuidePanel();
+        formulaPanel.setPreferredSize(new Dimension(250, 400));
+
+        // 模式选择按钮
+        JPanel modePanel = new JPanel(new GridLayout(2, 1, 20, 20));
+        for (int i = 0; i < MODES.length; i++) {
+            JButton modeButton = new JButton(MODES[i]);
+            modeButton.setFont(new Font("Arial", Font.BOLD, 24));
+            int modeIndex = i;
+            modeButton.addActionListener(e -> {
+                if (!completedModes[modeIndex]) {
+                    currentMode = modeIndex;
+                    ((CardLayout)task4.getLayout()).show(task4, "calculation");
+                    start();
+                }
+            });
+            modeButton.setEnabled(!completedModes[modeIndex]);
+            modePanel.add(modeButton);
+        }
+
+        // 返回主页按钮
+        JButton homeButton = new JButton("返回主页");
+        homeButton.addActionListener(e -> {
+            if (onReturnHome != null) onReturnHome.run();
+        });
+
+        modeSelectionPanel.add(formulaPanel, BorderLayout.WEST);
+        modeSelectionPanel.add(modePanel, BorderLayout.CENTER);
+        modeSelectionPanel.add(homeButton, BorderLayout.SOUTH);
+    }
+
+    // 修改后的start方法
     public void start() {
         input.setText("");
         feedbackLabel.setText("");
@@ -118,16 +172,83 @@ public class   Task4CircleArea {
         drawPanel.setVisible(false);
         radius = new Random().nextInt(20) + 1;
         attempts = 1;
-        questionLabel.setText("🟢 Given a circle with radius = " + radius + ", calculate its area (π≈3.14)");
+
+        String modeText = currentMode == 0 ?
+            "面积（π≈3.14）" :
+            "周长（π≈3.14）";
+        questionLabel.setText("🟢 圆形半径 = " + radius + "，计算" + modeText);
+        drawPanel.setMode(currentMode);
     }
 
+    private void handleWrongAnswer(double correctValue) {
+        if (attempts == 3) {
+            feedbackLabel.setText("❌ 已用尽所有尝试次数");
+            formulaLabel.setText(currentMode == 0 ?
+                    "公式：π×r² = 3.14×" + radius + "×" + radius + " = " + String.format("%.2f", correctValue) :
+                    "公式：2πr = 2×3.14×" + radius + " = " + String.format("%.2f", correctValue));
+            drawPanel.setRadius(radius);
+            drawPanel.setVisible(true);
+        } else {
+            feedbackLabel.setText("❌ 错误，剩余尝试次数：" + (3 - attempts));
+        }
+    }
+
+    // 新增文字说明面板创建方法
+    private JPanel createGuidePanel() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBorder(BorderFactory.createTitledBorder("圆形公式指南"));
+        panel.setBackground(new Color(245, 245, 245));
+
+        // 标题
+        JLabel title = new JLabel("圆形基本属性公式");
+        title.setFont(new Font("微软雅黑", Font.BOLD, 18));
+        title.setForeground(new Color(0, 102, 204));
+
+        // 半径说明
+        JLabel radiusLabel = createFormulaLabel("半径 (r) = 直径 (D) ÷ 2", new Color(255, 140, 0));
+
+        // 面积公式
+        JLabel areaLabel = createFormulaLabel("面积 = π × r²", Color.DARK_GRAY);
+
+        // 周长公式
+        JLabel circumLabel1 = createFormulaLabel("周长 = 2 × π × r", new Color(0, 102, 204));
+        JLabel circumLabel2 = createFormulaLabel("周长 = π × D", new Color(0, 102, 204));
+
+        // 添加组件
+        panel.add(Box.createVerticalStrut(10));
+        panel.add(title);
+        panel.add(Box.createVerticalStrut(15));
+        panel.add(radiusLabel);
+        panel.add(Box.createVerticalStrut(10));
+        panel.add(areaLabel);
+        panel.add(Box.createVerticalStrut(5));
+        panel.add(circumLabel1);
+        panel.add(circumLabel2);
+
+        return panel;
+    }
+
+
+    // 辅助方法：创建统一样式的公式标签
+    private JLabel createFormulaLabel(String text, Color color) {
+        JLabel label = new JLabel(text);
+        label.setFont(new Font("微软雅黑", Font.PLAIN, 14));
+        label.setForeground(color);
+        label.setAlignmentX(Component.LEFT_ALIGNMENT);
+        return label;
+    }
+
+    // 修改后的checkAnswer方法
     public void checkAnswer() {
         String userInput = input.getText().trim();
-        double correctArea = 3.14 * radius * radius;
+        double correctValue = currentMode == 0 ?
+            3.14 * radius * radius :
+            2 * 3.14 * radius;
 
         try {
             double userAnswer = Double.parseDouble(userInput);
-            double diff = Math.abs(userAnswer - correctArea);
+            double diff = Math.abs(userAnswer - correctValue);
             if (diff <= 0.01) {
                 int points = switch (attempts) {
                     case 1 -> 3;
@@ -136,40 +257,41 @@ public class   Task4CircleArea {
                     default -> 0;
                 };
                 scoreManager.addScore(points);
-                score.setText("Score: " + scoreManager.getScore());
-                feedbackLabel.setText("✅ Correct! You earned " + points + " points.");
+                score.setText("分数: " + scoreManager.getScore());
+                feedbackLabel.setText("✅ 正确！获得 " + points + " 分");
 
-                // 触发完成回调
-                if (onComplete != null) {
-                    onComplete.run();
+                // 标记当前模式已完成
+                completedModes[currentMode] = true;
+
+                // 检查是否全部完成
+                if (completedModes[0] && completedModes[1]) {
+                    if (onComplete != null) onComplete.run();
                 }
 
-                Timer timer = new Timer(1500, e -> start());
-                timer.setRepeats(false);
-                timer.start();
+                // 返回模式选择界面
+                ((CardLayout)task4.getLayout()).show(task4, "modeSelection");
+
             } else {
-                if (attempts == 3) {
-                    feedbackLabel.setText("❌ You've used all attempts.");
-                    formulaLabel.setText("公式：π×r² = 3.14×" + radius + "×" + radius + " = " + String.format("%.2f", correctArea));
-                    drawPanel.setRadius(radius);
-                    drawPanel.setVisible(true);
-                } else {
-                    feedbackLabel.setText("❌ Incorrect. Try again.");
-                }
-                attempts++;
+                handleWrongAnswer(correctValue);
             }
         } catch (NumberFormatException e) {
-            feedbackLabel.setText("❌ Please enter a valid number.");
+            feedbackLabel.setText("❌ 请输入有效数字");
         }
     }
 
-    // 自定义面板绘制圆和半径，支持自适应大小
+
+    // 修改后的DrawCirclePanel类
     static class DrawCirclePanel extends JPanel {
         private int radius = 0;
+        private int mode = 0;
 
+        public void setMode(int mode) {
+            this.mode = mode;
+            repaint();
+        }
         public void setRadius(int radius) {
             this.radius = radius;
-            repaint();
+            repaint(); // 更新绘制
         }
 
         @Override
@@ -181,25 +303,46 @@ public class   Task4CircleArea {
 
             int centerX = getWidth() / 2;
             int centerY = getHeight() / 2;
-            // 使用面板尺寸的一半作为最大圆半径，留出边距
             int maxRadius = Math.min(getWidth(), getHeight()) / 2 - 20;
 
-            // 画圆
+            // 画圆和半径
             g2.setColor(Color.BLUE);
             g2.drawOval(centerX - maxRadius, centerY - maxRadius, maxRadius * 2, maxRadius * 2);
-
-            // 画半径
             g2.setColor(Color.RED);
             g2.drawLine(centerX, centerY, centerX + maxRadius, centerY);
 
-            // 标注半径值
-            g2.setFont(new Font("Arial", Font.PLAIN, 14));
-            g2.drawString("r = " + radius, centerX + maxRadius + 10, centerY + 5);
+            // 标注内容
+            String formula = mode == 0 ?
+                "面积 = π×r² = " + String.format("%.2f", 3.14 * radius * radius) :
+                "周长 = 2πr = " + String.format("%.2f", 2 * 3.14 * radius);
 
-            // 标注面积公式和结果
             g2.setColor(Color.BLACK);
-            g2.drawString("Area = π×r² = " + String.format("%.2f", 3.14 * radius * radius),
-                    centerX - maxRadius, centerY + maxRadius + 20);
+            g2.drawString("r = " + radius, centerX + maxRadius + 10, centerY + 5);
+            g2.drawString(formula, centerX - maxRadius, centerY + maxRadius + 20);
         }
     }
+
+    // 新增返回模式选择界面的方法
+    private void createCalculationPanel() {
+        // 保留原有布局结构，修改以下部分：
+        // 将homeButton改为backButton
+        JButton backButton = new JButton("返回选择");
+        backButton.addActionListener(e -> {
+            ((CardLayout)task4.getLayout()).show(task4, "modeSelection");
+        });
+
+        // 修改底部面板
+        JPanel bottomPanel = new JPanel(new BorderLayout(10, 10));
+        bottomPanel.add(drawPanel, BorderLayout.CENTER);
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        buttonPanel.add(backButton);
+        bottomPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        // 将修改后的面板添加到卡片布局
+        JPanel calculationPanel = new JPanel(new BorderLayout());
+        // ... 原有布局代码 ...
+        calculationPanel.add(bottomPanel, BorderLayout.SOUTH);
+        task4.add(calculationPanel, "calculation");
+    }
+
 }
