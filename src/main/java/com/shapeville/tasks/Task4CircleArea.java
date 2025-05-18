@@ -13,6 +13,7 @@ public class Task4CircleArea {
     public JPanel task4;
     private JPanel modeSelectionPanel;
     private JPanel calculationPanel;
+    private JButton[] modeButtons = new JButton[2]; // 保存按钮引用，便于刷新状态
 
     private JLabel score;
     private JLabel questionLabel;
@@ -45,6 +46,8 @@ public class Task4CircleArea {
         ((CardLayout) task4.getLayout()).show(task4, "modeSelection");
     }
 
+    // ... 保持你已有的 import 和类头部不变
+
     private void createModeSelectionPanel() {
         modeSelectionPanel = new JPanel(new BorderLayout());
 
@@ -54,9 +57,12 @@ public class Task4CircleArea {
         JPanel modePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
         for (int i = 0; i < MODES.length; i++) {
             JButton modeButton = new JButton(MODES[i]);
+            modeButtons[i] = modeButton; // ✅ 保存引用
             int modeIndex = i;
+
             modeButton.setPreferredSize(new Dimension(120, 40));
             modeButton.setFont(new Font("Arial", Font.BOLD, 16));
+
             modeButton.addActionListener(e -> {
                 if (!completedModes[modeIndex]) {
                     currentMode = modeIndex;
@@ -64,7 +70,8 @@ public class Task4CircleArea {
                     start();
                 }
             });
-            modeButton.setEnabled(!completedModes[modeIndex]);
+
+            modeButton.setEnabled(!completedModes[modeIndex]); // ✅ 初始是否启用
             modePanel.add(modeButton);
         }
 
@@ -126,6 +133,7 @@ public class Task4CircleArea {
 
         JButton backButton = new JButton("Back to Mode Select");
         backButton.addActionListener(e -> {
+            refreshModeButtons(); // ✅ 刷新按钮禁用状态
             ((CardLayout) task4.getLayout()).show(task4, "modeSelection");
         });
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -157,9 +165,9 @@ public class Task4CircleArea {
 
     public void checkAnswer() {
         String userInput = input.getText().trim();
-        double correctValue = currentMode == 0 ?
-                3.14 * radius * radius :
-                2 * 3.14 * radius;
+        double correctValue = currentMode == 0
+                ? 3.14 * radius * radius
+                : 2 * 3.14 * radius;
 
         try {
             double userAnswer = Double.parseDouble(userInput);
@@ -175,12 +183,23 @@ public class Task4CircleArea {
                 score.setText("分数: " + scoreManager.getScore());
                 feedbackLabel.setText("✅ 正确！获得 " + points + " 分");
 
+                // 标记模式已完成
                 completedModes[currentMode] = true;
+
+                // 禁用对应按钮
+                if (modeButtons[currentMode] != null) {
+                    modeButtons[currentMode].setEnabled(false);
+                }
+
+                // 如果全部完成，触发回调
                 if (completedModes[0] && completedModes[1]) {
                     if (onComplete != null) onComplete.run();
                 }
 
+                // ✅ 刷新按钮状态并切换回模式选择
+                refreshModeButtons();
                 ((CardLayout) task4.getLayout()).show(task4, "modeSelection");
+
             } else {
                 handleWrongAnswer(correctValue);
             }
@@ -188,7 +207,6 @@ public class Task4CircleArea {
             feedbackLabel.setText("❌ 请输入有效数字");
         }
     }
-
     private void handleWrongAnswer(double correctValue) {
         if (attempts == 3) {
             feedbackLabel.setText("❌ 已用尽所有尝试次数");
@@ -271,6 +289,14 @@ public class Task4CircleArea {
             g2.setColor(Color.BLACK);
             g2.drawString("r = " + radius, centerX + maxRadius + 10, centerY + 5);
             g2.drawString(formula, centerX - maxRadius, centerY + maxRadius + 20);
+        }
+    }
+
+    private void refreshModeButtons() {
+        for (int i = 0; i < modeButtons.length; i++) {
+            if (modeButtons[i] != null) {
+                modeButtons[i].setEnabled(!completedModes[i]);
+            }
         }
     }
 }
