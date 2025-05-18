@@ -208,13 +208,15 @@ public class Main {
             task3Button.setBackground(new Color(144, 238, 144)); // 浅绿色
             task3Button.setEnabled(false);
 
-            task3ProgressBar.setValue(task3.CompletedShapes.size());
+
         };
 
         task3.onReturnHome = () -> {
             cardLayout.show(cardPanel, "startPanel");
             counter1.setText("积分：" + scoremanager.getScore());
             counter2.setText("积分：" + scoremanager.getScore());
+
+            task3ProgressBar.setValue(task3.CompletedShapes.size());
         };
         // 修改 task3 相关代码
         task3Button.addActionListener(e -> {

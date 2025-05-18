@@ -14,7 +14,7 @@ public class Task3VolumeSurfaceCalculator {
     public Runnable onReturnHome;
     private ScoreManager scoreManager;
     public JLabel score;
-    public Set<String> CompletedShapes;
+    public Set<String> CompletedShapes = new HashSet<>();
 
     private JLabel questionLabel;
     private JTextField inputField;
