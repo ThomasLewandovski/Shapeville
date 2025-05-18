@@ -16,6 +16,7 @@ public class Bonus2SectorAreaCalculator {
 
     private JPanel selectPanel;
     private JPanel questionPanel;
+    private JPanel bottomPanel; // 添加成员变量保存底部面板
 
     private JLabel imageLabel;
     private JTextField answerField;
@@ -171,15 +172,16 @@ public class Bonus2SectorAreaCalculator {
 
         questionPanel.add(contentPanel, BorderLayout.CENTER);
 
-        // 底部按钮面板
-        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JButton homeButton = new JButton("Back");
-        homeButton.addActionListener(e -> {
+        // 底部按钮面板 - 初始化成员变量
+        bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JButton backButton = new JButton("Back");
+        backButton.addActionListener(e -> {
+            resetQuestion();
             ((CardLayout)taskPanel.getLayout()).show(taskPanel, "select");
-//            if (onReturnHome != null) onReturnHome.run();
         });
-        bottomPanel.add(homeButton);
+        bottomPanel.add(backButton);
         questionPanel.add(bottomPanel, BorderLayout.SOUTH);
+        backButton.setVisible(false);
     }
 
     private void showQuestion(int shapeId) {
@@ -188,6 +190,7 @@ public class Bonus2SectorAreaCalculator {
         answerField.setText("");
         feedbackLabel.setText("");
         scoreLabel.setText("Score: " + scoreManager.getScore());
+        answerField.setEnabled(true); // 确保输入框启用
 
         try {
             ImageIcon rawIcon = new ImageIcon(getClass().getClassLoader().getResource("images/circle" + shapeId + ".png"));
@@ -214,16 +217,46 @@ public class Bonus2SectorAreaCalculator {
                 scoreManager.addScore(score);
                 feedbackLabel.setText("✅ Correct! +" + score + " points");
                 scoreLabel.setText("Score: " + scoreManager.getScore());
+                showBackButton(); // 显示返回按钮
             } else {
                 attemptCount++;
                 if (attemptCount >= 3) {
                     feedbackLabel.setText("❌ Incorrect. " + explanations.get(currentShapeId));
+                    showBackButton(); // 显示返回按钮
                 } else {
                     feedbackLabel.setText("❌ Try again. Attempts left: " + (3 - attemptCount));
                 }
             }
         } catch (Exception ex) {
             feedbackLabel.setText("❌ Please enter a valid number.");
+        }
+    }
+
+    private void showBackButton() {
+        if (bottomPanel != null) {
+            for (Component comp : bottomPanel.getComponents()) {
+                if (comp instanceof JButton && ((JButton) comp).getText().equals("Back")) {
+                    comp.setVisible(true);
+                    answerField.setEnabled(false); // 禁用输入框
+                    break;
+                }
+            }
+        }
+    }
+
+    private void resetQuestion() {
+        answerField.setText("");
+        feedbackLabel.setText("");
+        answerField.setEnabled(true); // 启用输入框
+
+        // 隐藏返回按钮
+        if (bottomPanel != null) {
+            for (Component comp : bottomPanel.getComponents()) {
+                if (comp instanceof JButton && ((JButton) comp).getText().equals("Back")) {
+                    comp.setVisible(false);
+                    break;
+                }
+            }
         }
     }
 }
