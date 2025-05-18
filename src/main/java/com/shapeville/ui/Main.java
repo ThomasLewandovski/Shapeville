@@ -231,20 +231,11 @@ public class Main {
         Task4CircleArea task4 = new Task4CircleArea(scoremanager);
         cardPanel.add(task4.task4, "task4");
 
-        task4.onComplete = () -> {
-            taskCompletionStatus[3] = true;
-            task4Button.setBackground(new Color(144, 238, 144));
-            task4Button.setEnabled(false);
-        };
-
-        task4.onReturnHome = () -> {
-            cardLayout.show(cardPanel, "startPanel");
-            counter1.setText("积分：" + scoremanager.getScore());
-            counter2.setText("积分：" + scoremanager.getScore());
-        };
+        // 在 task4Button 的监听器中添加重置逻辑
         task4Button.addActionListener(e -> {
             if (!taskCompletionStatus[3]) {
-
+                // 关键修改：重置到模式选择界面
+                ((CardLayout)task4.task4.getLayout()).show(task4.task4, "modeSelection");
                 cardLayout.show(cardPanel, "task4");
             } else {
                 JOptionPane.showMessageDialog(null,
@@ -253,6 +244,20 @@ public class Main {
                         JOptionPane.INFORMATION_MESSAGE);
             }
         });
+
+// 保持原有的 onComplete 回调设置不变
+        task4.onComplete = () -> {
+            taskCompletionStatus[3] = true;
+            task4Button.setBackground(new Color(144, 238, 144)); // 浅绿色
+            task4Button.setEnabled(false);
+        };
+
+// 保持原有的 onReturnHome 回调
+        task4.onReturnHome = () -> {
+            cardLayout.show(cardPanel, "startPanel");
+            counter1.setText("积分：" + scoremanager.getScore());
+            counter2.setText("积分：" + scoremanager.getScore());
+        };
 
         Bonus1CompoundShapeArea bonus1 = new Bonus1CompoundShapeArea(scoremanager);
         cardPanel.add(bonus1.taskPanel, "bonus1");

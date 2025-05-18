@@ -38,6 +38,8 @@ public class   Task4CircleArea {
         this.completedModes = new boolean[2];
         this.currentMode = 0;
 
+        drawPanel = new DrawCirclePanel();
+
         // 主面板改为卡片布局
         task4 = new JPanel(new CardLayout());
 
@@ -102,7 +104,6 @@ public class   Task4CircleArea {
         // 底部面板 - 包含绘图区域和返回按钮
         JPanel bottomPanel = new JPanel(new BorderLayout(10, 10));
 
-        drawPanel = new DrawCirclePanel();
         drawPanel.setPreferredSize(new Dimension(300, 300));
         drawPanel.setMinimumSize(new Dimension(200, 200));
         drawPanel.setBackground(Color.WHITE);
@@ -159,9 +160,13 @@ public class   Task4CircleArea {
             if (onReturnHome != null) onReturnHome.run();
         });
 
+        // 保持原有布局结构
         modeSelectionPanel.add(formulaPanel, BorderLayout.WEST);
         modeSelectionPanel.add(modePanel, BorderLayout.CENTER);
         modeSelectionPanel.add(homeButton, BorderLayout.SOUTH);
+
+
+
     }
 
     // 修改后的start方法
