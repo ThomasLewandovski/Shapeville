@@ -103,7 +103,7 @@ public class Task3VolumeSurfaceCalculator {
         JPanel bottomPanel = new JPanel(new BorderLayout(10, 10));
 
         drawingPanel = new DrawingPanel();
-        drawingPanel.setPreferredSize(new Dimension(400, 200));
+        drawingPanel.setPreferredSize(new Dimension(400, 300));
         drawingPanel.setMinimumSize(new Dimension(300, 150));
         drawingPanel.setBackground(Color.WHITE);
         bottomPanel.add(drawingPanel, BorderLayout.CENTER);
@@ -245,65 +245,93 @@ public class Task3VolumeSurfaceCalculator {
 
             switch (currentShape) {
                 case "Rectangle" -> {
-                    int rectWidth = Math.min(shapeWidth, shapeHeight * 2 / 3);
-                    int rectHeight = rectWidth * 3 / 5;
+                    // ✅ 保持长宽比例真实反映 param1:length 与 param2:width
+                    double scale = Math.min(shapeWidth / (double)param1, shapeHeight / (double)param2);
+                    int rectWidth = (int)(param1 * scale);
+                    int rectHeight = (int)(param2 * scale);
                     int x = (width - rectWidth) / 2;
                     int y = (height - rectHeight - 30) / 2;
 
                     g2.drawRect(x, y, rectWidth, rectHeight);
-                    g2.drawString("length: " + param1, x + rectWidth/2 - 20, y - 5);
-                    g2.drawString("width: " + param2, x + rectWidth + 5, y + rectHeight/2);
+                    g2.drawString("length: " + param1, x + rectWidth / 2 - 20, y - 5);
+                    g2.drawString("width: " + param2, x + rectWidth + 5, y + rectHeight / 2);
                 }
                 case "Parallelogram" -> {
-                    int paraWidth = Math.min(shapeWidth, shapeHeight * 2 / 3);
-                    int paraHeight = paraWidth * 3 / 5;
-                    int x = (width - paraWidth) / 2;
-                    int y = (height - paraHeight - 30) / 2;
-                    int skew = paraWidth / 5;
+                    double scale = Math.min(shapeWidth / (double)param1, shapeHeight / (double)param2);
+                    int baseLength = (int)(param1 * scale);
+                    int heightVal = (int)(param2 * scale);
+                    int x = (width - baseLength) / 2;
+                    int y = (height - heightVal - 30) / 2;
+                    int skew = baseLength / 4; // 左右倾斜量
 
-                    int[] xPoints = {x, x + skew, x + paraWidth, x + paraWidth - skew};
-                    int[] yPoints = {y + paraHeight, y, y, y + paraHeight};
+                    int[] xPoints = {x, x + skew, x + baseLength, x + baseLength - skew};
+                    int[] yPoints = {y + heightVal, y, y, y + heightVal};
 
                     g2.drawPolygon(xPoints, yPoints, 4);
-                    g2.drawString("base: " + param1, x + paraWidth/2 - 15, y - 5);
-                    g2.drawString("height: " + param2, x - 25, y + paraHeight/2);
+                    g2.drawString("base: " + param1, x + baseLength / 2 - 15, y - 5);
+                    g2.drawString("height: " + param2, x - 30, y + heightVal / 2);
                 }
                 case "Triangle" -> {
-                    int triWidth = Math.min(shapeWidth, shapeHeight);
-                    int triHeight = triWidth * 3 / 4;
-                    int x = (width - triWidth) / 2;
-                    int y = (height - triHeight - 30) / 2;
+                    // 计算比例缩放
+                    double scale = Math.min(shapeWidth / (double)param1, shapeHeight / (double)param2);
+                    int baseLength = (int)(param1 * scale);
+                    int triHeight = (int)(param2 * scale);
 
-                    int[] xPoints = {x, x + triWidth, x + triWidth/2};
-                    int[] yPoints = {y + triHeight, y + triHeight, y};
+                    // 计算底边起点和三角形顶点坐标（居中显示）
+                    int xBaseLeft = (width - baseLength) / 2;
+                    int xBaseRight = xBaseLeft + baseLength;
+                    int yBase = (height + triHeight) / 2;
+                    int xTop = (xBaseLeft + xBaseRight) / 2;
+                    int yTop = yBase - triHeight;
 
+                    // 绘制三角形
+                    int[] xPoints = {xBaseLeft, xBaseRight, xTop};
+                    int[] yPoints = {yBase, yBase, yTop};
+                    g2.setColor(Color.BLUE);
                     g2.drawPolygon(xPoints, yPoints, 3);
-                    g2.drawString("base: " + param1, x + triWidth/2 - 15, y + triHeight + 15);
-                    g2.drawString("height: " + param2, x + triWidth/2 + 10, y + triHeight/2);
+
+                    // 🔵 绘制垂直高度虚线（从顶点到底边中点）
+                    g2.setColor(Color.GRAY);
+                    Stroke dashed = new BasicStroke(1.5f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{5}, 0);
+                    g2.setStroke(dashed);
+                    g2.drawLine(xTop, yTop, xTop, yBase);
+
+                    // 还原为实线画笔
+                    g2.setStroke(new BasicStroke(1.2f));
+
+                    // 🟦 添加标签文字
+                    g2.setColor(Color.BLUE);
+                    g2.drawString("base: " + param1, xBaseLeft + baseLength / 2 - 20, yBase + 15);
+                    g2.drawString("height: " + param2, xTop + 5, (yTop + yBase) / 2);
                 }
                 case "Trapezium" -> {
-                    int trapWidth = Math.min(shapeWidth, shapeHeight * 2 / 3);
-                    int trapHeight = trapWidth * 3 / 5;
-                    int x = (width - trapWidth) / 2;
-                    int y = (height - trapHeight - 30) / 2;
+                    double scale = Math.min(shapeWidth / (double)(param1 + param2), shapeHeight / (double)param3);
+                    int aLen = (int)(param1 * scale); // 上底
+                    int bLen = (int)(param2 * scale); // 下底
+                    int heightVal = (int)(param3 * scale);
+                    int x = (width - bLen) / 2;
+                    int y = (height - heightVal - 30) / 2;
 
-                    // 梯形的上底和下底
-                    int topBase = trapWidth * 3 / 5;
-                    int bottomBase = trapWidth;
-
-                    int[] xPoints = {x + (bottomBase - topBase)/2, x + (bottomBase - topBase)/2 + topBase, x + bottomBase, x};
-                    int[] yPoints = {y, y, y + trapHeight, y + trapHeight};
+                    int[] xPoints = {
+                        x + (bLen - aLen) / 2,        // 左上
+                        x + (bLen - aLen) / 2 + aLen, // 右上
+                        x + bLen,                     // 右下
+                        x                             // 左下
+                    };
+                    int[] yPoints = {y, y, y + heightVal, y + heightVal};
 
                     g2.drawPolygon(xPoints, yPoints, 4);
-                    g2.drawString("a: " + param1, x + bottomBase/2 - 10, y - 10);
-                    g2.drawString("b: " + param2, x + bottomBase/2 - 10, y + trapHeight + 20);
+                    g2.drawString("a: " + param1, x + bLen / 2 - 10, y - 10);
+                    g2.drawString("b: " + param2, x + bLen / 2 - 10, y + heightVal + 20);
 
-                    // 绘制高度线
-                    int midX = x + bottomBase/2;
+                    int midX = x + bLen / 2;
                     g2.setColor(Color.GRAY);
-                    g2.drawLine(midX, y, midX, y + trapHeight);
+                    Stroke dashed = new BasicStroke(1.5f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{5}, 0);
+                    g2.setStroke(dashed);
+                    g2.drawLine(midX, y, midX, y + heightVal);
+                    g2.setStroke(new BasicStroke(1.2f));
                     g2.setColor(Color.BLUE);
-                    g2.drawString("height: " + param3, midX - 40, y + trapHeight/2);
+                    g2.drawString("height: " + param3, midX - 40, y + heightVal / 2);
                 }
             }
 
