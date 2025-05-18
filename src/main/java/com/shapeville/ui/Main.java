@@ -28,6 +28,12 @@ public class Main {
         };
         ref.is_played_task1[0] = 0;
         ref.is_played_task1[1] = 0;
+
+        // 在main方法开始处替换原有状态数组
+        boolean[] taskCompletionStatus = new boolean[6]; // [0]task1 [1]task2 [2]task3 [3]task4 [4]bonus1 [5]bonus2
+        for (int i = 0; i < 6; i++) {
+            taskCompletionStatus[i] = false;
+        }
         // 创建主窗口
         JFrame frame = new JFrame("Shapeville");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -83,6 +89,22 @@ public class Main {
         startpanel.add(bonus1Button);
         startpanel.add(bonus2Button);
 
+
+        // 在创建按钮后添加样式设置
+        task1Button.setOpaque(true);
+        task2Button.setOpaque(true);
+        task3Button.setOpaque(true);
+        task4Button.setOpaque(true);
+        bonus1Button.setOpaque(true);
+        bonus2Button.setOpaque(true);
+
+        task1Button.setContentAreaFilled(false);
+        task2Button.setContentAreaFilled(false);
+        task3Button.setContentAreaFilled(false);
+        task4Button.setContentAreaFilled(false);
+        bonus1Button.setContentAreaFilled(false);
+        bonus2Button.setContentAreaFilled(false);
+
         // 将面板添加到卡片面板
         cardPanel.add(mainpanel, "mainPanel");
         cardPanel.add(startpanel, "startPanel");
@@ -111,44 +133,54 @@ public class Main {
             }
         });
 
-        Task2AngleIdentification task2 = new Task2AngleIdentification(scoremanager);
-        cardPanel.add(task2.task2, "task2"); // 使用taskPanel而非task2
-        task2.onReturnHome = () -> {
-            cardLayout.show(cardPanel, "startPanel");
-            counter1.setText("积分：" + scoremanager.getScore());
-            counter2.setText("积分：" + scoremanager.getScore());
-        };
-
+        // 修改task2Button监听逻辑
         task2Button.addActionListener(e -> {
-            if (is_played[1] == 0) {
-                is_played[1] = 1;
+            if (!taskCompletionStatus[1]) {
+                Task2AngleIdentification task2 = new Task2AngleIdentification(scoremanager);
+                cardPanel.add(task2.task2, "task2");
+
+                task2.onComplete = () -> {
+                    taskCompletionStatus[1] = true;
+                    task2Button.setBackground(new Color(144, 238, 144));
+                    task2Button.setEnabled(false);
+                };
+
+                task2.onReturnHome = () -> {
+                    cardLayout.show(cardPanel, "startPanel");
+                    counter1.setText("积分：" + scoremanager.getScore());
+                    counter2.setText("积分：" + scoremanager.getScore());
+                };
                 cardLayout.show(cardPanel, "task2");
                 task2.start();
             } else {
-                JOptionPane.showMessageDialog(null,
-                        "You have played this module, please try other modules",
-                        "提示",
-                        JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "该模块已完成，无法再次进入", "提示", JOptionPane.INFORMATION_MESSAGE);
             }
         });
 
-        Task3VolumeSurfaceCalculator task3 = new Task3VolumeSurfaceCalculator(scoremanager);
-        cardPanel.add(task3.task3, "task3"); // 使用taskPanel而非task3
-        task3.onReturnHome = () -> {
-            cardLayout.show(cardPanel, "startPanel");
-            counter1.setText("积分：" + scoremanager.getScore());
-            counter2.setText("积分：" + scoremanager.getScore());
-        };
 
-// 任务状态标记和按钮事件
+        // 修改 task3 相关代码
         task3Button.addActionListener(e -> {
-            if (is_played[3] == 0) {
-                is_played[3] = 1;
+            if (!taskCompletionStatus[2]) {
+                Task3VolumeSurfaceCalculator task3 = new Task3VolumeSurfaceCalculator(scoremanager);
+                cardPanel.add(task3.task3, "task3");
+
+                task3.onComplete = () -> {
+                    taskCompletionStatus[2] = true;
+                    task3Button.setBackground(new Color(144, 238, 144)); // 浅绿色
+                    task3Button.setEnabled(false);
+                };
+
+                task3.onReturnHome = () -> {
+                    cardLayout.show(cardPanel, "startPanel");
+                    counter1.setText("积分：" + scoremanager.getScore());
+                    counter2.setText("积分：" + scoremanager.getScore());
+                };
+
                 cardLayout.show(cardPanel, "task3");
                 task3.start();
             } else {
                 JOptionPane.showMessageDialog(null,
-                        "You have played this module, please try other modules",
+                        "该模块已完成，无法再次进入",
                         "提示",
                         JOptionPane.INFORMATION_MESSAGE);
             }

@@ -28,6 +28,7 @@ public class Task3VolumeSurfaceCalculator {
     private int correctAnswer;
     private int attemptsLeft;
     private int timeRemaining;
+    public Runnable onComplete;
 
     private Set<String> completedShapes;
 
@@ -186,6 +187,7 @@ public class Task3VolumeSurfaceCalculator {
                 };
                 scoreManager.addScore(score);
                 completedShapes.add(currentShape);
+                checkAllShapesCompleted(); // 新增完成检测
                 questionLabel.setText("✅ Great job! +" + score + " points");
             } else {
                 attemptsLeft--;
@@ -211,6 +213,7 @@ public class Task3VolumeSurfaceCalculator {
             default -> "Unknown shape.";
         };
         completedShapes.add(currentShape);
+        checkAllShapesCompleted(); // 新增完成检测
         drawingPanel.repaint();
     }
 
@@ -313,5 +316,11 @@ public class Task3VolumeSurfaceCalculator {
             case "Trapezium" -> "(" + param1 + " + " + param2 + ") * " + param3 + " / 2 = " + correctAnswer;
             default -> "Unknown";
         };
+    }
+
+    private void checkAllShapesCompleted() {
+        if (completedShapes.size() == 4 && onComplete != null) {
+            onComplete.run();
+        }
     }
 }

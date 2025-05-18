@@ -29,6 +29,7 @@ public class Task2AngleIdentification {
     public Runnable onReturnHome;
     private JLabel scoreLabel;
     private int result = 0;
+    public Runnable onComplete;
 
     private int currentAngle = -1;
     private int attempt = 1;
@@ -274,11 +275,14 @@ public class Task2AngleIdentification {
     }
 
     private void checkCompletion() {
-        if (identifiedTypes.size() >= 3) {
+        if (identifiedTypes.size() == 4) {
+            if (onComplete != null) {
+                onComplete.run();
+            }
             questionLabel.setText("🎉 You have identified all 4 types of angles! Task Complete!");
             inputField.setVisible(false);
             submitButton.setVisible(false);
-            goHomeButton.setVisible(true);
+            goHomeButton.setVisible(false);
         } else {
             questionLabel.setText("Enter an angle (0-360, multiple of 10):");
             waitingForAngleInput = true;

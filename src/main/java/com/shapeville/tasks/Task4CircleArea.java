@@ -8,7 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Random;
 
-public class Task4CircleArea {
+public class   Task4CircleArea {
     public JPanel task4;
     private JLabel questionLabel;
     private JTextField input;
@@ -21,6 +21,7 @@ public class Task4CircleArea {
 
     private ScoreManager scoreManager;
     public Runnable onReturnHome;
+    public Runnable onComplete;
 
     private int radius;
     private int attempts;
@@ -136,7 +137,11 @@ public class Task4CircleArea {
                 score.setText("Score: " + scoreManager.getScore());
                 feedbackLabel.setText("✅ Correct! You earned " + points + " points.");
 
-                // 延迟重新开始，让用户有时间看到正确反馈
+                // 触发完成回调
+                if (onComplete != null) {
+                    onComplete.run();
+                }
+
                 Timer timer = new Timer(1500, e -> start());
                 timer.setRepeats(false);
                 timer.start();
