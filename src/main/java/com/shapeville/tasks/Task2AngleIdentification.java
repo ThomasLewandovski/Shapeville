@@ -182,6 +182,8 @@ public class Task2AngleIdentification {
         });
 
         submitButton.addActionListener(this::handleInput);
+
+        start();
     }
 
     public void start() {

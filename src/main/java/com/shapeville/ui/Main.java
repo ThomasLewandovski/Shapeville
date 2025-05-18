@@ -134,50 +134,47 @@ public class Main {
         });
 
         // 修改task2Button监听逻辑
+        Task2AngleIdentification task2 = new Task2AngleIdentification(scoremanager);
+        cardPanel.add(task2.task2, "task2");
+
+        task2.onComplete = () -> {
+            taskCompletionStatus[1] = true;
+            task2Button.setBackground(new Color(144, 238, 144));
+            task2Button.setEnabled(false);
+        };
+
+        task2.onReturnHome = () -> {
+            cardLayout.show(cardPanel, "startPanel");
+            counter1.setText("积分：" + scoremanager.getScore());
+            counter2.setText("积分：" + scoremanager.getScore());
+        };
         task2Button.addActionListener(e -> {
             if (!taskCompletionStatus[1]) {
-                Task2AngleIdentification task2 = new Task2AngleIdentification(scoremanager);
-                cardPanel.add(task2.task2, "task2");
 
-                task2.onComplete = () -> {
-                    taskCompletionStatus[1] = true;
-                    task2Button.setBackground(new Color(144, 238, 144));
-                    task2Button.setEnabled(false);
-                };
-
-                task2.onReturnHome = () -> {
-                    cardLayout.show(cardPanel, "startPanel");
-                    counter1.setText("积分：" + scoremanager.getScore());
-                    counter2.setText("积分：" + scoremanager.getScore());
-                };
                 cardLayout.show(cardPanel, "task2");
-                task2.start();
             } else {
                 JOptionPane.showMessageDialog(null, "该模块已完成，无法再次进入", "提示", JOptionPane.INFORMATION_MESSAGE);
             }
         });
 
+        Task3VolumeSurfaceCalculator task3 = new Task3VolumeSurfaceCalculator(scoremanager);
+        cardPanel.add(task3.task3, "task3");
 
+        task3.onComplete = () -> {
+            taskCompletionStatus[2] = true;
+            task3Button.setBackground(new Color(144, 238, 144)); // 浅绿色
+            task3Button.setEnabled(false);
+        };
+
+        task3.onReturnHome = () -> {
+            cardLayout.show(cardPanel, "startPanel");
+            counter1.setText("积分：" + scoremanager.getScore());
+            counter2.setText("积分：" + scoremanager.getScore());
+        };
         // 修改 task3 相关代码
         task3Button.addActionListener(e -> {
             if (!taskCompletionStatus[2]) {
-                Task3VolumeSurfaceCalculator task3 = new Task3VolumeSurfaceCalculator(scoremanager);
-                cardPanel.add(task3.task3, "task3");
-
-                task3.onComplete = () -> {
-                    taskCompletionStatus[2] = true;
-                    task3Button.setBackground(new Color(144, 238, 144)); // 浅绿色
-                    task3Button.setEnabled(false);
-                };
-
-                task3.onReturnHome = () -> {
-                    cardLayout.show(cardPanel, "startPanel");
-                    counter1.setText("积分：" + scoremanager.getScore());
-                    counter2.setText("积分：" + scoremanager.getScore());
-                };
-
                 cardLayout.show(cardPanel, "task3");
-                task3.start();
             } else {
                 JOptionPane.showMessageDialog(null,
                         "该模块已完成，无法再次进入",
@@ -187,21 +184,26 @@ public class Main {
         });
 
         Task4CircleArea task4 = new Task4CircleArea(scoremanager);
-        cardPanel.add(task4.task4, "task4"); // 使用taskPanel而非task4
+        cardPanel.add(task4.task4, "task4");
+
+        task4.onComplete = () -> {
+            taskCompletionStatus[3] = true;
+            task4Button.setBackground(new Color(144, 238, 144));
+            task4Button.setEnabled(false);
+        };
+
         task4.onReturnHome = () -> {
             cardLayout.show(cardPanel, "startPanel");
             counter1.setText("积分：" + scoremanager.getScore());
             counter2.setText("积分：" + scoremanager.getScore());
         };
-
         task4Button.addActionListener(e -> {
-            if (is_played[4] == 0) {
-                is_played[4] = 1;
+            if (!taskCompletionStatus[3]) {
+
                 cardLayout.show(cardPanel, "task4");
-                task4.start();  // 启动任务流程
             } else {
                 JOptionPane.showMessageDialog(null,
-                        "You have already played this module. Please try another one.",
+                        "该模块已完成，无法再次进入",
                         "提示",
                         JOptionPane.INFORMATION_MESSAGE);
             }

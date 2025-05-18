@@ -123,6 +123,8 @@ public class Task3VolumeSurfaceCalculator {
             if (countdownTimer != null) countdownTimer.stop();
             if (onReturnHome != null) onReturnHome.run();
         });
+
+        start();
     }
 
     public void start() {

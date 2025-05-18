@@ -107,6 +107,8 @@ public class   Task4CircleArea {
                 onReturnHome.run();
             }
         });
+
+        start();
     }
 
     public void start() {
