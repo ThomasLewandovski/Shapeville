@@ -172,6 +172,8 @@ public class Task1ShapeIdentification {
             }
         };
         input.addKeyListener(keyAdapter);
+
+        start();
     }
 
     public void start() {

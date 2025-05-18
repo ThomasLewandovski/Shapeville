@@ -108,7 +108,6 @@ public class Main {
         task1Button.addActionListener(e -> {
             if (ref.is_played_task1[0] == 0 || ref.is_played_task1[1] == 0) {
                 cardLayout.show(cardPanel, "task1");
-                task1.start(); // 启动任务
             }
         });
 
