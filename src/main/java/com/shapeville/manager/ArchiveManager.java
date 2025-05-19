@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 public class ArchiveManager {
+    private static final String SHAPEVILLE_SAVE_FILE = "src/main/resources/Archive/shapeville_save.dat";
     private static final String TASK1_SAVE_FILE = "src/main/resources/Archive/task1_saved_file.dat";
     private static final String TASK2_SAVE_FILE = "src/main/resources/Archive/task2_saved_file.dat";
     private static final String TASK3_SAVE_FILE = "src/main/resources/Archive/task3_saved_file.dat";
@@ -315,6 +316,36 @@ public class ArchiveManager {
                     "错误",
                     JOptionPane.ERROR_MESSAGE);
             return null;
+        }
+    }
+
+    public static void delete_archive(){
+        // 创建文件对象
+        File[] saveFiles = {
+                new File(SHAPEVILLE_SAVE_FILE),
+                new File(TASK1_SAVE_FILE),
+                new File(TASK2_SAVE_FILE),
+                new File(TASK3_SAVE_FILE),
+                new File(TASK4_SAVE_FILE),
+                new File(BONUS1_SAVE_FILE),
+                new File(BONUS2_SAVE_FILE)
+        };
+
+        // 逐个删除文件
+        for (File file : saveFiles) {
+            try {
+                if (file.exists()) {
+                    if (file.delete()) {
+                        System.out.println("成功删除存档文件: " + file.getAbsolutePath());
+                    } else {
+                        System.err.println("无法删除文件: " + file.getAbsolutePath());
+                    }
+                } else {
+                    System.out.println("文件不存在，跳过删除: " + file.getAbsolutePath());
+                }
+            } catch (SecurityException e) {
+                System.err.println("删除文件时权限不足: " + file.getAbsolutePath() + " - " + e.getMessage());
+            }
         }
     }
 }

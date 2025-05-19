@@ -1,6 +1,8 @@
 package com.shapeville.ui;
 
 import static com.shapeville.manager.ArchiveManager.*;
+
+import com.shapeville.manager.ArchiveManager;
 import com.shapeville.manager.ScoreManager;
 import com.shapeville.tasks.Task1ShapeIdentification;
 import com.shapeville.tasks.Task2AngleIdentification;
@@ -232,6 +234,7 @@ public class Main {
 
         // 添加按钮点击事件监听器
         startButton.addActionListener(e -> {
+            delete_archive();
             cardLayout.show(cardPanel, "startPanel");
             GameState gameState = new GameState(taskCompletionStatus, is_played_task1,
                     0, 0, 0, 0, 0,
@@ -485,7 +488,7 @@ public class Main {
         saveTask2State(
                 task2.identifiedTypes,
                 task2.waitingForAngleInput,
-                task2.scoreManager.getScore()
+                task2.result
         );
 
         saveTask3State(
