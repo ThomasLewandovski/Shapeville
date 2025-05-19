@@ -119,8 +119,6 @@ public class Bonus2SectorAreaCalculator {
         selectPanel = new JPanel(new BorderLayout());
         selectPanel.setBackground(new Color(255, 250, 205));
 
-
-
         JPanel titlePanel = new JPanel();
         titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.Y_AXIS)); // 设置垂直布局
         titlePanel.setBackground(new Color(255, 250, 205));
