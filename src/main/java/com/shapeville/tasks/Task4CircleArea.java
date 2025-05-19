@@ -72,7 +72,7 @@ public class Task4CircleArea {
             modeButtons[i] = modeButton;
             int modeIndex = i;
 
-            modeButton.setPreferredSize(new Dimension(120, 40));
+            modeButton.setPreferredSize(new Dimension(160, 40));
             modeButton.setFont(new Font("Arial", Font.BOLD, 16));
 
             modeButton.addActionListener(e -> {
@@ -88,7 +88,7 @@ public class Task4CircleArea {
         }
 
         // 返回主菜单按钮
-        JButton homeButton = new JButton("Back to Main");
+        JButton homeButton = new JButton("Return to home");
         homeButton.setFont(new Font("Arial", Font.PLAIN, 13));
         homeButton.addActionListener(e -> {
             if (onReturnHome != null) onReturnHome.run();
