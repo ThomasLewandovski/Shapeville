@@ -1,4 +1,3 @@
-// File: Bonus2SectorAreaCalculator.java
 package com.shapeville.tasks;
 
 import com.shapeville.manager.ScoreManager;
@@ -17,7 +16,7 @@ public class Bonus2SectorAreaCalculator {
 
     private JPanel selectPanel;
     private JPanel questionPanel;
-    private JPanel bottomPanel; // 添加成员变量保存底部面板
+    private JPanel bottomPanel;
 
     private JLabel imageLabel;
     private JTextField answerField;
@@ -28,10 +27,13 @@ public class Bonus2SectorAreaCalculator {
     public int attemptCount;
     private Map<Integer, Double> correctAnswers;
     private Map<Integer, String> explanations;
+    private Map<Integer, JButton> shapeButtons = new HashMap<>();
+    private boolean[] completed = new boolean[9]; // 1-based indexing for 8 questions
 
     public Bonus2SectorAreaCalculator(ScoreManager scoreManager) {
         this.scoreManager = scoreManager;
         this.taskPanel = new JPanel(new CardLayout());
+        taskPanel.setBackground(new Color(255, 250, 205)); // 米黄色背景
 
         initAnswers();
         initSelectPanel();
@@ -72,29 +74,20 @@ public class Bonus2SectorAreaCalculator {
 
     private void initSelectPanel() {
         selectPanel = new JPanel(new BorderLayout());
-        selectPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 30, 30));
+        selectPanel.setBackground(new Color(255, 250, 205));
 
-        // 标题面板
         JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        titlePanel.setBackground(new Color(255, 250, 205));
         JLabel title = new JLabel("Select a Sector Shape:");
-        title.setFont(new Font("Arial", Font.BOLD, 16));
+        title.setFont(new Font("Arial", Font.BOLD, 18));
         titlePanel.add(title);
         selectPanel.add(titlePanel, BorderLayout.NORTH);
 
-        // 图像按钮面板 - 使用 GridBagLayout 实现响应式布局
-        JPanel buttonPanel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.weightx = 0.25; // 四列平均分布
-        gbc.weighty = 0.5;  // 两行平均分布
+        JPanel buttonPanel = new JPanel(new GridLayout(2, 4, 20, 20));
+        buttonPanel.setBackground(new Color(255, 250, 205));
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
 
         for (int i = 1; i <= 8; i++) {
-            int row = (i - 1) / 4;
-            int col = (i - 1) % 4;
-            gbc.gridx = col;
-            gbc.gridy = row;
-
             int id = i;
             JButton btn;
             try {
@@ -104,14 +97,23 @@ public class Bonus2SectorAreaCalculator {
             } catch (Exception ex) {
                 btn = new JButton("circle" + i);
             }
-            btn.addActionListener(e -> showQuestion(id));
-            buttonPanel.add(btn, gbc);
+            btn.setBackground(Color.WHITE);
+            btn.setFocusPainted(false);
+            btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            shapeButtons.put(i, btn);
+
+            btn.addActionListener(e -> {
+                if (!completed[id]) {
+                    showQuestion(id);
+                }
+            });
+            buttonPanel.add(btn);
         }
 
         selectPanel.add(buttonPanel, BorderLayout.CENTER);
 
-        // 底部按钮面板
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        bottomPanel.setBackground(new Color(255, 250, 205));
         JButton homeButton = new JButton("Home");
         homeButton.addActionListener(e -> {
             if (onReturnHome != null) onReturnHome.run();
@@ -122,30 +124,28 @@ public class Bonus2SectorAreaCalculator {
 
     private void initQuestionPanel() {
         questionPanel = new JPanel(new BorderLayout());
-        questionPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 30, 10));
+        questionPanel.setBackground(new Color(255, 250, 205));
 
-        // 顶部计分板
         scoreLabel = new JLabel("Score: " + scoreManager.getScore());
-        scoreLabel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
+        scoreLabel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 10));
         questionPanel.add(scoreLabel, BorderLayout.NORTH);
 
-        // 主内容面板 - 使用 GridBagLayout
         JPanel contentPanel = new JPanel(new GridBagLayout());
+        contentPanel.setBackground(new Color(255, 250, 205));
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.insets = new Insets(10, 15, 10, 15);
         gbc.fill = GridBagConstraints.BOTH;
 
-        // 图像区域
         imageLabel = new JLabel();
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.gridheight = 4;
+        gbc.gridheight = 3;
         gbc.weightx = 0.4;
         gbc.weighty = 1.0;
         contentPanel.add(imageLabel, gbc);
 
-        // 问题区域
         JLabel prompt = new JLabel("Enter the calculated area (2 decimals):");
+        prompt.setFont(new Font("Arial", Font.PLAIN, 14));
         gbc.gridx = 1;
         gbc.gridy = 0;
         gbc.gridheight = 1;
@@ -153,36 +153,36 @@ public class Bonus2SectorAreaCalculator {
         gbc.weighty = 0.1;
         contentPanel.add(prompt, gbc);
 
-        // 输入区域
-        JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         answerField = new JTextField(10);
         JButton submitButton = new JButton("Submit");
         submitButton.addActionListener(this::handleSubmit);
+
+        JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        inputPanel.setBackground(new Color(255, 250, 205));
         inputPanel.add(answerField);
         inputPanel.add(submitButton);
-
         gbc.gridx = 1;
         gbc.gridy = 1;
         contentPanel.add(inputPanel, gbc);
 
-        // 反馈区域
         feedbackLabel = new JLabel("");
+        feedbackLabel.setFont(new Font("Arial", Font.PLAIN, 13));
         gbc.gridx = 1;
         gbc.gridy = 2;
         contentPanel.add(feedbackLabel, gbc);
 
         questionPanel.add(contentPanel, BorderLayout.CENTER);
 
-        // 底部按钮面板 - 初始化成员变量
         bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        bottomPanel.setBackground(new Color(255, 250, 205));
         JButton backButton = new JButton("Back");
         backButton.addActionListener(e -> {
             resetQuestion();
-            ((CardLayout)taskPanel.getLayout()).show(taskPanel, "select");
+            ((CardLayout) taskPanel.getLayout()).show(taskPanel, "select");
         });
+        backButton.setVisible(false);
         bottomPanel.add(backButton);
         questionPanel.add(bottomPanel, BorderLayout.SOUTH);
-        backButton.setVisible(false);
     }
 
     private void showQuestion(int shapeId) {
@@ -191,7 +191,7 @@ public class Bonus2SectorAreaCalculator {
         answerField.setText("");
         feedbackLabel.setText("");
         scoreLabel.setText("Score: " + scoreManager.getScore());
-        answerField.setEnabled(true); // 确保输入框启用
+        answerField.setEnabled(true);
 
         try {
             ImageIcon rawIcon = new ImageIcon(getClass().getClassLoader().getResource("images/circle" + shapeId + ".png"));
@@ -199,6 +199,13 @@ public class Bonus2SectorAreaCalculator {
             imageLabel.setIcon(new ImageIcon(scaledImage));
         } catch (Exception ex) {
             imageLabel.setText("Image not found");
+        }
+
+        for (Component comp : bottomPanel.getComponents()) {
+            if (comp instanceof JButton && ((JButton) comp).getText().equals("Back")) {
+                comp.setVisible(false);
+                break;
+            }
         }
 
         ((CardLayout) taskPanel.getLayout()).show(taskPanel, "question");
@@ -217,48 +224,51 @@ public class Bonus2SectorAreaCalculator {
                 };
                 scoreManager.addScore(score);
                 feedbackLabel.setText("✅ Correct! +" + score + " points");
-                scoreLabel.setText("Score: " + scoreManager.getScore());
-                showBackButton(); // 显示返回按钮
-                completedTasks+=1;
+                completeCurrentShape();
             } else {
                 attemptCount++;
                 if (attemptCount >= 3) {
                     feedbackLabel.setText("❌ Incorrect. " + explanations.get(currentShapeId));
-                    showBackButton(); // 显示返回按钮
-                    completedTasks+=1;
+                    completeCurrentShape();
                 } else {
                     feedbackLabel.setText("❌ Try again. Attempts left: " + (3 - attemptCount));
                 }
             }
+            scoreLabel.setText("Score: " + scoreManager.getScore());
         } catch (Exception ex) {
             feedbackLabel.setText("❌ Please enter a valid number.");
         }
     }
 
-    private void showBackButton() {
-        if (bottomPanel != null) {
-            for (Component comp : bottomPanel.getComponents()) {
-                if (comp instanceof JButton && ((JButton) comp).getText().equals("Back")) {
-                    comp.setVisible(true);
-                    answerField.setEnabled(false); // 禁用输入框
-                    break;
-                }
+    private void completeCurrentShape() {
+        completed[currentShapeId] = true;
+        completedTasks++;
+
+        if (shapeButtons.containsKey(currentShapeId)) {
+            JButton btn = shapeButtons.get(currentShapeId);
+            btn.setEnabled(false);
+            btn.setBackground(Color.LIGHT_GRAY);
+        }
+
+        for (Component comp : bottomPanel.getComponents()) {
+            if (comp instanceof JButton && ((JButton) comp).getText().equals("Back")) {
+                comp.setVisible(true);
+                break;
             }
         }
+
+        answerField.setEnabled(false);
     }
 
     private void resetQuestion() {
         answerField.setText("");
         feedbackLabel.setText("");
-        answerField.setEnabled(true); // 启用输入框
+        answerField.setEnabled(true);
 
-        // 隐藏返回按钮
-        if (bottomPanel != null) {
-            for (Component comp : bottomPanel.getComponents()) {
-                if (comp instanceof JButton && ((JButton) comp).getText().equals("Back")) {
-                    comp.setVisible(false);
-                    break;
-                }
+        for (Component comp : bottomPanel.getComponents()) {
+            if (comp instanceof JButton && ((JButton) comp).getText().equals("Back")) {
+                comp.setVisible(false);
+                break;
             }
         }
     }

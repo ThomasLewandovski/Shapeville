@@ -7,13 +7,14 @@ import java.awt.*;
 import java.util.Random;
 
 public class Task4CircleArea {
-    private static final String[] MODES = {"Area", "Perimeter"};
+    private static final String[] MODES = {"Area", "Circumference"};
     public boolean[] completedModes = new boolean[2];
+    private boolean isCurrentModeFailed = false; // ✅ 标记答错三次但尚未跳转
 
     public JPanel task4;
     private JPanel modeSelectionPanel;
     private JPanel calculationPanel;
-    private JButton[] modeButtons = new JButton[2]; // 保存按钮引用，便于刷新状态
+    private JButton[] modeButtons = new JButton[2];
 
     public JLabel score;
     private JLabel questionLabel;
@@ -46,8 +47,6 @@ public class Task4CircleArea {
         ((CardLayout) task4.getLayout()).show(task4, "modeSelection");
     }
 
-    // ... 保持你已有的 import 和类头部不变
-
     private void createModeSelectionPanel() {
         modeSelectionPanel = new JPanel(new BorderLayout());
 
@@ -57,7 +56,7 @@ public class Task4CircleArea {
         JPanel modePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
         for (int i = 0; i < MODES.length; i++) {
             JButton modeButton = new JButton(MODES[i]);
-            modeButtons[i] = modeButton; // ✅ 保存引用
+            modeButtons[i] = modeButton;
             int modeIndex = i;
 
             modeButton.setPreferredSize(new Dimension(120, 40));
@@ -71,7 +70,7 @@ public class Task4CircleArea {
                 }
             });
 
-            modeButton.setEnabled(!completedModes[modeIndex]); // ✅ 初始是否启用
+            modeButton.setEnabled(!completedModes[modeIndex]);
             modePanel.add(modeButton);
         }
 
@@ -88,7 +87,6 @@ public class Task4CircleArea {
     private void createCalculationPanel() {
         calculationPanel = new JPanel(new BorderLayout(10, 10));
 
-        // Top
         JPanel topPanel = new JPanel(new BorderLayout());
         score = new JLabel("Score: 0");
         score.setFont(new Font("Arial", Font.BOLD, 16));
@@ -98,7 +96,6 @@ public class Task4CircleArea {
         topPanel.add(score, BorderLayout.NORTH);
         topPanel.add(questionLabel, BorderLayout.CENTER);
 
-        // Middle
         JPanel middlePanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
@@ -124,7 +121,6 @@ public class Task4CircleArea {
         gbc.gridx = 0; gbc.gridy = 2;
         middlePanel.add(formulaLabel, gbc);
 
-        // Bottom
         JPanel bottomPanel = new JPanel(new BorderLayout());
         drawPanel = new DrawCirclePanel();
         drawPanel.setPreferredSize(new Dimension(300, 300));
@@ -133,14 +129,20 @@ public class Task4CircleArea {
 
         JButton backButton = new JButton("Back to Mode Select");
         backButton.addActionListener(e -> {
-            refreshModeButtons(); // ✅ 刷新按钮禁用状态
-            ((CardLayout) task4.getLayout()).show(task4, "modeSelection");
+            // ✅ 只有在失败完成时才执行真正完成逻辑
+            if (isCurrentModeFailed) {
+                completeCurrentMode();
+                isCurrentModeFailed = false;
+            } else {
+                refreshModeButtons();
+                ((CardLayout) task4.getLayout()).show(task4, "modeSelection");
+            }
         });
+
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.add(backButton);
         bottomPanel.add(buttonPanel, BorderLayout.SOUTH);
 
-        // Put together
         calculationPanel.add(topPanel, BorderLayout.NORTH);
         calculationPanel.add(middlePanel, BorderLayout.CENTER);
         calculationPanel.add(bottomPanel, BorderLayout.SOUTH);
@@ -155,11 +157,12 @@ public class Task4CircleArea {
         drawPanel.setVisible(false);
         radius = new Random().nextInt(20) + 1;
         attempts = 1;
+        isCurrentModeFailed = false;
 
         String modeText = currentMode == 0 ?
-                "面积（π≈3.14）" :
-                "周长（π≈3.14）";
-        questionLabel.setText("🟢 圆形半径 = " + radius + "，计算" + modeText);
+                "Area（π≈3.14）" :
+                "Circumference（π≈3.14）";
+        questionLabel.setText("The radius of a circle = " + radius + "，calculating" + modeText);
         drawPanel.setMode(currentMode);
     }
 
@@ -180,44 +183,56 @@ public class Task4CircleArea {
                     default -> 0;
                 };
                 scoreManager.addScore(points);
-                score.setText("分数: " + scoreManager.getScore());
-                feedbackLabel.setText("✅ 正确！获得 " + points + " 分");
+                score.setText("Score: " + scoreManager.getScore());
+                feedbackLabel.setText("Correct! Obtaining " + points + " marks");
 
-                // 标记模式已完成
-                completedModes[currentMode] = true;
-
-                // 禁用对应按钮
-                if (modeButtons[currentMode] != null) {
-                    modeButtons[currentMode].setEnabled(false);
-                }
-
-                // 如果全部完成，触发回调
-                if (completedModes[0] && completedModes[1]) {
-                    if (onComplete != null) onComplete.run();
-                }
-
-                // ✅ 刷新按钮状态并切换回模式选择
-                refreshModeButtons();
-                ((CardLayout) task4.getLayout()).show(task4, "modeSelection");
+                completeCurrentMode();
 
             } else {
                 handleWrongAnswer(correctValue);
             }
         } catch (NumberFormatException e) {
-            feedbackLabel.setText("❌ 请输入有效数字");
+            feedbackLabel.setText("Please enter a valid number.");
         }
     }
+
     private void handleWrongAnswer(double correctValue) {
         if (attempts == 3) {
-            feedbackLabel.setText("❌ 已用尽所有尝试次数");
-            formulaLabel.setText(currentMode == 0 ?
-                    "公式：π×r² = 3.14×" + radius + "×" + radius + " = " + String.format("%.2f", correctValue) :
-                    "公式：2πr = 2×3.14×" + radius + " = " + String.format("%.2f", correctValue));
+            feedbackLabel.setText("All attempts have been exhausted");
+            formulaLabel.setText(currentMode == 0
+                    ? "Formula：π×r² = 3.14×" + radius + "×" + radius + " = " + String.format("%.2f", correctValue)
+                    : "Formula：2πr = 2×3.14×" + radius + " = " + String.format("%.2f", correctValue));
             drawPanel.setRadius(radius);
             drawPanel.setVisible(true);
+
+            isCurrentModeFailed = true; // ✅ 标记当前模式已失败
         } else {
-            feedbackLabel.setText("❌ 错误，剩余尝试次数：" + (3 - attempts));
+            feedbackLabel.setText("Wrong, remaining attempts：" + (3 - attempts));
             attempts++;
+        }
+    }
+
+    private void completeCurrentMode() {
+        completedModes[currentMode] = true;
+
+        if (modeButtons[currentMode] != null) {
+            modeButtons[currentMode].setEnabled(false);
+        }
+
+        refreshModeButtons();
+
+        if (completedModes[0] && completedModes[1]) {
+            if (onComplete != null) onComplete.run();
+        }
+
+        ((CardLayout) task4.getLayout()).show(task4, "modeSelection");
+    }
+
+    private void refreshModeButtons() {
+        for (int i = 0; i < modeButtons.length; i++) {
+            if (modeButtons[i] != null) {
+                modeButtons[i].setEnabled(!completedModes[i]);
+            }
         }
     }
 
@@ -282,21 +297,13 @@ public class Task4CircleArea {
             g2.setColor(Color.RED);
             g2.drawLine(centerX, centerY, centerX + maxRadius, centerY);
 
-            String formula = mode == 0 ?
-                    "面积 = π×r² = " + String.format("%.2f", 3.14 * radius * radius) :
-                    "周长 = 2πr = " + String.format("%.2f", 2 * 3.14 * radius);
+            String formula = mode == 0
+                    ? "Area = π×r² = " + String.format("%.2f", 3.14 * radius * radius)
+                    : "Circumference = 2πr = " + String.format("%.2f", 2 * 3.14 * radius);
 
             g2.setColor(Color.BLACK);
             g2.drawString("r = " + radius, centerX + maxRadius + 10, centerY + 5);
             g2.drawString(formula, centerX - maxRadius, centerY + maxRadius + 20);
-        }
-    }
-
-    private void refreshModeButtons() {
-        for (int i = 0; i < modeButtons.length; i++) {
-            if (modeButtons[i] != null) {
-                modeButtons[i].setEnabled(!completedModes[i]);
-            }
         }
     }
 }
