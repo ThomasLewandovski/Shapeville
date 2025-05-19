@@ -868,14 +868,20 @@ public class Main {
         // 返回按钮
         Component backButton = null;
         Component detailButton = null;
+        Component introductionButton = null;
+        Component restartButton = null;
         for (Component c : startpanel.getComponents()) {
             if (c instanceof JButton && "Back".equals(((JButton) c).getText())) {
                 backButton = c;
-                break;
             }
             if (c instanceof JButton && "Score Display".equals(((JButton) c).getText())) {
                 detailButton = c;
-                break;
+            }
+            if (c instanceof JButton && "Introduction".equals(((JButton) c).getText())) {
+                introductionButton = c;
+            }
+            if (c instanceof JButton && "Restart".equals(((JButton) c).getText())) {
+                restartButton = c;
             }
         }
         if (backButton != null) {
@@ -884,7 +890,12 @@ public class Main {
         if (detailButton != null) {
             detailButton.setBounds(width * 6/7, 0, width / 7, height / 20);
         }
-
+        if (introductionButton != null) {
+            introductionButton.setBounds(width/32, height*16/17, width / 8, height / 20);
+        }
+        if (restartButton != null) {
+            restartButton.setBounds(width*6/32, height*16/17, width / 8, height / 20);
+        }
         // 任务按钮 task1-task4
         int buttonW = width / 6;
         int buttonH = height / 6;
