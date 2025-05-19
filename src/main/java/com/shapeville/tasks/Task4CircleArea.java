@@ -10,6 +10,7 @@ public class Task4CircleArea {
     private static final String[] MODES = {"Area", "Circumference"};
     public boolean[] completedModes;
     public int Completed=0;
+    public int scores;
     private boolean isCurrentModeFailed = false; // ✅ 标记答错三次但尚未跳转
 
     public JPanel task4;
@@ -17,7 +18,7 @@ public class Task4CircleArea {
     private JPanel calculationPanel;
     private JButton[] modeButtons = new JButton[2];
 
-    public JLabel score;
+    public JLabel scorelable;
     private JLabel questionLabel;
     private JTextField input;
     private JButton submitButton;
@@ -89,12 +90,12 @@ public class Task4CircleArea {
         calculationPanel = new JPanel(new BorderLayout(10, 10));
 
         JPanel topPanel = new JPanel(new BorderLayout());
-        score = new JLabel("Score: 0");
-        score.setFont(new Font("Arial", Font.BOLD, 16));
+        scorelable = new JLabel("Score: 0");
+        scorelable.setFont(new Font("Arial", Font.BOLD, 16));
         questionLabel = new JLabel();
         questionLabel.setFont(new Font("Arial", Font.PLAIN, 16));
         questionLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-        topPanel.add(score, BorderLayout.NORTH);
+        topPanel.add(scorelable, BorderLayout.NORTH);
         topPanel.add(questionLabel, BorderLayout.CENTER);
 
         JPanel middlePanel = new JPanel(new GridBagLayout());
@@ -185,7 +186,9 @@ public class Task4CircleArea {
                 };
                 Completed++;
                 scoreManager.addScore(points);
-                score.setText("Score: " + scoreManager.getScore());
+
+                scores+=points;
+                scorelable.setText("Score: " + scores);
                 feedbackLabel.setText("Correct! Obtaining " + points + " marks");
 
                 completeCurrentMode();

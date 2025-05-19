@@ -13,7 +13,8 @@ public class Bonus1CompoundShapeArea {
     public JPanel taskPanel;
     public Runnable onReturnHome;
     public ScoreManager scoreManager;
-    public JLabel score;
+    public JLabel scorelable;
+    public int scores=0;
     public int completedTasks = 0;
     public int[] completedShapes = new int[7];
 
@@ -42,7 +43,7 @@ public class Bonus1CompoundShapeArea {
         this.scoreManager = scoreManager;
         this.taskPanel = new JPanel(new CardLayout());
         this.taskPanel.setBackground(new Color(255, 250, 205));
-        this.score = new JLabel("Score: 0");
+        this.scorelable = new JLabel("Score: 0");
 
         initAnswerData();
         initShapeSelectPanel();
@@ -82,7 +83,7 @@ public class Bonus1CompoundShapeArea {
 
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         topPanel.setBackground(new Color(255, 250, 205));
-        topPanel.add(score);
+        topPanel.add(scorelable);
         JLabel title = new JLabel("Select a Compound Shape:");
         title.setFont(new Font("Comic Sans MS", Font.BOLD, 16));
         topPanel.add(title);
@@ -99,16 +100,16 @@ public class Bonus1CompoundShapeArea {
                 originalImages.put(shapeId, rawIcon.getImage());
 
                 JButton btn = new JButton(new ImageIcon(getScaledImage(rawIcon.getImage(), 200, 130)));
-                btn.addActionListener(e -> showQuestion(shapeId));
+                btn.addActionListener(e ->{
+                    submitButton.setEnabled(true);
+                    showQuestion(shapeId);
+                });
                 buttonPanel.add(btn);
                 completedShapes[i] = 0;
                 shapeButtons.put(shapeId, btn);
             } catch (Exception ex) {
                 JButton btn = new JButton("Shape " + i);
-                btn.addActionListener(e ->{
-                    submitButton.setEnabled(true);
-                    showQuestion(shapeId);
-                });
+                btn.addActionListener(e ->showQuestion(shapeId));
                 buttonPanel.add(btn);
                 shapeButtons.put(shapeId, btn);
             }
@@ -248,14 +249,15 @@ public class Bonus1CompoundShapeArea {
             double correct = correctAnswers.get(currentShapeId);
             if (Math.abs(ans - correct) < 0.01) {
                 int points = switch (attemptCount) {
-                    case 0 -> 3;
-                    case 1 -> 2;
-                    case 2 -> 1;
+                    case 0 -> 6;
+                    case 1 -> 4;
+                    case 2 -> 2;
                     default -> 0;
                 };
                 feedbackLabel.setText("✅ Correct! +" + points + " points");
                 mascotSpeechBubble.setText("<html><div style='padding:10px; background:#e0ffe0; border-radius:10px; border:1px solid #8bc34a;'>Yay! That’s correct! 🎉🦊</div></html>");
                 scoreManager.addScore(points);
+                scores+=points;
                 completedTasks++;
                 updateButtonState(currentShapeId);
                 submitButton.setEnabled(false);
@@ -282,7 +284,7 @@ public class Bonus1CompoundShapeArea {
             feedbackLabel.setText("❌ Please enter a valid number.");
             mascotSpeechBubble.setText("<html><div style='padding:10px; background:#ffe0e0; border-radius:10px; border:1px solid #e57373;'>Only numbers please! 🦊</div></html>");
         }
-        score.setText("Score: " + scoreManager.getScore());
+        scorelable.setText("Score: " + scores);
     }
 
     private void updateButtonState(int shapeId) {

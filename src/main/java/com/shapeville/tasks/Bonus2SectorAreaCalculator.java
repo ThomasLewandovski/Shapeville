@@ -13,6 +13,7 @@ public class Bonus2SectorAreaCalculator {
     public JPanel taskPanel;
     public Runnable onReturnHome;
     public ScoreManager scoreManager;
+    public int scores;
     public int completedTasks = 0;
     private JButton submitButton;
 
@@ -24,7 +25,7 @@ public class Bonus2SectorAreaCalculator {
     private JTextField answerField;
     private JLabel feedbackLabel;
     public JLabel scoreLabel;
-    public  JLabel score;
+    public JLabel scorelable;
 
     private JLabel mascotSpeechBubble;
     private JLabel mascotImageLabel;
@@ -90,11 +91,11 @@ public class Bonus2SectorAreaCalculator {
         JLabel title = new JLabel("Select a Sector Shape:");
         title.setFont(new Font("Comic Sans MS", Font.BOLD, 18));
 
-        score = new JLabel("points: " + scoreManager.getScore());
-        score.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
-        score.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        scorelable = new JLabel("points: " + scoreManager.getScore());
+        scorelable.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
+        scorelable.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
 
-        titlePanel.add(score);
+        titlePanel.add(scorelable);
         titlePanel.add(title);
 
         selectPanel.add(titlePanel, BorderLayout.NORTH);
@@ -262,7 +263,8 @@ public class Bonus2SectorAreaCalculator {
         answerField.setText("");
         feedbackLabel.setText("");
         mascotSpeechBubble.setText("<html><div style='padding:10px; background:#fff8dc; border-radius:10px; border:1px solid #ccc;'>Let's take a look at this question!🐰</div></html>");
-        scoreLabel.setText("Score: " + scoreManager.getScore()); // 确保每次显示问题时更新分数
+        scoreLabel.setText("Score: " + scores); // 确保每次显示问题时更新分数
+        scorelable.setText("Score: " + scores);
         answerField.setEnabled(true);
 
         try {
@@ -296,6 +298,7 @@ public class Bonus2SectorAreaCalculator {
                 };
                 submitButton.setVisible(false);
                 scoreManager.addScore(score);
+                scores+=score;
                 feedbackLabel.setText("✅ Correct! +" + score + " points");
                 mascotSpeechBubble.setText("<html><div style='padding:10px; background:#e0ffe0; border-radius:10px; border:1px solid #8bc34a;'>Great! You got it right!🎉</div></html>");
                 completeCurrentShape();
@@ -311,8 +314,8 @@ public class Bonus2SectorAreaCalculator {
                     mascotSpeechBubble.setText("<html><div style='padding:10px; background:#fff3cd; border-radius:10px; border:1px solid #ffeb3b;'>Think again! You can do it!🌟</div></html>");
                 }
             }
-            scoreLabel.setText("Score: " + scoreManager.getScore()); // 更新分数显示
-            score.setText("Score: " + scoreManager.getScore());
+            scoreLabel.setText("Score: " + scores); // 更新分数显示
+            scorelable.setText("Score: " + scores);
         } catch (Exception ex) {
             feedbackLabel.setText("❌ Please enter a valid number.");
             mascotSpeechBubble.setText("<html><div style='padding:10px; background:#ffe0e0; border-radius:10px; border:1px solid #e57373;'>Please enter a valid number. 🐰</div></html>");

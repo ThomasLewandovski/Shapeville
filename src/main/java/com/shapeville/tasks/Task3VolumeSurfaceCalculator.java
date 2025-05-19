@@ -13,7 +13,8 @@ public class Task3VolumeSurfaceCalculator {
     public JPanel task3;
     public Runnable onReturnHome;
     public ScoreManager scoreManager;
-    public JLabel score;
+    public JLabel scorelable;
+    public int scores = 0;
     public Set<String> CompletedShapes;
 
     private JLabel questionLabel;
@@ -44,9 +45,9 @@ public class Task3VolumeSurfaceCalculator {
 
         // 顶部面板 - 包含分数和标题
         JPanel topPanel = new JPanel(new BorderLayout());
-        score = new JLabel("Score: 0");
-        score.setFont(new Font("Arial", Font.BOLD, 16));
-        topPanel.add(score, BorderLayout.NORTH);
+        scorelable = new JLabel("Score: " + scoreManager.getScore());
+        scorelable.setFont(new Font("Arial", Font.BOLD, 16));
+        topPanel.add(scorelable, BorderLayout.NORTH);
 
         questionLabel = new JLabel("Choose a shape:");
         questionLabel.setFont(new Font("Arial", Font.PLAIN, 16));
@@ -197,6 +198,7 @@ public class Task3VolumeSurfaceCalculator {
                     default -> 0;
                 };
                 scoreManager.addScore(score);
+                scores+=score;
                 CompletedShapes.add(currentShape);
                 checkAllShapesCompleted(); // 新增完成检测
                 questionLabel.setText("<html>✅ Great job! +" + score + " points<br>👉 Please select a new shape and click Generate Problem to continue.</html>");
@@ -224,7 +226,7 @@ public class Task3VolumeSurfaceCalculator {
         } catch (Exception e) {
             questionLabel.setText("Please enter a valid number");
         }
-        score.setText("Score: " + scoreManager.getScore());
+        scorelable.setText("Score: " + scores);
     }
 
     private void showExplanation() {

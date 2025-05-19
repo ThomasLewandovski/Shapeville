@@ -1,6 +1,5 @@
 package com.shapeville.ui;
 
-import com.shapeville.data.ShapeData.*;
 import static com.shapeville.manager.ArchiveManager.*;
 import com.shapeville.manager.ScoreManager;
 import com.shapeville.tasks.Task1ShapeIdentification;
@@ -15,8 +14,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 public class Main {
     // 定义存档文件名
@@ -485,7 +482,7 @@ public class Main {
 
         saveTask3State(
                 task3.CompletedShapes,
-                task3.scoreManager.getScore()
+                task3.scores
         );
 
         saveTask4State(
@@ -493,19 +490,19 @@ public class Main {
                 task4.currentMode,
                 task4.radius,
                 task4.attempts,
-                task4.scoreManager.getScore()
+                task4.scores
         );
 
         saveBonus1State(
                 bonus1.completedTasks,
                 bonus1.completedShapes,
-                bonus1.scoreManager.getScore()
+                bonus1.scores
         );
 
         saveBonus2State(
                 bonus2.completedTasks,
                 bonus2.completed,
-                bonus2.scoreManager.getScore()
+                bonus2.scores
         );
     }
 
@@ -594,7 +591,7 @@ public class Main {
         // 更新任务1状态
         task1.isIdentifiedShapes = state.isIdentifiedShapes;
         task1.is_played_task1 = state.is_played_task1.clone();
-        task1.scoreManager.setScore(state.score);
+        task1.scoreManager.setScore(scoreManager.getScore());
         task1.score.setText("points: " + state.score);
 
         // 检查任务是否完成
@@ -610,7 +607,7 @@ public class Main {
         if (state == null) return;
         task2.identifiedTypes = new HashSet<>(state.identifiedTypes);
         task2.waitingForAngleInput = state.waitingForAngleInput;
-        task2.scoreManager.setScore(state.score);
+        task2.scoreManager.setScore(scoreManager.getScore());
         task2.scoreLabel.setText("points: " + state.score);
 
         // 检查任务是否完成
@@ -627,8 +624,8 @@ public class Main {
 
         // 更新任务3状态
         task3.CompletedShapes = state.CompletedShapes;
-        task3.scoreManager.setScore(state.score);
-        task3.score.setText("points: " + state.score);
+        task3.scoreManager.setScore(scoreManager.getScore());
+        task3.scorelable.setText("points: " + state.score);
     }
 
     // 任务4状态恢复方法
@@ -640,8 +637,8 @@ public class Main {
         task4.currentMode = state.currentMode;
         task4.radius = state.radius;
         task4.attempts = state.attempts;
-        task4.scoreManager.setScore(state.score);
-        task4.score.setText("points: " + state.score);
+        task4.scoreManager.setScore(scoreManager.getScore());
+        task4.scorelable.setText("points: " + state.score);
 
         // 更新任务4进度条
         int progress = 0;
@@ -672,8 +669,9 @@ public class Main {
         // 更新奖励任务1状态
         bonus1.completedTasks = state.completedTasks;
         bonus1.completedShapes = state.completedShapes;
-        bonus1.scoreManager.setScore(state.score);
-        bonus1.score.setText("points: " + state.score);
+        bonus1.scoreManager.setScore(scoreManager.getScore());
+        bonus1.scores = state.score;
+        bonus1.scorelable.setText("points: " + state.score);
 
         for(int i = 0; i < 6; i++) {
             JButton btn = bonus1.shapeButtons.get(i);
@@ -690,8 +688,10 @@ public class Main {
         // 更新奖励任务2状态
         bonus2.completedTasks = state.completedTasks;
         bonus2.completed = state.completed;
-        bonus2.scoreManager.setScore(state.score);
-        bonus2.scoreLabel.setText("points: " + state.score);
+        bonus2.scoreManager.setScore(scoreManager.getScore());
+        bonus2.scores = state.score;
+        bonus2.scoreLabel.setText("Scores: " + state.score);
+        bonus2.scorelable.setText("Scores: " + state.score);
 
         for(int i = 1;i<=8;i++){
             if(bonus2.completed[i]){
