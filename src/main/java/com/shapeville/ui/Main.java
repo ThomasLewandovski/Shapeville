@@ -67,6 +67,7 @@ public class Main {
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); // 禁用默认关闭操作
         frame.setSize(800, 600);
 
+
         // 创建卡片布局和面板
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
@@ -100,7 +101,30 @@ public class Main {
         mainpanel.add(continueButton);
 
         // 创建第二个界面：关卡选择，管理进入各个task的通道及积分器
-        JPanel startpanel = new JPanel(null);
+        // 创建第二个界面：关卡选择，管理进入各个task的通道及积分器
+        JPanel startpanel = new JPanel(null) {
+            Image bg = new ImageIcon(getClass().getClassLoader().getResource("images/startpanel_background.png")).getImage();
+
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                if (bg != null) {
+                    g.drawImage(bg, 0, 0, getWidth(), getHeight(), this); // 拉伸填满整个面板
+                }
+            }
+        };
+
+        // 在 frame 初始化之后添加：
+        frame.setResizable(true);  // 允许缩放
+        resizeComponents(startpanel);  // 初始化设置
+        frame.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                resizeComponents(startpanel);
+            }
+        });
+
+
         counter2 = new JLabel("积分：");
         counter2.setBounds(10, 0, 60, 30);
         startpanel.add(counter2);
@@ -118,10 +142,10 @@ public class Main {
         task2Button = new JButton("task2:");
         task3Button = new JButton("task3:");
         task4Button = new JButton("task4:");
-        task1Button.setBounds(100, 100, 150, 100);
-        task2Button.setBounds(250, 100, 150, 100);
-        task3Button.setBounds(400, 100, 150, 100);
-        task4Button.setBounds(550, 100, 150, 100);
+        task1Button.setBounds(100, 140, 150, 100);
+        task2Button.setBounds(250, 140, 150, 100);
+        task3Button.setBounds(400, 140, 150, 100);
+        task4Button.setBounds(550, 140, 150, 100);
         startpanel.add(task1Button);
         startpanel.add(task2Button);
         startpanel.add(task3Button);
@@ -129,22 +153,22 @@ public class Main {
 
         // 进度条
         task1ProgressBar = new JProgressBar(0, 8); // 4个小题
-        task1ProgressBar.setBounds(100, 200, 150, 20); // 位于按钮下方
+        task1ProgressBar.setBounds(100, 240, 150, 20); // 位于按钮下方
         task1ProgressBar.setStringPainted(true); // 显示百分比
         startpanel.add(task1ProgressBar);
 
         task2ProgressBar = new JProgressBar(0, 4); // 4个小题
-        task2ProgressBar.setBounds(250, 200, 150, 20); // 位于按钮下方
+        task2ProgressBar.setBounds(250, 240, 150, 20); // 位于按钮下方
         task2ProgressBar.setStringPainted(true); // 显示百分比
         startpanel.add(task2ProgressBar);
 
         task3ProgressBar = new JProgressBar(0, 4); // 4个小题
-        task3ProgressBar.setBounds(400, 200, 150, 20); // 位于按钮下方
+        task3ProgressBar.setBounds(400, 240, 150, 20); // 位于按钮下方
         task3ProgressBar.setStringPainted(true); // 显示百分比
         startpanel.add(task3ProgressBar);
 
         task4ProgressBar = new JProgressBar(0, 2); // 4个小题
-        task4ProgressBar.setBounds(550, 200, 150, 20); // 位于按钮下方
+        task4ProgressBar.setBounds(550, 240, 150, 20); // 位于按钮下方
         task4ProgressBar.setStringPainted(true); // 显示百分比
         startpanel.add(task4ProgressBar);
 
@@ -641,5 +665,65 @@ public class Main {
         bonus2.attemptCount = state.attemptCount;
         bonus2.scoreManager.setScore(state.score);
         bonus2.scoreLabel.setText("points: " + state.score);
+    }
+
+    private void resizeComponents(JPanel startpanel) {
+        int width = startpanel.getWidth();
+        int height = startpanel.getHeight();
+
+        // 左上角“积分”
+        if (counter2 != null) {
+            counter2.setBounds(width / 80, height / 50, width / 10, height / 20);
+        }
+
+        // 返回按钮
+        Component backButton = null;
+        for (Component c : startpanel.getComponents()) {
+            if (c instanceof JButton && "Back".equals(((JButton) c).getText())) {
+                backButton = c;
+                break;
+            }
+        }
+        if (backButton != null) {
+            backButton.setBounds(width / 80, height * 5 / 6, width / 8, height / 20);
+        }
+
+        // 任务按钮 task1-task4
+        int buttonW = width / 6;
+        int buttonH = height / 6;
+        int spacingX = width / 40;
+        int baseY = height / 4;
+        int barH = height / 30;
+
+        if (task1Button != null) task1Button.setBounds(spacingX, baseY, buttonW, buttonH);
+        if (task2Button != null) task2Button.setBounds(2 * spacingX + buttonW, baseY, buttonW, buttonH);
+        if (task3Button != null) task3Button.setBounds(3 * spacingX + 2 * buttonW, baseY, buttonW, buttonH);
+        if (task4Button != null) task4Button.setBounds(4 * spacingX + 3 * buttonW, baseY, buttonW, buttonH);
+
+        if (task1ProgressBar != null) task1ProgressBar.setBounds(spacingX, baseY + buttonH + 5, buttonW, barH);
+        if (task2ProgressBar != null) task2ProgressBar.setBounds(2 * spacingX + buttonW, baseY + buttonH + 5, buttonW, barH);
+        if (task3ProgressBar != null) task3ProgressBar.setBounds(3 * spacingX + 2 * buttonW, baseY + buttonH + 5, buttonW, barH);
+        if (task4ProgressBar != null) task4ProgressBar.setBounds(4 * spacingX + 3 * buttonW, baseY + buttonH + 5, buttonW, barH);
+
+        // Bonus按钮
+        int bonusY = baseY + buttonH + barH + height / 20;
+        int bonusW = width / 3;
+        int bonusH = buttonH;
+
+        Component[] components = startpanel.getComponents();
+        JButton bonus1Button = null, bonus2Button = null;
+        JProgressBar b1bar = null, b2bar = null;
+        for (Component c : components) {
+            if (c instanceof JButton && "bonus1".equals(((JButton) c).getText())) bonus1Button = (JButton) c;
+            if (c instanceof JButton && "bonus2".equals(((JButton) c).getText())) bonus2Button = (JButton) c;
+            if (c instanceof JProgressBar && ((JProgressBar) c).getMaximum() == 6) b1bar = (JProgressBar) c;
+            if (c instanceof JProgressBar && ((JProgressBar) c).getMaximum() == 8) b2bar = (JProgressBar) c;
+        }
+
+        if (bonus1Button != null) bonus1Button.setBounds(spacingX * 3, bonusY, bonusW, bonusH);
+        if (bonus2Button != null) bonus2Button.setBounds(spacingX * 3 + bonusW + spacingX, bonusY, bonusW, bonusH);
+
+        if (b1bar != null) b1bar.setBounds(spacingX * 3, bonusY + bonusH + 5, bonusW, barH);
+        if (b2bar != null) b2bar.setBounds(spacingX * 3 + bonusW + spacingX, bonusY + bonusH + 5, bonusW, barH);
     }
 }
