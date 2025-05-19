@@ -7,6 +7,8 @@ import java.awt.*;
 import javax.swing.Timer;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.*;
 
 public class Task3VolumeSurfaceCalculator {
@@ -16,6 +18,8 @@ public class Task3VolumeSurfaceCalculator {
     public JLabel scorelable;
     public int scores = 0;
     public Set<String> CompletedShapes;
+    private JPanel centerPanel;
+    private JPanel homeButtonPanel;
 
     private JLabel questionLabel;
     private JTextField inputField;
@@ -24,7 +28,12 @@ public class Task3VolumeSurfaceCalculator {
     private Timer countdownTimer;
     private JLabel timerLabel;
     private DrawingPanel drawingPanel;
-    private String currentQuestionText = "";  // ✅ 新增：当前题目的纯描述文本
+    private String currentQuestionText = "";
+    private JLabel mascotSpeech;
+    private JLabel mascotImageLabel;
+    private JPanel mascotPanel;
+    private JPanel mascotWrapper;
+    private ImageIcon pikaIcon;
 
     public String currentShape;
     public int param1;
@@ -40,98 +49,103 @@ public class Task3VolumeSurfaceCalculator {
         this.scoreManager = scoreManager;
         this.CompletedShapes = new HashSet<>();
 
-        // 使用BorderLayout作为主面板布局
-        task3 = new JPanel(new BorderLayout(10, 10));
+        // 使用null布局
+        task3 = new JPanel(null);
         task3.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        task3.setBackground(creamyYellow);
 
         // 顶部面板 - 包含分数和标题
-        JPanel topPanel = new JPanel(new BorderLayout());
+        JPanel topPanel = new JPanel(null);
         topPanel.setBackground(creamyYellow);
         scorelable = new JLabel("Score: " + scoreManager.getScore());
         scorelable.setFont(new Font("Arial", Font.BOLD, 16));
-        topPanel.add(scorelable, BorderLayout.NORTH);
+        topPanel.add(scorelable);
 
         questionLabel = new JLabel("Choose a shape:");
         questionLabel.setFont(new Font("Arial", Font.PLAIN, 16));
         questionLabel.setVerticalAlignment(JLabel.TOP);
-        questionLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-        topPanel.add(questionLabel, BorderLayout.CENTER);
+        topPanel.add(questionLabel);
 
-        task3.add(topPanel, BorderLayout.NORTH);
+        task3.add(topPanel);
 
         // 中间面板 - 包含形状选择和输入区域
-        JPanel centerPanel = new JPanel(new GridBagLayout());
+        centerPanel = new JPanel(null);
         centerPanel.setBackground(creamyYellow);
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
 
         shapeSelector = new JComboBox<>(new String[]{"Rectangle", "Parallelogram", "Triangle", "Trapezium"});
         shapeSelector.setFont(new Font("Arial", Font.PLAIN, 14));
         shapeSelector.setBackground(new Color(255, 250, 220));
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.weightx = 0.5;
-        centerPanel.add(shapeSelector, gbc);
+        centerPanel.add(shapeSelector);
 
         JButton generateButton = new JButton("Generate Problem");
         generateButton.setFont(new Font("Arial", Font.PLAIN, 14));
         generateButton.setBackground(new Color(255, 250, 220));
-        gbc.gridx = 1;
-        gbc.gridy = 0;
-        gbc.weightx = 0.5;
-        centerPanel.add(generateButton, gbc);
+        centerPanel.add(generateButton);
 
         timerLabel = new JLabel("Time left: 180s");
         timerLabel.setFont(new Font("Arial", Font.PLAIN, 14));
         timerLabel.setBackground(new Color(255, 250, 220));
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.gridwidth = 2;
-        centerPanel.add(timerLabel, gbc);
+        centerPanel.add(timerLabel);
 
         inputField = new JTextField();
         inputField.setFont(new Font("Arial", Font.PLAIN, 14));
         inputField.setBackground(new Color(255, 250, 220));
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        gbc.gridwidth = 1;
-        gbc.weightx = 0.7;
-        centerPanel.add(inputField, gbc);
-        inputField.setEnabled(false);     // ✅ 新增：初始禁用输入框
+        centerPanel.add(inputField);
+        inputField.setEnabled(false);
 
         submitButton = new JButton("Submit");
         submitButton.setFont(new Font("Arial", Font.PLAIN, 14));
         submitButton.setBackground(new Color(255, 250, 220));
-        gbc.gridx = 1;
-        gbc.gridy = 2;
-        gbc.weightx = 0.3;
-        centerPanel.add(submitButton, gbc);
-        submitButton.setEnabled(false);  // ✅ 新增：初始禁用提交按钮
+        centerPanel.add(submitButton);
+        submitButton.setEnabled(false);
 
-        task3.add(centerPanel, BorderLayout.CENTER);
-  
-
+        task3.add(centerPanel);
 
         // 底部面板 - 包含绘图区域和返回按钮
-        JPanel bottomPanel = new JPanel(new BorderLayout(10, 10));
+        JPanel bottomPanel = new JPanel(null);
         bottomPanel.setBackground(creamyYellow);
 
         drawingPanel = new DrawingPanel();
-        drawingPanel.setPreferredSize(new Dimension(320, 260));
-        drawingPanel.setMinimumSize(new Dimension(300, 150));
         drawingPanel.setBackground(Color.WHITE);
-        bottomPanel.add(drawingPanel, BorderLayout.CENTER);
-        
+        bottomPanel.add(drawingPanel);
+
         homeButton = new JButton("Home");
         homeButton.setFont(new Font("Arial", Font.PLAIN, 14));
         homeButton.setAlignmentX(Component.RIGHT_ALIGNMENT);
-        JPanel homeButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        homeButtonPanel = new JPanel(null);
         homeButtonPanel.setBackground(creamyYellow);
         homeButtonPanel.add(homeButton);
-        bottomPanel.add(homeButtonPanel, BorderLayout.SOUTH);
+        bottomPanel.add(homeButtonPanel);
 
-        task3.add(bottomPanel, BorderLayout.SOUTH);
+        // 皮卡丘区域
+        mascotWrapper = new JPanel(null);
+        mascotWrapper.setOpaque(false);
+
+        mascotPanel = new JPanel(null);
+        mascotPanel.setOpaque(false);
+
+        // 气泡提示
+        mascotSpeech = new JLabel("<html><div style='padding:8px; background:#fff8dc; border:1px solid #ccc; border-radius:10px;'>Choose a shape to start the challenge!⚡</div></html>");
+        mascotSpeech.setFont(new Font("Comic Sans MS", Font.PLAIN, 13));
+        mascotPanel.add(mascotSpeech);
+
+        // 加载Pikachu图
+        mascotImageLabel = new JLabel("⚡");
+        try {
+            pikaIcon = new ImageIcon(getClass().getClassLoader().getResource("images/Pikachu.png"));
+            if (pikaIcon.getImageLoadStatus() == MediaTracker.COMPLETE) {
+                Image scaled = pikaIcon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
+                mascotImageLabel = new JLabel(new ImageIcon(scaled));
+            }
+        } catch (Exception ex) {
+            // 使用备用图标
+        }
+        mascotPanel.add(mascotImageLabel);
+
+        mascotWrapper.add(mascotPanel);
+        bottomPanel.add(mascotWrapper);
+
+        task3.add(bottomPanel);
 
         // 按钮事件处理
         generateButton.addActionListener(e -> start());
@@ -141,42 +155,89 @@ public class Task3VolumeSurfaceCalculator {
             if (onReturnHome != null) onReturnHome.run();
         });
 
-        //start();
+        // 添加窗口尺寸监听器
+        task3.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                Dimension size = task3.getSize();
+                setComponentPositions(size.width, size.height);
+            }
+        });
 
-        // ✅ 创建皮卡丘区域在 bottomPanel 右下角显示
-        JPanel mascotWrapper = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        mascotWrapper.setOpaque(false); // 透明背景
-
-        JPanel mascotPanel = new JPanel();
-        mascotPanel.setLayout(new BoxLayout(mascotPanel, BoxLayout.Y_AXIS));
-        mascotPanel.setOpaque(false);
-
-        // 气泡提示
-        JLabel mascotSpeech = new JLabel("<html><div style='padding:8px; background:#fff8dc; border:1px solid #ccc; border-radius:10px;'>Choose a shape to start the challenge!⚡</div></html>");
-        mascotSpeech.setFont(new Font("Comic Sans MS", Font.PLAIN, 13));
-        mascotSpeech.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        // 加载Pikachu图
-        JLabel mascotImageLabel;
-        try {
-            ImageIcon pikaIcon = new ImageIcon(getClass().getClassLoader().getResource("images/Pikachu.png"));
-            Image scaled = pikaIcon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
-            mascotImageLabel = new JLabel(new ImageIcon(scaled));
-        } catch (Exception ex) {
-            mascotImageLabel = new JLabel("⚡");
-        }
-        mascotImageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        // 装载进 panel
-        mascotPanel.add(mascotSpeech);
-        mascotPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        mascotPanel.add(mascotImageLabel);
-
-        mascotWrapper.add(mascotPanel);
-
-        // ✅ 添加皮卡丘 Panel 到 bottomPanel（SOUTH 区域的 EAST）
-        bottomPanel.add(mascotWrapper, BorderLayout.EAST);
+        // 初始化布局
+        setComponentPositions(800, 600);
     }
+
+    private void setComponentPositions(int width, int height) {
+        // 百分比布局参数
+        double topPanelHeight = 0.1;
+        double centerPanelHeight = 0.3;
+        double bottomPanelHeight = 0.6;
+
+        // 顶部面板
+        int topPanelY = 0;
+        int topPanelHeightPx = (int) (height * topPanelHeight);
+        task3.getComponent(0).setBounds(0, topPanelY, width, topPanelHeightPx);
+
+        // 分数标签
+        scorelable.setBounds(10, 0, width - 20, 30);
+        questionLabel.setBounds(10, topPanelHeightPx/2, width - 20, 40);
+
+        // 中间面板
+        int centerPanelY = topPanelHeightPx;
+        int centerPanelHeightPx = (int) (height * centerPanelHeight);
+        task3.getComponent(1).setBounds(0, centerPanelY, width, centerPanelHeightPx);
+
+        // 形状选择框
+        double shapeSelectorWidth = 0.6;
+        double shapeSelectorHeight = 0.2;
+        shapeSelector.setBounds(20, 20,
+                (int)(width*shapeSelectorWidth), (int)(centerPanelHeightPx*shapeSelectorHeight));
+
+        // 生成按钮
+        JButton generateButton = (JButton) centerPanel.getComponent(1);
+        generateButton.setBounds((int)(width*shapeSelectorWidth) + 20,
+                20, width - shapeSelector.getX() - shapeSelector.getWidth() - 40,  (int)(centerPanelHeightPx*shapeSelectorHeight));
+
+        // 计时器标签
+        timerLabel.setBounds(20, shapeSelector.getY() + shapeSelector.getHeight() + 20,
+                width - 40, 30);
+
+        // 输入框和提交按钮
+        double inputFieldWidth = 0.6;
+        double inputFieldHeight = 0.2;
+        inputField.setBounds(20, timerLabel.getY() + timerLabel.getHeight() + 20,
+                (int)(width*inputFieldWidth), (int)(centerPanelHeightPx*inputFieldHeight));
+        submitButton.setBounds(inputField.getWidth() + 20,
+                inputField.getY(), width - inputField.getX() - inputField.getWidth() - 40, (int)(centerPanelHeightPx*inputFieldHeight));
+
+        // 底部面板
+        int bottomPanelY = centerPanelY + centerPanelHeightPx;
+        int bottomPanelHeightPx = height - bottomPanelY;
+        task3.getComponent(2).setBounds(0, bottomPanelY, width, bottomPanelHeightPx);
+
+        // 绘图面板
+        double drawingPanelRatio = 0.9;
+        drawingPanel.setSize((int)(width*0.6), (int)(bottomPanelHeightPx*drawingPanelRatio));
+        drawingPanel.setLocation((width - drawingPanel.getWidth())/30,
+                (bottomPanelHeightPx - drawingPanel.getHeight())/2 - 40);
+
+        // 返回按钮面板
+        homeButtonPanel.setBounds(0, bottomPanelHeightPx - 50, width, 50);
+        homeButton.setBounds(width - 100, 10, 80, 30);
+
+        // 皮卡丘面板
+        int mascotWidth = (int)(width * 0.3);
+        int mascotHeight = (int)(bottomPanelHeightPx * 0.8);
+        mascotWrapper.setBounds(width - mascotWidth - 20, bottomPanelHeightPx - mascotHeight - 20,
+                mascotWidth, mascotHeight);
+        mascotPanel.setBounds(0, 0, mascotWidth, mascotHeight);
+
+        mascotSpeech.setBounds((int)(mascotWidth*0.1), (int)(mascotHeight*0.2), (int)(mascotWidth*0.5), (int)(mascotHeight*0.2));
+        mascotImageLabel.setBounds((int)(mascotWidth*0.2), (int)(mascotHeight*0.4), (int)(mascotWidth*0.75), (int)(mascotHeight*0.5));
+
+    }
+
 
     public void start() {
         currentShape = (String) shapeSelector.getSelectedItem();
@@ -185,7 +246,6 @@ public class Task3VolumeSurfaceCalculator {
             return;
         }
 
-        // 参数生成（1~20）
         Random rand = new Random();
         param1 = rand.nextInt(20) + 1;
         param2 = rand.nextInt(20) + 1;
@@ -193,7 +253,6 @@ public class Task3VolumeSurfaceCalculator {
         attemptsLeft = 3;
         timeRemaining = 180;
 
-        // 设置题目内容
         switch (currentShape) {
             case "Rectangle" -> {
                 correctAnswer = param1 * param2;
@@ -212,31 +271,26 @@ public class Task3VolumeSurfaceCalculator {
                 currentQuestionText = " Trapezium: a = " + param1 + ", b = " + param2 + ", height = " + param3 + ". Calculate area:";
             }
         }
-        questionLabel.setText(currentQuestionText);  // ✅ 用统一变量设置显示
+        questionLabel.setText(currentQuestionText);
 
         inputField.setText("");
-        inputField.setEnabled(true);     // ✅ 新增：启用输入框
-        submitButton.setEnabled(true);  // ✅ 新增：启用提交按钮
+        inputField.setEnabled(true);
+        submitButton.setEnabled(true);
         if (countdownTimer != null) countdownTimer.stop();
         countdownTimer = new Timer(1000, e -> {
             timeRemaining--;
             timerLabel.setText("Time left: " + timeRemaining + "s");
             if (timeRemaining <= 0) {
                 ((Timer) e.getSource()).stop();
-                //showExplanation();
-                // 👇 追加操作使其行为与答错三次一致
                 attemptsLeft = 0;
                 submitButton.setEnabled(false);
                 CompletedShapes.add(currentShape);
-
-                // 更新题目显示（与 checkAnswer 中逻辑一致）
                 questionLabel.setText("<html>" + currentQuestionText + "<br> Time's up! The correct answer is shown below.</html>");
-
-                showExplanation(); // 展示图形和答案
+                showExplanation();
             }
         });
         countdownTimer.start();
-        drawingPanel.repaint(); // 清除旧图形
+        drawingPanel.repaint();
     }
 
     private void checkAnswer() {
@@ -251,28 +305,22 @@ public class Task3VolumeSurfaceCalculator {
                     default -> 0;
                 };
                 scoreManager.addScore(score);
-                scores+=score;
+                scores += score;
                 CompletedShapes.add(currentShape);
-                checkAllShapesCompleted(); // 新增完成检测
+                checkAllShapesCompleted();
                 questionLabel.setText("<html> Great job! +" + score + " points<br>👉 Please select a new shape and click Generate Problem to continue.</html>");
-                //System.out.println("1");
-                submitButton.setEnabled(false); // ✅ 禁用提交按钮
-                attemptsLeft = 0; // ✅ 强制绘图逻辑触发
-                CompletedShapes.add(currentShape);
+                submitButton.setEnabled(false);
+                attemptsLeft = 0;
                 showExplanation();
             } else {
                 attemptsLeft--;
                 if (attemptsLeft <= 0) {
-                    //questionLabel.setText(" Incorrect. Attempts left: " + attemptsLeft);
                     questionLabel.setText("<html>" + currentQuestionText + "<br> Incorrect. Attempts left: 0</html>");
                     countdownTimer.stop();
-                    CompletedShapes.add(currentShape);//标记该图形已完成
-                    //System.out.println("1");
-                    submitButton.setEnabled(false); // ✅ 禁用提交按钮
+                    CompletedShapes.add(currentShape);
+                    submitButton.setEnabled(false);
                     showExplanation();
-
                 } else {
-                    //questionLabel.setText(" Incorrect. Attempts left: " + attemptsLeft);
                     questionLabel.setText("<html>" + currentQuestionText + "<br> Incorrect. come on！！ try again！ Attempts left: " + attemptsLeft + "</html>");
                 }
             }
@@ -290,7 +338,7 @@ public class Task3VolumeSurfaceCalculator {
             case "Trapezium" -> "Area = (a + b) × height / 2 = (" + param1 + " + " + param2 + ") × " + param3 + " / 2 = " + correctAnswer;
             default -> "Unknown shape.";
         };
-        checkAllShapesCompleted(); // 新增完成检测
+        checkAllShapesCompleted();
         drawingPanel.repaint();
     }
 
@@ -308,34 +356,23 @@ public class Task3VolumeSurfaceCalculator {
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2.setFont(new Font("Arial", Font.PLAIN, 12));
 
-            int width = getWidth();
-            int height = getHeight();
-            int padding = 20;
-            int shapeWidth = width - 2 * padding;
-            int shapeHeight = height - 40; // 为底部文本留出空间
+            int panelWidth = getWidth();
+            int panelHeight = getHeight();
+            int padding = panelWidth / 20;
+            int shapeWidth = panelWidth - 2 * padding;
+            int shapeHeight = panelHeight - 60;
 
             g2.setColor(Color.BLUE);
 
             switch (currentShape) {
                 case "Rectangle" -> {
-                    // 👉 原始逻辑：基于参数决定比例
-                    double baseScale = 15.0;  // 默认每单位显示 15px（可调节）
+                    double baseScale = Math.min(shapeWidth / (double) param1, shapeHeight / (double) param2) / 2;
 
                     int rectWidth = (int) (param1 * baseScale);
                     int rectHeight = (int) (param2 * baseScale);
 
-                    // 🛑 溢出检查：如果长宽有一项超出画板最大尺寸，缩放
-                    double overflowScale = Math.min(
-                        shapeWidth / (double) rectWidth,
-                        shapeHeight *0.7/ (double) rectHeight
-                    );
-                    if (overflowScale < 1.0) {
-                        rectWidth = (int) (rectWidth * overflowScale);
-                        rectHeight = (int) (rectHeight * overflowScale);
-                    }
-
-                    int x = (width - rectWidth) / 2;
-                    int y = (height - rectHeight - 30) / 2;
+                    int x = (panelWidth - rectWidth) / 2;
+                    int y = (panelHeight - rectHeight - 30) / 2;
 
                     g2.drawRect(x, y, rectWidth, rectHeight);
                     g2.setFont(new Font("Arial", Font.PLAIN, 12));
@@ -343,142 +380,100 @@ public class Task3VolumeSurfaceCalculator {
                     g2.drawString("width: " + param2, x + rectWidth + 5, y + rectHeight / 2);
                 }
                 case "Parallelogram" -> {
-                    // 预留底部文字空间
                     int reservedBottomSpace = 40;
-                    int availableHeight = height - reservedBottomSpace;
+                    int availableHeight = panelHeight - reservedBottomSpace;
 
-                    double baseScale = 15.0;
+                    double baseScale = Math.min(shapeWidth / (double) param1, availableHeight / (double) param2) / 2;
                     int rawWidth = (int) (param1 * baseScale);
                     int rawHeight = (int) (param2 * baseScale);
-                    int rawSkew = Math.max(rawWidth / 5, 10); // 倾斜宽度
+                    int rawSkew = Math.max(rawWidth / 5, 10);
 
-                    // 判断是否需要缩放
-                    double overflowScale = Math.min(
-                        shapeWidth / (double) (rawWidth + rawSkew + 50),  // 多留 50px 画延长线
-                        availableHeight * 0.7 / (double) rawHeight
-                    );
-
-                    if (overflowScale < 1.0) {
-                        rawWidth = (int) (rawWidth * overflowScale);
-                        rawHeight = (int) (rawHeight * overflowScale);
-                        rawSkew = (int) (rawSkew * overflowScale);
-                    }
-
-                    int x = (width - rawWidth) / 2;
+                    int x = (panelWidth - rawWidth) / 2;
                     int y = (availableHeight - rawHeight) / 2;
 
-                    // 平行四边形顶点
                     int[] xPoints = {x, x + rawSkew, x + rawWidth, x + rawWidth - rawSkew};
                     int[] yPoints = {y + rawHeight, y, y, y + rawHeight};
 
                     g2.setColor(Color.BLUE);
                     g2.drawPolygon(xPoints, yPoints, 4);
 
-                    // ⬛ 延长线（底边向左延伸 40px）
                     int extension = 40;
                     g2.setColor(Color.GRAY);
                     Stroke dashed = new BasicStroke(1.2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{5}, 0);
                     g2.setStroke(dashed);
-                    //上下延长线都从 x + rawWidth 开始，保持对齐
-                    g2.drawLine(x + rawWidth-rawSkew, y + rawHeight, x + rawWidth + extension, y + rawHeight);//下
-                    g2.drawLine(x + rawWidth, y, x + rawWidth + extension, y);//上
+                    g2.drawLine(x + rawWidth - rawSkew, y + rawHeight, x + rawWidth + extension, y + rawHeight);
+                    g2.drawLine(x + rawWidth, y, x + rawWidth + extension, y);
 
-                    // 🔵 高度线：从左上角垂直到底边延长线
-                    //g2.drawLine(x + rawSkew, y, x + rawSkew, y + rawHeight);
-                    // int highX = x + rawWidth + 20;  // 👉 平行四边形右侧外 20px
-                    g2.drawLine(x+rawWidth, y, x+rawWidth, y + rawHeight);
+                    g2.drawLine(x + rawWidth, y, x + rawWidth, y + rawHeight);
 
-                    // 还原画笔
                     g2.setStroke(new BasicStroke(1.2f));
                     g2.setColor(Color.BLUE);
 
-                    // 标签
                     g2.setFont(new Font("Arial", Font.PLAIN, 12));
                     g2.drawString("base: " + param1, x + rawWidth / 2 - 15, y - 5);
                     g2.drawString("height: " + param2, x + rawWidth + 5, y + rawHeight / 2);
                 }
 
                 case "Triangle" -> {
-                    // 计算比例缩放
-                    double scale = Math.min(shapeWidth / (double)param1, shapeHeight / (double)param2);
-                    int baseLength = (int)(param1 * scale);
-                    int triHeight = (int)(param2 * scale);
+                    double scale = Math.min(shapeWidth / (double) param1, shapeHeight / (double) param2) / 1.5;
+                    int baseLength = (int) (param1 * scale);
+                    int triHeight = (int) (param2 * scale);
 
-                    // 计算底边起点和三角形顶点坐标（居中显示）
-                    int xBaseLeft = (width - baseLength) / 2;
+                    int xBaseLeft = (panelWidth - baseLength) / 2;
                     int xBaseRight = xBaseLeft + baseLength;
-                    int yBase = (height + triHeight) / 2;
+                    int yBase = (panelHeight + triHeight) / 2;
                     int xTop = (xBaseLeft + xBaseRight) / 2;
                     int yTop = yBase - triHeight;
 
-                    // 绘制三角形
                     int[] xPoints = {xBaseLeft, xBaseRight, xTop};
                     int[] yPoints = {yBase, yBase, yTop};
                     g2.setColor(Color.BLUE);
                     g2.drawPolygon(xPoints, yPoints, 3);
 
-                    // 🔵 绘制垂直高度虚线（从顶点到底边中点）
                     g2.setColor(Color.GRAY);
                     Stroke dashed = new BasicStroke(1.5f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{5}, 0);
                     g2.setStroke(dashed);
                     g2.drawLine(xTop, yTop, xTop, yBase);
 
-                    // 还原为实线画笔
                     g2.setStroke(new BasicStroke(1.2f));
 
-                    // 🟦 添加标签文字
                     g2.setColor(Color.BLUE);
                     g2.drawString("base: " + param1, xBaseLeft + baseLength / 2 - 20, yBase + 15);
                     g2.drawString("height: " + param2, xTop + 5, (yTop + yBase) / 2);
                 }
                 case "Trapezium" -> {
                     int reservedBottom = 40;
-                    int availableHeight = height - reservedBottom;
+                    int availableHeight = panelHeight - reservedBottom;
 
-                    double baseScale = 15.0;
-                    int aLen = (int)(param1 * baseScale); // 上底
-                    int bLen = (int)(param2 * baseScale); // 下底
-                    int hLen = (int)(param3 * baseScale);
+                    double baseScale = Math.min(shapeWidth / (double) param2, availableHeight / (double) param3) / 2;
+                    int aLen = (int) (param1 * baseScale);
+                    int bLen = (int) (param2 * baseScale);
+                    int hLen = (int) (param3 * baseScale);
 
-                    // 🔁 判断是否溢出 → 缩放
-                    double overflowScale = Math.min(
-                        shapeWidth / (double)bLen,
-                        availableHeight*0.7 / (double)hLen
-                    );
-                    if (overflowScale < 1.0) {
-                        aLen = (int)(aLen * overflowScale);
-                        bLen = (int)(bLen * overflowScale);
-                        hLen = (int)(hLen * overflowScale);
-                    }
-
-                    int x = (width - bLen) / 2;
+                    int x = (panelWidth - bLen) / 2;
                     int y = (availableHeight - hLen) / 2;
 
-                    // 梯形坐标（等腰梯形）
                     int[] xPoints = {
-                        x + (bLen - aLen) / 2,        // 左上
-                        x + (bLen - aLen) / 2 + aLen, // 右上
-                        x + bLen,                     // 右下
-                        x                             // 左下
+                            x + (bLen - aLen) / 2,
+                            x + (bLen - aLen) / 2 + aLen,
+                            x + bLen,
+                            x
                     };
                     int[] yPoints = {y, y, y + hLen, y + hLen};
 
                     g2.setColor(Color.BLUE);
                     g2.drawPolygon(xPoints, yPoints, 4);
 
-                    // 标签 a b
                     g2.setFont(new Font("Arial", Font.PLAIN, 12));
                     g2.drawString("a: " + param1, x + bLen / 2 - 10, y - 10);
                     g2.drawString("b: " + param2, x + bLen / 2 - 10, y + hLen + 20);
 
-                    // 高度线：虚线
                     int midX = x + bLen / 2;
                     g2.setColor(Color.GRAY);
                     Stroke dashed = new BasicStroke(1.5f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{5}, 0);
                     g2.setStroke(dashed);
                     g2.drawLine(midX, y, midX, y + hLen);
 
-                    // 恢复实线，绘制高度标注
                     g2.setStroke(new BasicStroke(1.2f));
                     g2.setColor(Color.BLUE);
                     g2.drawString("height: " + param3, midX - 40, y + hLen / 2);
@@ -486,7 +481,7 @@ public class Task3VolumeSurfaceCalculator {
             }
 
             g2.setColor(Color.RED);
-            g2.drawString("Formula + Answer: " + getFormulaExplanation(), padding, height - 10);
+            g2.drawString("Formula + Answer: " + getFormulaExplanation(), padding, panelHeight - 10);
         }
     }
 

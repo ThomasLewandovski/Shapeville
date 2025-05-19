@@ -182,7 +182,6 @@ public class Task2AngleIdentification {
         inputField.setText("");
         inputField.setVisible(true);
         submitButton.setVisible(true);
-        //goHomeButton.setVisible(false);
         angleCanvas.setAngle(-1);
         angleCanvas.repaint();
         waitingForAngleInput = true;
