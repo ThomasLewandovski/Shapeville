@@ -8,7 +8,8 @@ import java.util.Random;
 
 public class Task4CircleArea {
     private static final String[] MODES = {"Area", "Circumference"};
-    public boolean[] completedModes = new boolean[2];
+    public boolean[] completedModes;
+    public int Completed=0;
     private boolean isCurrentModeFailed = false; // ✅ 标记答错三次但尚未跳转
 
     public JPanel task4;
@@ -182,6 +183,7 @@ public class Task4CircleArea {
                     case 3 -> 1;
                     default -> 0;
                 };
+                Completed++;
                 scoreManager.addScore(points);
                 score.setText("Score: " + scoreManager.getScore());
                 feedbackLabel.setText("Correct! Obtaining " + points + " marks");
@@ -198,6 +200,7 @@ public class Task4CircleArea {
 
     private void handleWrongAnswer(double correctValue) {
         if (attempts == 3) {
+            Completed++;
             feedbackLabel.setText("All attempts have been exhausted");
             formulaLabel.setText(currentMode == 0
                     ? "Formula：π×r² = 3.14×" + radius + "×" + radius + " = " + String.format("%.2f", correctValue)

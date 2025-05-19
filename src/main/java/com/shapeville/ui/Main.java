@@ -299,7 +299,7 @@ public class Main {
             cardLayout.show(cardPanel, "startPanel");
             counter1.setText("积分：" + scoreManager.getScore());
             counter2.setText("积分：" + scoreManager.getScore());
-//            task4ProgressBar.setValue(task4.isCompleted ? 2 : 0);
+            task4ProgressBar.setValue(task4.Completed);
         };
 
         // 奖励任务1
