@@ -72,20 +72,31 @@ public class Main {
         cardPanel = new JPanel(cardLayout);
 
         // 创建第一个界面：主界面
-        JPanel mainpanel = new JPanel(null);
+        // 自定义带背景图的主界面面板
+        JPanel mainpanel = new JPanel(null) {
+            Image bg = new ImageIcon(getClass().getClassLoader().getResource("images/initial_background.png")).getImage();
+
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                if (bg != null) {
+                    g.drawImage(bg, 0, 0, getWidth(), getHeight(), this); // 拉伸填满整个面板
+                }
+            }
+        };
 
         // 积分器使用存档中的分数
-        counter1 = new JLabel("积分：");
+        /*counter1 = new JLabel("积分：");
         counter1.setBounds(10, 0, 60, 30);
-        mainpanel.add(counter1);
+        mainpanel.add(counter1);*/
 
         // 开始按钮
         JButton startButton = new JButton("Start a new game!");
-        startButton.setBounds(300, 400, 100, 30);
+        startButton.setBounds(300, 400, 180, 30);
         mainpanel.add(startButton);
 
         JButton continueButton = new JButton("Continue Archive!");
-        continueButton.setBounds(300, 450, 100, 30);
+        continueButton.setBounds(300, 450, 180, 30);
         mainpanel.add(continueButton);
 
         // 创建第二个界面：关卡选择，管理进入各个task的通道及积分器

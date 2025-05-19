@@ -23,6 +23,10 @@ public class Bonus1CompoundShapeArea {
     private JLabel feedbackLabel;
     private JTextField answerField;
 
+    private JLabel mascotSpeechBubble;
+    private JLabel mascotImageLabel;
+    private JButton backButton;
+
     private Map<Integer, Image> originalImages = new HashMap<>();
     private Map<Integer, Image> answerImages = new HashMap<>();
     private Map<Integer, JButton> shapeButtons = new HashMap<>();
@@ -35,11 +39,13 @@ public class Bonus1CompoundShapeArea {
     public Bonus1CompoundShapeArea(ScoreManager scoreManager) {
         this.scoreManager = scoreManager;
         this.taskPanel = new JPanel(new CardLayout());
-        this.score = new JLabel();
-        score.setText("Score: 0");
+        this.taskPanel.setBackground(new Color(255, 250, 205));
+        this.score = new JLabel("Score: 0");
+
         initAnswerData();
         initShapeSelectPanel();
         initQuestionPanel();
+
         taskPanel.add(shapeSelectPanel, "select");
         taskPanel.add(questionPanel, "question");
 
@@ -51,7 +57,6 @@ public class Bonus1CompoundShapeArea {
     }
 
     private void initAnswerData() {
-        // 正确答案
         correctAnswers.put(1, 310.0);
         correctAnswers.put(2, 598.0);
         correctAnswers.put(3, 288.0);
@@ -59,7 +64,6 @@ public class Bonus1CompoundShapeArea {
         correctAnswers.put(5, 3456.0);
         correctAnswers.put(6, 174.0);
 
-        // 加载解释图
         for (int i = 1; i <= 6; i++) {
             try {
                 Image img = new ImageIcon(getClass().getClassLoader().getResource("images/Bonus1Answer" + i + ".png")).getImage();
@@ -72,15 +76,18 @@ public class Bonus1CompoundShapeArea {
 
     private void initShapeSelectPanel() {
         shapeSelectPanel = new JPanel(new BorderLayout());
+        shapeSelectPanel.setBackground(new Color(255, 250, 205));
 
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        topPanel.setBackground(new Color(255, 250, 205));
         topPanel.add(score);
         JLabel title = new JLabel("Select a Compound Shape:");
-        title.setFont(new Font("Arial", Font.BOLD, 16));
+        title.setFont(new Font("Comic Sans MS", Font.BOLD, 16));
         topPanel.add(title);
         shapeSelectPanel.add(topPanel, BorderLayout.NORTH);
 
         JPanel buttonPanel = new JPanel(new GridLayout(0, 3, 10, 10));
+        buttonPanel.setBackground(new Color(255, 250, 205));
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         for (int i = 1; i <= 6; i++) {
@@ -102,11 +109,14 @@ public class Bonus1CompoundShapeArea {
         }
 
         JScrollPane scrollPane = new JScrollPane(buttonPanel);
+        scrollPane.setBackground(new Color(255, 250, 205));
+        scrollPane.getViewport().setBackground(new Color(255, 250, 205));
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         shapeSelectPanel.add(scrollPane, BorderLayout.CENTER);
 
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        bottomPanel.setBackground(new Color(255, 250, 205));
         JButton homeButton = new JButton("Home");
         homeButton.addActionListener(e -> {
             if (onReturnHome != null) onReturnHome.run();
@@ -115,67 +125,105 @@ public class Bonus1CompoundShapeArea {
         shapeSelectPanel.add(bottomPanel, BorderLayout.SOUTH);
     }
 
+
     private void initQuestionPanel() {
-        questionPanel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.weightx = 1.0;
+        questionPanel = new JPanel(new BorderLayout());
+        questionPanel.setBackground(new Color(255, 250, 205));
 
+        // 左边：题目图片
         imageLabel = new JLabel();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridheight = 4;
-        gbc.weighty = 1.0;
-        questionPanel.add(imageLabel, gbc);
+        imageLabel.setHorizontalAlignment(JLabel.CENTER);
+        imageLabel.setVerticalAlignment(JLabel.CENTER);
+        JPanel imagePanel = new JPanel(new BorderLayout());
+        imagePanel.setBackground(new Color(255, 250, 205));
+        imagePanel.add(imageLabel, BorderLayout.CENTER);
 
-        JLabel prompt = new JLabel("Enter the calculated area:");
-        gbc.gridx = 1;
-        gbc.gridy = 0;
-        gbc.gridheight = 1;
-        gbc.weighty = 0.0;
-        questionPanel.add(prompt, gbc);
+        // 右边：答题面板 + 狐狸吉祥物
+        JPanel rightPanel = new JPanel();
+        rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
+        rightPanel.setBackground(new Color(255, 250, 205));
 
-        answerField = new JTextField();
-        gbc.gridx = 1;
-        gbc.gridy = 1;
-        questionPanel.add(answerField, gbc);
-
-        JButton submitButton = new JButton("Submit");
-        submitButton.addActionListener(this::handleSubmit);
-        gbc.gridx = 1;
-        gbc.gridy = 2;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.anchor = GridBagConstraints.LINE_START;
-        questionPanel.add(submitButton, gbc);
-        gbc.fill = GridBagConstraints.BOTH;
-
-        feedbackLabel = new JLabel("");
-        gbc.gridx = 1;
-        gbc.gridy = 3;
-        questionPanel.add(feedbackLabel, gbc);
-
-        JButton homeButton = new JButton("Back");
-        homeButton.addActionListener(e -> {
+        // 🟢 Back 按钮单独置顶
+        JPanel backPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        backPanel.setOpaque(false);
+        backButton = new JButton("Back");
+        backButton.setVisible(false);
+        backButton.addActionListener(e -> {
             answerField.setText("");
             feedbackLabel.setText("");
             imageLabel.setIcon(null);
             attemptCount = 0;
             ((CardLayout) taskPanel.getLayout()).show(taskPanel, "select");
         });
-        gbc.gridx = 1;
-        gbc.gridy = 4;
-        gbc.anchor = GridBagConstraints.LINE_END;
-        questionPanel.add(homeButton, gbc);
-        homeButton.setVisible(false);
+        backPanel.add(backButton);
+        rightPanel.add(backPanel);
+
+        // ➕ 题目输入部分
+        JLabel prompt = new JLabel("Enter the calculated area:");
+        prompt.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
+        prompt.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        answerField = new JTextField();
+        answerField.setMaximumSize(new Dimension(200, 30));
+        answerField.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        JButton submitButton = new JButton("Submit");
+        submitButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+        submitButton.addActionListener(this::handleSubmit);
+
+        feedbackLabel = new JLabel("");
+        feedbackLabel.setFont(new Font("Comic Sans MS", Font.PLAIN, 13));
+        feedbackLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        // ➕ 狐狸吉祥物
+        JPanel mascotPanel = new JPanel();
+        mascotPanel.setLayout(new BoxLayout(mascotPanel, BoxLayout.Y_AXIS));
+        mascotPanel.setBackground(new Color(255, 250, 205));
+        mascotPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        mascotSpeechBubble = new JLabel("<html><div style='padding:10px; background:#fff8dc; border-radius:10px; border:1px solid #ccc;'>Hi! I'm Foxie! Let's solve this shape! 🦊</div></html>");
+        mascotSpeechBubble.setFont(new Font("Comic Sans MS", Font.PLAIN, 13));
+        mascotSpeechBubble.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        try {
+            ImageIcon foxIcon = new ImageIcon(getClass().getClassLoader().getResource("images/Fox.png"));
+            Image scaled = foxIcon.getImage().getScaledInstance(140, 140, Image.SCALE_SMOOTH);
+            mascotImageLabel = new JLabel(new ImageIcon(scaled));
+        } catch (Exception ex) {
+            mascotImageLabel = new JLabel("🦊");
+        }
+        mascotImageLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        mascotPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        mascotPanel.add(mascotSpeechBubble);
+        mascotPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        mascotPanel.add(mascotImageLabel);
+
+        // ➕ 装入右侧面板
+        rightPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        rightPanel.add(prompt);
+        rightPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        rightPanel.add(answerField);
+        rightPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+        rightPanel.add(submitButton);
+        rightPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        rightPanel.add(feedbackLabel);
+        rightPanel.add(Box.createVerticalGlue());
+        rightPanel.add(mascotPanel);
+
+        JPanel content = new JPanel(new GridLayout(1, 2));
+        content.setBackground(new Color(255, 250, 205));
+        content.add(imagePanel);
+        content.add(rightPanel);
+
+        questionPanel.add(content, BorderLayout.CENTER);
     }
 
     private void showQuestion(int shapeId) {
         currentShapeId = shapeId;
         Image originalImage = originalImages.getOrDefault(shapeId, null);
         if (originalImage != null) {
-            imageLabel.setIcon(new ImageIcon(getScaledImage(originalImage,
-                    imageLabel.getWidth(), imageLabel.getHeight())));
+            imageLabel.setIcon(new ImageIcon(getScaledImage(originalImage, 400, 300)));
         } else {
             imageLabel.setText("❌ Image not found");
         }
@@ -183,6 +231,8 @@ public class Bonus1CompoundShapeArea {
         answerField.setText("");
         feedbackLabel.setText("");
         attemptCount = 0;
+        backButton.setVisible(false);
+        mascotSpeechBubble.setText("<html><div style='padding:10px; background:#fff8dc; border-radius:10px; border:1px solid #ccc;'>Hmm... can you find the area? 🦊</div></html>");
         ((CardLayout) taskPanel.getLayout()).show(taskPanel, "question");
     }
 
@@ -198,28 +248,31 @@ public class Bonus1CompoundShapeArea {
                     default -> 0;
                 };
                 feedbackLabel.setText("✅ Correct! +" + points + " points");
+                mascotSpeechBubble.setText("<html><div style='padding:10px; background:#e0ffe0; border-radius:10px; border:1px solid #8bc34a;'>Yay! That’s correct! 🎉🦊</div></html>");
                 scoreManager.addScore(points);
-                completedTasks += 1;
+                completedTasks++;
                 updateButtonState(currentShapeId);
-                showbackButton();
+                backButton.setVisible(true);
             } else {
                 attemptCount++;
                 if (attemptCount >= 3) {
                     Image explanationImg = answerImages.get(currentShapeId);
                     if (explanationImg != null) {
-                        imageLabel.setIcon(new ImageIcon(getScaledImage(explanationImg,
-                                imageLabel.getWidth(), imageLabel.getHeight())));
+                        imageLabel.setIcon(new ImageIcon(getScaledImage(explanationImg, 400, 300)));
                     }
                     feedbackLabel.setText("❌ Incorrect.");
-                    completedTasks += 1;
+                    mascotSpeechBubble.setText("<html><div style='padding:10px; background:#ffe0e0; border-radius:10px; border:1px solid #e57373;'>Oops! The correct answer is " + correct + " 🦊</div></html>");
+                    completedTasks++;
                     updateButtonState(currentShapeId);
-                    showbackButton();
+                    backButton.setVisible(true);
                 } else {
                     feedbackLabel.setText("❌ Try again. Attempts left: " + (3 - attemptCount));
+                    mascotSpeechBubble.setText("<html><div style='padding:10px; background:#fff3cd; border-radius:10px; border:1px solid #ffeb3b;'>Almost there! Try once more! 🦊</div></html>");
                 }
             }
         } catch (Exception ex) {
             feedbackLabel.setText("❌ Please enter a valid number.");
+            mascotSpeechBubble.setText("<html><div style='padding:10px; background:#ffe0e0; border-radius:10px; border:1px solid #e57373;'>Only numbers please! 🦊</div></html>");
         }
         score.setText("Score: " + scoreManager.getScore());
     }
@@ -231,15 +284,6 @@ public class Bonus1CompoundShapeArea {
         }
     }
 
-    private void showbackButton() {
-        for (Component comp : questionPanel.getComponents()) {
-            if (comp instanceof JButton && ((JButton) comp).getText().equals("Back")) {
-                comp.setVisible(true);
-                break;
-            }
-        }
-    }
-
     private Image getScaledImage(Image srcImg, int w, int h) {
         if (w <= 0 || h <= 0) {
             w = 300;
@@ -248,7 +292,6 @@ public class Bonus1CompoundShapeArea {
 
         int originalWidth = srcImg.getWidth(null);
         int originalHeight = srcImg.getHeight(null);
-
         double ratio = (double) originalWidth / originalHeight;
         if (w / h > ratio) {
             w = (int) (h * ratio);
@@ -265,14 +308,9 @@ public class Bonus1CompoundShapeArea {
     }
 
     private void resizeCurrentImage() {
-        if (currentShapeId > 0) {
-            Image img = imageLabel.getIcon() instanceof ImageIcon
-                    ? ((ImageIcon) imageLabel.getIcon()).getImage()
-                    : originalImages.get(currentShapeId);
-            if (img != null) {
-                imageLabel.setIcon(new ImageIcon(getScaledImage(img,
-                        imageLabel.getWidth(), imageLabel.getHeight())));
-            }
+        if (currentShapeId > 0 && imageLabel.getIcon() instanceof ImageIcon) {
+            Image img = ((ImageIcon) imageLabel.getIcon()).getImage();
+            imageLabel.setIcon(new ImageIcon(getScaledImage(img, imageLabel.getWidth(), imageLabel.getHeight())));
         }
     }
 }
