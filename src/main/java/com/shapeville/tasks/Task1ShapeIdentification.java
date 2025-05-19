@@ -17,12 +17,12 @@ public class Task1ShapeIdentification {
     public int[] is_played_task1;
     public int isIdentifiedShapes;
     private final String[] encouragements = {
-            "🎉 Well done!",
-            "👏 Excellent!",
-            "🌟 You're a shape master!",
-            "👍 Great job!",
-            "💡 Smart thinking!",
-            "🔥 Keep it up!"
+            "Well done!",
+            "Excellent!",
+            "You're a shape master!",
+            "Great job!",
+            "Smart thinking!",
+            "Keep it up!"
     };
     public ScoreManager scoreManager;
     public Runnable onReturnHome;
@@ -99,7 +99,7 @@ public class Task1ShapeIdentification {
         gbcBottom.fill = GridBagConstraints.HORIZONTAL;
 
         // 主页/返回按钮
-        goHomeButton = new JButton("🏠 Return to Home");
+        goHomeButton = new JButton(" Return to Home");
         goHomeButton.setFont(new Font("Arial", Font.PLAIN, 14));
         gbcBottom.gridx = 0;
         gbcBottom.gridy = 0;
@@ -226,7 +226,7 @@ public class Task1ShapeIdentification {
         img.setIcon(null);
         input.setText("");
 
-        output.setText("<html>📐 Task 1: Identify 2D / 3D Shapes<br><br>" +
+        output.setText("<html> Task 1: Identify 2D / 3D Shapes<br><br>" +
                 "Select the type of shapes you want to practice:</html>");
 
         // 显示模式选择面板
@@ -250,7 +250,7 @@ public class Task1ShapeIdentification {
         }
 
         // 更新Home按钮文本
-        goHomeButton.setText("🏠 Return to Home");
+        goHomeButton.setText(" Return to Home");
         nextButton.setVisible(false);
 
         score.setText("points: " + scoreManager.getScore());
@@ -337,7 +337,7 @@ public class Task1ShapeIdentification {
             int points = calculatePoints();
             scoreManager.addScore(points);
             score.setText("points: " + scoreManager.getScore());
-            output.setText("<html>✅ Correct! +" + points + " points.<br>" +
+            output.setText("<html> Correct! +" + points + " points.<br>" +
                     getRandomEncouragement() + "</html>");
             input.setEnabled(false);
             isIdentifiedShapes++;
@@ -345,10 +345,10 @@ public class Task1ShapeIdentification {
         } else {
             attempt++;
             if (attempt <= 3) {
-                output.setText("❌ Incorrect. Try again.");
+                output.setText("Incorrect. Try again.");
             } else {
                 updatePlayCount();
-                output.setText("⚠️ The correct answer was: " + currentShape.getName());
+                output.setText("The correct answer was: " + currentShape.getName());
                 input.setEnabled(false);
                 nextButton.setVisible(true);
                 isIdentifiedShapes++;
@@ -385,8 +385,8 @@ public class Task1ShapeIdentification {
         // 更新结果面板
         JLabel resultLabel = (JLabel) ((JPanel) cardPanel.getComponent(2)).getComponent(0);
         String taskType = isAdvanced ? "3D" : "2D";
-        resultLabel.setText("<html>🎉 Task Complete! (" + taskType + " Shapes)<br>" +
-                "🏆 Total Score: <b>" + scoreManager.getScore() + "</b> points<br><br>" +
+        resultLabel.setText("<html> Task Complete! (" + taskType + " Shapes)<br>" +
+                " Total Score: <b>" + scoreManager.getScore() + "</b> points<br><br>" +
                 "Click 'Back to Selection' to try another module or 'Return to Home' to exit.</html>");
         output.setText("");
 
