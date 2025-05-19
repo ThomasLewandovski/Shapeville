@@ -195,7 +195,7 @@ public class Task2AngleIdentification {
         if (waitingForAngleInput) {
             try {
                 int angle = Integer.parseInt(userInput);
-                if (angle < 0 || angle > 360 || angle % 10 != 0) {
+                if (angle <=0 || angle >= 360 || angle % 10 != 0) {
                     questionLabel.setText("Invalid angle. Must be 0-360 and a multiple of 10.");
                     return;
                 }
