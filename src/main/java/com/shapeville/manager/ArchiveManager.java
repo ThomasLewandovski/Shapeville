@@ -88,12 +88,12 @@ public class ArchiveManager {
     public static class task3State implements Serializable {
         private static final long serialVersionUID = 4L;
 
-        public Set<String> completedShapes;
+        public Set<String> CompletedShapes;
         public int score;
 
-        public task3State(Set<String> completedShapes, int score) {
+        public task3State(Set<String> CompletedShapes, int score) {
 
-            this.completedShapes = new HashSet<>(completedShapes); // 克隆集合
+            this.CompletedShapes = CompletedShapes; // 克隆集合
             this.score = score;
         }
     }

@@ -416,7 +416,7 @@ public class Main {
         );
 
         saveTask3State(
-                task3.completedShapes,
+                task3.CompletedShapes,
                 task3.scoreManager.getScore()
         );
 
@@ -560,19 +560,10 @@ public class Main {
         if (state == null) return;
 
         // 更新任务3状态
-        task3.completedShapes = new HashSet<>(state.completedShapes);
+//        System.out.println(state.completedShapes);
+        task3.CompletedShapes = state.CompletedShapes;
         task3.scoreManager.setScore(state.score);
         task3.score.setText("points: " + state.score);
-
-        // 更新任务3进度条
-        task3ProgressBar.setValue(state.completedShapes.size());
-
-        // 检查任务是否完成
-        if (state.completedShapes.size() >= 4) {
-            taskCompletionStatus[2] = true;
-            task3Button.setBackground(new Color(144, 238, 144));
-            task3Button.setEnabled(false);
-        }
     }
 
     // 任务4状态恢复方法

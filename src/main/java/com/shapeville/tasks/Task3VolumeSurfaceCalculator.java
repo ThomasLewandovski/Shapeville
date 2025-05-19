@@ -14,7 +14,7 @@ public class Task3VolumeSurfaceCalculator {
     public Runnable onReturnHome;
     public ScoreManager scoreManager;
     public JLabel score;
-    public Set<String> CompletedShapes = new HashSet<>();
+    public Set<String> CompletedShapes;
 
     private JLabel questionLabel;
     private JTextField inputField;
@@ -33,11 +33,9 @@ public class Task3VolumeSurfaceCalculator {
     public int timeRemaining;
     public Runnable onComplete;
 
-    public Set<String> completedShapes;
-
     public Task3VolumeSurfaceCalculator(ScoreManager scoreManager) {
         this.scoreManager = scoreManager;
-        this.completedShapes = new HashSet<>();
+        this.CompletedShapes = new HashSet<>();
 
         // 使用BorderLayout作为主面板布局
         task3 = new JPanel(new BorderLayout(10, 10));
@@ -132,7 +130,7 @@ public class Task3VolumeSurfaceCalculator {
 
     public void start() {
         currentShape = (String) shapeSelector.getSelectedItem();
-        if (completedShapes.contains(currentShape)) {
+        if (CompletedShapes.contains(currentShape)) {
             questionLabel.setText("You already completed " + currentShape);
             return;
         }
@@ -198,8 +196,9 @@ public class Task3VolumeSurfaceCalculator {
                 attemptsLeft--;
                 if (attemptsLeft <= 0) {
                     countdownTimer.stop();
-                    showExplanation();
                     CompletedShapes.add(currentShape);
+                    showExplanation();
+
                 } else {
                     questionLabel.setText("❌ Incorrect. Attempts left: " + attemptsLeft);
                 }
@@ -218,7 +217,6 @@ public class Task3VolumeSurfaceCalculator {
             case "Trapezium" -> "Area = (a + b) × height / 2 = (" + param1 + " + " + param2 + ") × " + param3 + " / 2 = " + correctAnswer;
             default -> "Unknown shape.";
         };
-        completedShapes.add(currentShape);
         checkAllShapesCompleted(); // 新增完成检测
         drawingPanel.repaint();
     }
@@ -388,7 +386,7 @@ public class Task3VolumeSurfaceCalculator {
     }
 
     private void checkAllShapesCompleted() {
-        if (completedShapes.size() == 4 && onComplete != null) {
+        if (CompletedShapes.size() == 4 && onComplete != null) {
             onComplete.run();
         }
     }
