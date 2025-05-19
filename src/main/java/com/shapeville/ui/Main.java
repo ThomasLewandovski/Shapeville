@@ -292,7 +292,7 @@ public class Main {
         task2.onReturnHome = () -> {
             cardLayout.show(cardPanel, "startPanel");
 //            counter1.setText("积分：" + scoreManager.getScore());
-            counter2.setText("积分：" + scoreManager.getScore());
+            counter2.setText("Score：" + scoreManager.getScore());
 
             task2ProgressBar.setValue(task2.identifiedTypes.size());
         };
@@ -301,7 +301,7 @@ public class Main {
             if (!taskCompletionStatus[1]) {
                 cardLayout.show(cardPanel, "task2");
             } else {
-                JOptionPane.showMessageDialog(null, "该模块已完成，无法再次进入", "提示", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "This module has been completed and cannot be accessed again.", "Prompt", JOptionPane.INFORMATION_MESSAGE);
             }
         });
 
@@ -318,7 +318,7 @@ public class Main {
         task3.onReturnHome = () -> {
             cardLayout.show(cardPanel, "startPanel");
 //            counter1.setText("积分：" + scoreManager.getScore());
-            counter2.setText("积分：" + scoreManager.getScore());
+            counter2.setText("Score：" + scoreManager.getScore());
 
             task3ProgressBar.setValue(task3.CompletedShapes.size());
         };
@@ -328,8 +328,8 @@ public class Main {
                 cardLayout.show(cardPanel, "task3");
             } else {
                 JOptionPane.showMessageDialog(null,
-                        "该模块已完成，无法再次进入",
-                        "提示",
+                        "This module has been completed and cannot be accessed again.",
+                        "Prompt",
                         JOptionPane.INFORMATION_MESSAGE);
             }
         });
@@ -346,8 +346,8 @@ public class Main {
                 cardLayout.show(cardPanel, "task4");
             } else {
                 JOptionPane.showMessageDialog(null,
-                        "该模块已完成，无法再次进入",
-                        "提示",
+                        "This module has been completed and cannot be accessed again.",
+                        "Prompt",
                         JOptionPane.INFORMATION_MESSAGE);
             }
         });
@@ -363,7 +363,7 @@ public class Main {
         task4.onReturnHome = () -> {
             cardLayout.show(cardPanel, "startPanel");
 //            counter1.setText("积分：" + scoreManager.getScore());
-            counter2.setText("积分：" + scoreManager.getScore());
+            counter2.setText("Score：" + scoreManager.getScore());
             task4ProgressBar.setValue(task4.Completed);
         };
 
@@ -373,7 +373,7 @@ public class Main {
         bonus1.onReturnHome = () -> {
             cardLayout.show(cardPanel, "startPanel");
 //            counter1.setText("积分：" + scoreManager.getScore());
-            counter2.setText("积分：" + scoreManager.getScore());
+            counter2.setText("Score：" + scoreManager.getScore());
 
             bonus1ProgressBar.setValue(bonus1.completedTasks);
         };
@@ -387,7 +387,7 @@ public class Main {
         bonus2.onReturnHome = () -> {
             cardLayout.show(cardPanel, "startPanel");
 //            counter1.setText("积分：" + scoreManager.getScore());
-            counter2.setText("积分：" + scoreManager.getScore());
+            counter2.setText("Score：" + scoreManager.getScore());
 
             bonus2ProgressBar.setValue(bonus2.completedTasks);
         };
@@ -401,13 +401,13 @@ public class Main {
             public void windowClosing(WindowEvent e) {
                 int choice = JOptionPane.showOptionDialog(
                         frame,
-                        "是否保存当前游戏进度？",
-                        "退出确认",
+                        "Should the current game progress be saved?",
+                        "Exit Confirmation",
                         JOptionPane.YES_NO_CANCEL_OPTION,
                         JOptionPane.QUESTION_MESSAGE,
                         null,
-                        new Object[]{"保存并退出", "不保存退出", "取消"},
-                        "保存并退出"
+                        new Object[]{"Save and Exit", "Exit Without Saving", "Cancel"},
+                        "Save and Exit"
                 );
 
                 if (choice == JOptionPane.YES_OPTION) {
@@ -461,11 +461,11 @@ public class Main {
                     bonus2Progress
             );
             oos.writeObject(state);
-            JOptionPane.showMessageDialog(null, "游戏进度已保存", "保存成功", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "The game progress has been saved", "Save successful", JOptionPane.INFORMATION_MESSAGE);
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(null,
-                    "存档失败：" + ex.getMessage(),
-                    "错误",
+                    "Archive failed：" + ex.getMessage(),
+                    "Error",
                     JOptionPane.ERROR_MESSAGE);
         }
         saveTask1State(
@@ -517,8 +517,8 @@ public class Main {
             return null;
         } catch (IOException | ClassNotFoundException ex) {
             JOptionPane.showMessageDialog(null,
-                    "加载存档失败：" + ex.getMessage(),
-                    "错误",
+                    "Failed to load the archive：" + ex.getMessage(),
+                    "Error",
                     JOptionPane.ERROR_MESSAGE);
             return null;
         }
@@ -541,7 +541,7 @@ public class Main {
     private void useGameState(GameState state) {
         // 更新积分显示
 //        counter1.setText("积分：" + state.score);
-        counter2.setText("积分：" + state.score);
+        counter2.setText("Score：" + state.score);
         scoreManager.setScore(state.score);
 
         // 更新任务完成状态
