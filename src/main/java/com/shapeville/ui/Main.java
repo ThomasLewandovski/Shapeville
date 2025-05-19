@@ -105,6 +105,14 @@ public class Main {
         counter2.setBounds(10, 0, 60, 30);
         startpanel.add(counter2);
 
+        // 添加返回按钮：从 startPanel 回到 mainPanel
+        JButton backToMainButton = new JButton("Back");
+        backToMainButton.setBounds(10, 500, 100, 30); // 你可以自定义位置
+        startpanel.add(backToMainButton);
+        backToMainButton.addActionListener(e -> {
+            cardLayout.show(cardPanel, "mainPanel");
+        });
+
         // 4个tasks按钮
         task1Button = new JButton("task1:");
         task2Button = new JButton("task2:");
