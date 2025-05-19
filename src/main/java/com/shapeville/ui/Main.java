@@ -93,11 +93,11 @@ public class Main {
 
         // 开始按钮
         JButton startButton = new JButton("Start a new game!");
-        startButton.setBounds(300, 400, 180, 30);
+        startButton.setBounds(310, 350, 180, 30);
         mainpanel.add(startButton);
 
         JButton continueButton = new JButton("Continue Archive!");
-        continueButton.setBounds(300, 450, 180, 30);
+        continueButton.setBounds(310, 400, 180, 30);
         mainpanel.add(continueButton);
 
         // 创建第二个界面：关卡选择，管理进入各个task的通道及积分器
@@ -113,6 +113,15 @@ public class Main {
                 }
             }
         };
+
+        resizeMainPanel(mainpanel);
+        frame.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                //resizeComponents(startpanel);
+                resizeMainPanel(mainpanel);  // 别忘了主界面
+            }
+        });
 
         // 在 frame 初始化之后添加：
         frame.setResizable(true);  // 允许缩放
@@ -137,73 +146,86 @@ public class Main {
             cardLayout.show(cardPanel, "mainPanel");
         });
 
-        // 4个tasks按钮
+        // 4个task按钮居中横排
         task1Button = new JButton("task1:");
         task2Button = new JButton("task2:");
         task3Button = new JButton("task3:");
         task4Button = new JButton("task4:");
-        task1Button.setBounds(100, 140, 150, 100);
-        task2Button.setBounds(250, 140, 150, 100);
+
+        task1Button.setBounds(50, 140, 150, 100);
+        task2Button.setBounds(225, 140, 150, 100);
         task3Button.setBounds(400, 140, 150, 100);
-        task4Button.setBounds(550, 140, 150, 100);
+        task4Button.setBounds(575, 140, 150, 100);
+
         startpanel.add(task1Button);
         startpanel.add(task2Button);
         startpanel.add(task3Button);
         startpanel.add(task4Button);
 
-        // 进度条
-        task1ProgressBar = new JProgressBar(0, 8); // 4个小题
-        task1ProgressBar.setBounds(100, 240, 150, 20); // 位于按钮下方
-        task1ProgressBar.setStringPainted(true); // 显示百分比
+// 对应进度条（居中在按钮下方）
+        task1ProgressBar = new JProgressBar(0, 8);
+        task1ProgressBar.setBounds(50, 250, 150, 20);
+        task1ProgressBar.setStringPainted(true);
         startpanel.add(task1ProgressBar);
 
-        task2ProgressBar = new JProgressBar(0, 4); // 4个小题
-        task2ProgressBar.setBounds(250, 240, 150, 20); // 位于按钮下方
-        task2ProgressBar.setStringPainted(true); // 显示百分比
+        task2ProgressBar = new JProgressBar(0, 4);
+        task2ProgressBar.setBounds(225, 250, 150, 20);
+        task2ProgressBar.setStringPainted(true);
         startpanel.add(task2ProgressBar);
 
-        task3ProgressBar = new JProgressBar(0, 4); // 4个小题
-        task3ProgressBar.setBounds(400, 240, 150, 20); // 位于按钮下方
-        task3ProgressBar.setStringPainted(true); // 显示百分比
+        task3ProgressBar = new JProgressBar(0, 4);
+        task3ProgressBar.setBounds(400, 250, 150, 20);
+        task3ProgressBar.setStringPainted(true);
         startpanel.add(task3ProgressBar);
 
-        task4ProgressBar = new JProgressBar(0, 2); // 4个小题
-        task4ProgressBar.setBounds(550, 240, 150, 20); // 位于按钮下方
-        task4ProgressBar.setStringPainted(true); // 显示百分比
+        task4ProgressBar = new JProgressBar(0, 2);
+        task4ProgressBar.setBounds(575, 250, 150, 20);
+        task4ProgressBar.setStringPainted(true);
         startpanel.add(task4ProgressBar);
 
-        // bonus按钮
+// bonus按钮水平对称放置在下方
         JButton bonus1Button = new JButton("bonus1");
         JButton bonus2Button = new JButton("bonus2");
-        bonus1Button.setBounds(150, 300, 250, 100);
-        bonus2Button.setBounds(400, 300, 250, 100);
+
+        bonus1Button.setBounds(100, 320, 250, 100);
+        bonus2Button.setBounds(450, 320, 250, 100);
+
         startpanel.add(bonus1Button);
         startpanel.add(bonus2Button);
 
-        bonus1ProgressBar = new JProgressBar(0, 6); // 4个小题
-        bonus1ProgressBar.setBounds(150, 400, 250, 20); // 位于按钮下方
-        bonus1ProgressBar.setStringPainted(true); // 显示百分比
+// bonus进度条
+        bonus1ProgressBar = new JProgressBar(0, 6);
+        bonus1ProgressBar.setBounds(100, 430, 250, 20);
+        bonus1ProgressBar.setStringPainted(true);
         startpanel.add(bonus1ProgressBar);
 
-        bonus2ProgressBar = new JProgressBar(0, 8); // 4个小题
-        bonus2ProgressBar.setBounds(400, 400, 250, 20); // 位于按钮下方
-        bonus2ProgressBar.setStringPainted(true); // 显示百分比
+        bonus2ProgressBar = new JProgressBar(0, 8);
+        bonus2ProgressBar.setBounds(450, 430, 250, 20);
+        bonus2ProgressBar.setStringPainted(true);
         startpanel.add(bonus2ProgressBar);
 
         // 在创建按钮后添加样式设置
-        task1Button.setOpaque(true);
-        task2Button.setOpaque(true);
-        task3Button.setOpaque(true);
-        task4Button.setOpaque(true);
-        bonus1Button.setOpaque(true);
-        bonus2Button.setOpaque(true);
+        // 设置米黄色背景色
+        startpanel.setBackground(new Color(255, 250, 240));
 
-        task1Button.setContentAreaFilled(false);
-        task2Button.setContentAreaFilled(false);
-        task3Button.setContentAreaFilled(false);
-        task4Button.setContentAreaFilled(false);
-        bonus1Button.setContentAreaFilled(false);
-        bonus2Button.setContentAreaFilled(false);
+// 样式工具方法
+        Font taskFont = new Font("Comic Sans MS", Font.BOLD, 16);
+
+        JButton[] allButtons = {
+                task1Button, task2Button, task3Button, task4Button,
+                bonus1Button, bonus2Button,
+                backToMainButton
+        };
+
+        for (JButton btn : allButtons) {
+            btn.setFont(taskFont);
+            btn.setBackground(new Color(255, 228, 196)); // bisque
+            btn.setFocusPainted(false);
+            btn.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+            btn.setContentAreaFilled(true);
+            btn.setOpaque(true);
+            btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        }
 
         // 将面板添加到卡片面板
         cardPanel.add(mainpanel, "mainPanel");
@@ -665,6 +687,23 @@ public class Main {
         bonus2.attemptCount = state.attemptCount;
         bonus2.scoreManager.setScore(state.score);
         bonus2.scoreLabel.setText("points: " + state.score);
+    }
+
+    private void resizeMainPanel(JPanel mainpanel) {
+        int width = mainpanel.getWidth();
+        int height = mainpanel.getHeight();
+
+        for (Component comp : mainpanel.getComponents()) {
+            if (comp instanceof JButton) {
+                JButton button = (JButton) comp;
+                String text = button.getText();
+                if (text.contains("Start")) {
+                    button.setBounds(width / 2 - width / 8, height * 2 / 3, width / 4, height / 15);
+                } else if (text.contains("Continue")) {
+                    button.setBounds(width / 2 - width / 8, height * 2 / 3 + height / 12 + 10, width / 4, height / 15);
+                }
+            }
+        }
     }
 
     private void resizeComponents(JPanel startpanel) {
