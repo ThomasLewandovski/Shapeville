@@ -137,14 +137,6 @@ public class Main {
         scoreRatioLabel.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
         startpanel.add(scoreRatioLabel);
 
-        // 添加返回按钮：从 startPanel 回到 mainPanel
-        JButton backToMainButton = new JButton("Back");
-        backToMainButton.setBounds(10, 600, 100, 30);
-        startpanel.add(backToMainButton);
-        backToMainButton.addActionListener(e -> {
-            cardLayout.show(cardPanel, "mainPanel");
-        });
-
         JButton score_display = new JButton("Score Display");
         score_display.setBounds(600, 0, 180, 30);
         startpanel.add(score_display);
@@ -155,6 +147,116 @@ public class Main {
         score_display.addActionListener(e -> {
             scoreDetail.updateScores(score_for_tasks);
             cardLayout.show(cardPanel, "score_display");
+        });
+
+        //在这里也写一个相同的introduction
+        JButton openIntroButton2 = new JButton("Introduction");
+        openIntroButton2.setBounds(30,520,180,30);
+        startpanel.add(openIntroButton2);
+        openIntroButton2.addActionListener(e -> {
+            // 创建并显示Introduction对话框
+            Introduction intro = new Introduction(frame);
+            intro.show();
+        });
+        startpanel.add(openIntroButton2);
+
+        //在这里，也就是introduction的右边，新增一个restart按钮，其作用跟mainpanel的start按钮一样
+        JButton restartButton = new JButton("Restart");
+        restartButton.setBounds(230, 520, 180, 30);
+        startpanel.add(restartButton);
+        //这里是restart逻辑：
+        restartButton.addActionListener(e -> {
+            // 始终清除本地存档
+            delete_archive();
+
+            // 重置总分
+            scoreManager.resetScore();
+            counter2.setText("积分：0");
+
+            // 重置任务状态
+            taskCompletionStatus = new boolean[6];
+            is_played_task1 = new int[2];
+            score_for_tasks = new int[6];
+
+            // 重置进度条
+            task1ProgressBar.setValue(0);
+            task2ProgressBar.setValue(0);
+            task3ProgressBar.setValue(0);
+            task4ProgressBar.setValue(0);
+            bonus1ProgressBar.setValue(0);
+            bonus2ProgressBar.setValue(0);
+            scoreProgressBar.setValue(0);
+            scoreRatioLabel.setText("0/153");
+
+            // 重置按钮状态
+            task1Button.setEnabled(true);
+            task2Button.setEnabled(true);
+            task3Button.setEnabled(true);
+            task4Button.setEnabled(true);
+
+            Color resetColor = new Color(255, 228, 196);
+            task1Button.setBackground(resetColor);
+            task2Button.setBackground(resetColor);
+            task3Button.setBackground(resetColor);
+            task4Button.setBackground(resetColor);
+
+            // 重置任务 1
+            task1.isIdentifiedShapes = 0;
+            task1.is_played_task1 = new int[2];
+            task1.scores = 0;
+            task1.scorelabel.setText("points: 0");
+
+            // 重置任务 2
+            task2.identifiedTypes.clear();
+            task2.waitingForAngleInput = false;
+            task2.scores = 0;
+            task2.scoreLabel.setText("points: 0");
+
+            // 重置任务 3
+            task3.CompletedShapes.clear();
+            task3.scores = 0;
+            task3.scorelable.setText("points: 0");
+
+            // 重置任务 4
+            task4.completedModes = new boolean[2];
+            //task4.currentMode = "";
+            task4.radius = 0;
+            task4.attempts = 0;
+            task4.scores = 0;
+            task4.scorelable.setText("points: 0");
+
+            // 重置 Bonus 1
+            bonus1.completedTasks = 0;
+            bonus1.completedShapes = new int[6];
+            bonus1.scores = 0;
+            bonus1.scorelable.setText("points: 0");
+            for (int i = 0; i < 6; i++) {
+                JButton btn = bonus1.shapeButtons.get(i);
+                btn.setEnabled(true);
+                btn.setBackground(resetColor);
+            }
+
+            // 重置 Bonus 2
+            bonus2.completedTasks = 0;
+            bonus2.completed = new boolean[9];
+            bonus2.scores = 0;
+            bonus2.scorelable.setText("Scores: 0");
+            bonus2.scoreLabel.setText("Scores: 0");
+            for (int i = 1; i <= 8; i++) {
+                if (bonus2.shapeButtons.containsKey(i)) {
+                    JButton btn = bonus2.shapeButtons.get(i);
+                    btn.setEnabled(true);
+                    btn.setBackground(resetColor);
+                }
+            }
+
+            // ✅ 弹出提示 —— 无论是否有存档，都会执行
+            JOptionPane.showMessageDialog(
+                    frame,
+                    "Already restarted a new game!",
+                    "Restart Success",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
         });
 
         // 4个task按钮居中横排
@@ -220,8 +322,8 @@ public class Main {
 
         JButton[] allButtons = {
                 task1Button, task2Button, task3Button, task4Button,
-                bonus1Button, bonus2Button,
-                backToMainButton
+                bonus1Button, bonus2Button, startButton, score_display, restartButton,
+                openIntroButton, openIntroButton2, continueButton
         };
 
         for (JButton btn : allButtons) {
@@ -780,7 +882,7 @@ public class Main {
             backButton.setBounds(width / 80, height*7/8, width / 8, height / 20);
         }
         if (detailButton != null) {
-            detailButton.setBounds(width * 9/10, 0, width / 10, height / 20);
+            detailButton.setBounds(width * 6/7, 0, width / 7, height / 20);
         }
 
         // 任务按钮 task1-task4

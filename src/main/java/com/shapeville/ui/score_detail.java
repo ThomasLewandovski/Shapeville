@@ -10,6 +10,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 public class score_detail {
+
     JPanel panel;
     private JLabel[] mascotLabels;
     private JLabel[] scoreLabels;
@@ -19,65 +20,69 @@ public class score_detail {
 
     // 吉祥物图片路径
     private String[] mascotPaths = {
-            "C:\\Users\\16937\\Shapeville\\src\\main\\resources\\images\\Pikachu.png",
-            "C:\\Users\\16937\\Shapeville\\src\\main\\resources\\images\\Fox.png",
-            "C:\\Users\\16937\\Shapeville\\src\\main\\resources\\images\\Kuromi.png",
-            "C:\\Users\\16937\\Shapeville\\src\\main\\resources\\images\\Raccoon.png",
-            "C:\\Users\\16937\\Shapeville\\src\\main\\resources\\images\\Bunny.png",
-            "C:\\Users\\16937\\Shapeville\\src\\main\\resources\\images\\Totoro.png"
+            "src/main/resources/images/Raccoon.png",
+            "src/main/resources/images/Kuromi.png",
+            "src/main/resources/images/Pikachu.png",
+            "src/main/resources/images/Totoro.png",
+            "src/main/resources/images/Fox.png",
+            "src/main/resources/images/Bunny.png"
     };
 
     // 吉祥物名称
-    private String[] mascotNames = {"皮卡丘", "狐狸", "Kuromi", "浣熊", "兔子", "龙猫"};
+    private String[] mascotNames = {"Task1", "Task2", "Task3", "Task4", "Bonus1", "Bonus2"};
 
     private CardLayout cardLayout;
     private JPanel cardPanel;
 
     public score_detail(int[] scores_detail, CardLayout cardLayout, JPanel cardPanel) {
-        // 设置主面板布局为边框布局
         panel = new JPanel(new BorderLayout(10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        panel.setBackground(new Color(255, 248, 220)); // 米黄色背景
 
-        scores = scores_detail;
+        this.scores = scores_detail;
         this.cardLayout = cardLayout;
         this.cardPanel = cardPanel;
 
-        // 初始化标签数组
         mascotLabels = new JLabel[6];
         scoreLabels = new JLabel[6];
 
-        // 创建主内容面板，使用3行2列的网格布局
-        JPanel contentPanel = new JPanel(new GridLayout(2, 3, 20, 20));
-
-        // 加载并显示吉祥物和分数
+        JPanel contentPanel = new JPanel(new GridLayout(2, 3, 15, 15));
+        contentPanel.setOpaque(false);
         loadMascotsAndScores(contentPanel);
-
-        // 将内容面板添加到主面板的中央
         panel.add(contentPanel, BorderLayout.CENTER);
 
-        // 添加返回按钮到左下角
-        JButton backButton = new JButton("返回");
-        backButton.setPreferredSize(new Dimension(100, 30)); // 设置按钮大小
-        backButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                cardLayout.show(cardPanel, "startPanel");
-            }
-        });
+        // ✅ bottom panel
+        JButton backButton = new JButton("← Back");
+        backButton.setPreferredSize(new Dimension(100, 36));
+        backButton.setFont(new Font("Arial", Font.BOLD, 14));
+        backButton.setBackground(Color.WHITE);
+        backButton.setFocusPainted(false);
+        backButton.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+        backButton.addActionListener(e -> cardLayout.show(cardPanel, "startPanel"));
 
-        // 创建底部面板，使用FlowLayout居左对齐
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        bottomPanel.setOpaque(false);
         bottomPanel.add(backButton);
-        panel.add(bottomPanel, BorderLayout.SOUTH);
+
+        panel.add(bottomPanel, BorderLayout.SOUTH); // ✅ FIXED: add bottom panel
     }
 
     private void loadMascotsAndScores(JPanel parentPanel) {
         for (int i = 0; i < 6; i++) {
             // 创建吉祥物面板
-            JPanel mascotPanel = new JPanel();
+            JPanel mascotPanel = new JPanel() {
+                @Override
+                protected void paintComponent(Graphics g) {
+                    super.paintComponent(g);
+                    Graphics2D g2 = (Graphics2D) g;
+                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g2.setColor(new Color(255, 255, 255, 200));
+                    g2.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
+                }
+            };
+            mascotPanel.setOpaque(false);
             mascotPanel.setLayout(new BoxLayout(mascotPanel, BoxLayout.Y_AXIS));
-            mascotPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
-            mascotPanel.setBackground(Color.WHITE); // 设置背景色为白色
+            mascotPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
             // 加载吉祥物图片
             try {
