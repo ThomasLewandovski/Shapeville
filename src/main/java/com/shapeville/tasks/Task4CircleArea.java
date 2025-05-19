@@ -34,11 +34,15 @@ public class Task4CircleArea {
     public int radius;
     public int attempts;
 
+    private JLabel mascotSpeech;
+    private JLabel mascotImage;
+
     public Task4CircleArea(ScoreManager scoreManager) {
         this.scoreManager = scoreManager;
         this.completedModes = new boolean[2];
 
         task4 = new JPanel(new CardLayout());
+        task4.setBackground(new Color(255, 250, 205)); // 米黄色背景
 
         createModeSelectionPanel();
         createCalculationPanel();
@@ -50,12 +54,19 @@ public class Task4CircleArea {
     }
 
     private void createModeSelectionPanel() {
+        // 整体背景为米黄色
         modeSelectionPanel = new JPanel(new BorderLayout());
+        modeSelectionPanel.setBackground(new Color(255, 250, 205));
 
+        // 左侧公式面板
         JPanel formulaPanel = createGuidePanel();
         formulaPanel.setPreferredSize(new Dimension(250, 400));
+        formulaPanel.setBackground(new Color(255, 250, 205)); // 米黄色
 
+        // 中间按钮区
         JPanel modePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
+        modePanel.setBackground(new Color(255, 250, 205));
+
         for (int i = 0; i < MODES.length; i++) {
             JButton modeButton = new JButton(MODES[i]);
             modeButtons[i] = modeButton;
@@ -76,62 +87,135 @@ public class Task4CircleArea {
             modePanel.add(modeButton);
         }
 
+        // 返回主菜单按钮
         JButton homeButton = new JButton("Back to Main");
+        homeButton.setFont(new Font("Arial", Font.PLAIN, 13));
         homeButton.addActionListener(e -> {
             if (onReturnHome != null) onReturnHome.run();
         });
 
+        // 吉祥物区域：右下角 Totoro + 气泡
+        JPanel mascotPanel = new JPanel();
+        mascotPanel.setLayout(new BoxLayout(mascotPanel, BoxLayout.Y_AXIS));
+        mascotPanel.setOpaque(false);
+
+        JLabel mascotSpeech = new JLabel("<html><div style='padding:10px; background:#fff8dc; border:1px solid #aaa; border-radius:10px;'>Please select a mode to start!</div></html>");
+        mascotSpeech.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
+        mascotSpeech.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel mascotImageLabel;
+        try {
+            ImageIcon totoroIcon = new ImageIcon(getClass().getClassLoader().getResource("images/Totoro.png"));
+            Image scaled = totoroIcon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
+            mascotImageLabel = new JLabel(new ImageIcon(scaled));
+        } catch (Exception ex) {
+            mascotImageLabel = new JLabel("🐾");
+        }
+        mascotImageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        mascotPanel.add(Box.createVerticalStrut(10));
+        mascotPanel.add(mascotSpeech);
+        mascotPanel.add(Box.createVerticalStrut(10));
+        mascotPanel.add(mascotImageLabel);
+
+        // 吉祥物包装底部对齐
+        JPanel eastPanel = new JPanel(new BorderLayout());
+        eastPanel.setBackground(new Color(255, 250, 205));
+        eastPanel.add(Box.createVerticalGlue(), BorderLayout.CENTER);
+        eastPanel.add(mascotPanel, BorderLayout.SOUTH);
+
+        // 组装整个选择界面
         modeSelectionPanel.add(formulaPanel, BorderLayout.WEST);
         modeSelectionPanel.add(modePanel, BorderLayout.CENTER);
+        modeSelectionPanel.add(eastPanel, BorderLayout.EAST);
         modeSelectionPanel.add(homeButton, BorderLayout.SOUTH);
     }
 
     private void createCalculationPanel() {
         calculationPanel = new JPanel(new BorderLayout(10, 10));
+        calculationPanel.setBackground(new Color(255, 250, 205));
 
+        // 顶部区域
         JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.setBackground(new Color(255, 250, 205));
         scorelable = new JLabel("Score: 0");
-        scorelable.setFont(new Font("Arial", Font.BOLD, 16));
+        scorelable.setFont(new Font("Comic Sans MS", Font.BOLD, 16));
         questionLabel = new JLabel();
-        questionLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+        questionLabel.setFont(new Font("Comic Sans MS", Font.PLAIN, 16));
         questionLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
         topPanel.add(scorelable, BorderLayout.NORTH);
         topPanel.add(questionLabel, BorderLayout.CENTER);
 
+        // 中部输入区域
         JPanel middlePanel = new JPanel(new GridBagLayout());
+        middlePanel.setBackground(new Color(255, 250, 205));
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         input = new JTextField();
-        input.setFont(new Font("Arial", Font.PLAIN, 14));
+        input.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
         gbc.gridx = 0; gbc.gridy = 0; gbc.weightx = 0.7;
         middlePanel.add(input, gbc);
 
         submitButton = new JButton("Submit");
-        submitButton.setFont(new Font("Arial", Font.PLAIN, 14));
+        submitButton.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
         gbc.gridx = 1; gbc.gridy = 0; gbc.weightx = 0.3;
         middlePanel.add(submitButton, gbc);
 
         feedbackLabel = new JLabel();
-        feedbackLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        feedbackLabel.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
         gbc.gridx = 0; gbc.gridy = 1; gbc.gridwidth = 2;
         middlePanel.add(feedbackLabel, gbc);
 
         formulaLabel = new JLabel();
-        formulaLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        formulaLabel.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
         gbc.gridx = 0; gbc.gridy = 2;
         middlePanel.add(formulaLabel, gbc);
 
-        JPanel bottomPanel = new JPanel(new BorderLayout());
+        // 吉祥物 + 图形区域
+        JPanel bottomWrapper = new JPanel(new BorderLayout());
+        bottomWrapper.setBackground(new Color(255, 250, 205));
+
         drawPanel = new DrawCirclePanel();
         drawPanel.setPreferredSize(new Dimension(300, 300));
         drawPanel.setBackground(Color.WHITE);
-        bottomPanel.add(drawPanel, BorderLayout.CENTER);
 
+        // 吉祥物区域（右下角）
+        JPanel mascotPanel = new JPanel();
+        mascotPanel.setLayout(new BoxLayout(mascotPanel, BoxLayout.Y_AXIS));
+        mascotPanel.setBackground(new Color(255, 250, 205));
+
+        mascotSpeech = new JLabel("<html><div style='padding:8px;background:#fff8dc;border:1px solid #aaa;border-radius:10px;'>Let's go!</div></html>");
+        mascotSpeech.setFont(new Font("Comic Sans MS", Font.PLAIN, 13));
+        mascotSpeech.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        try {
+            ImageIcon totoro = new ImageIcon(getClass().getClassLoader().getResource("images/Totoro.png"));
+            Image scaled = totoro.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
+            mascotImage = new JLabel(new ImageIcon(scaled));
+        } catch (Exception e) {
+            mascotImage = new JLabel("Totoro");
+        }
+        mascotImage.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        mascotPanel.add(Box.createVerticalStrut(10));
+        mascotPanel.add(mascotSpeech);
+        mascotPanel.add(Box.createVerticalStrut(10));
+        mascotPanel.add(mascotImage);
+
+        // Bottom 内含绘图区域和 Totoro Panel
+        bottomWrapper.add(drawPanel, BorderLayout.CENTER);
+        bottomWrapper.add(mascotPanel, BorderLayout.EAST);
+
+        // 按钮区
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        buttonPanel.setBackground(new Color(255, 250, 205));
         JButton backButton = new JButton("Back to Mode Select");
+        backButton.setFont(new Font("Comic Sans MS", Font.PLAIN, 13));
+        buttonPanel.add(backButton);
+
         backButton.addActionListener(e -> {
-            // ✅ 只有在失败完成时才执行真正完成逻辑
             if (isCurrentModeFailed) {
                 completeCurrentMode();
                 isCurrentModeFailed = false;
@@ -141,13 +225,11 @@ public class Task4CircleArea {
             }
         });
 
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttonPanel.add(backButton);
-        bottomPanel.add(buttonPanel, BorderLayout.SOUTH);
+        bottomWrapper.add(buttonPanel, BorderLayout.SOUTH);
 
         calculationPanel.add(topPanel, BorderLayout.NORTH);
         calculationPanel.add(middlePanel, BorderLayout.CENTER);
-        calculationPanel.add(bottomPanel, BorderLayout.SOUTH);
+        calculationPanel.add(bottomWrapper, BorderLayout.SOUTH);
 
         submitButton.addActionListener(e -> checkAnswer());
     }
@@ -205,15 +287,17 @@ public class Task4CircleArea {
         if (attempts == 3) {
             Completed++;
             feedbackLabel.setText("All attempts have been exhausted");
-            formulaLabel.setText(currentMode == 0
-                    ? "Formula：π×r² = 3.14×" + radius + "×" + radius + " = " + String.format("%.2f", correctValue)
-                    : "Formula：2πr = 2×3.14×" + radius + " = " + String.format("%.2f", correctValue));
+
+            // Totoro 出来说正确答案
+            mascotSpeech.setText("<html><div style='padding:10px;background:#ffe0e0;border:1px solid #cc0000;border-radius:10px;'>Oops! The correct formula is:<br>" +
+                    formulaLabelFor(currentMode, radius, correctValue) + "</div></html>");
+
             drawPanel.setRadius(radius);
             drawPanel.setVisible(true);
-
             isCurrentModeFailed = true; // ✅ 标记当前模式已失败
         } else {
-            feedbackLabel.setText("Wrong, remaining attempts：" + (3 - attempts));
+            feedbackLabel.setText("Wrong, remaining attempts: " + (3 - attempts));
+            mascotSpeech.setText("<html><div style='padding:8px;background:#fff3cd;border:1px solid #ffcc00;border-radius:10px;'>Try again! You can do it </div></html>");
             attempts++;
         }
     }
@@ -311,5 +395,11 @@ public class Task4CircleArea {
             g2.drawString("r = " + radius, centerX + maxRadius + 10, centerY + 5);
             g2.drawString(formula, centerX - maxRadius, centerY + maxRadius + 20);
         }
+    }
+
+    private String formulaLabelFor(int mode, int radius, double correct) {
+        return mode == 0
+                ? "π × " + radius + "² = " + String.format("%.2f", correct)
+                : "2 × π × " + radius + " = " + String.format("%.2f", correct);
     }
 }
