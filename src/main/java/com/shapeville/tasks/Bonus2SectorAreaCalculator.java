@@ -14,6 +14,7 @@ public class Bonus2SectorAreaCalculator {
     public Runnable onReturnHome;
     public ScoreManager scoreManager;
     public int completedTasks = 0;
+    private JButton submitButton;
 
     private JPanel selectPanel;
     private JPanel questionPanel;
@@ -32,8 +33,8 @@ public class Bonus2SectorAreaCalculator {
     public int attemptCount;
     private Map<Integer, Double> correctAnswers;
     private Map<Integer, String> explanations;
-    private Map<Integer, JButton> shapeButtons = new HashMap<>();
-    private boolean[] completed = new boolean[9]; // 1-based indexing for 8 questions
+    public Map<Integer, JButton> shapeButtons = new HashMap<>();
+    public boolean[] completed = new boolean[9]; // 1-based indexing for 8 questions
 
     public Bonus2SectorAreaCalculator(ScoreManager scoreManager) {
         this.scoreManager = scoreManager;
@@ -119,6 +120,7 @@ public class Bonus2SectorAreaCalculator {
 
             btn.addActionListener(e -> {
                 if (!completed[id]) {
+                    submitButton.setEnabled(true);
                     showQuestion(id);
                 }
             });
@@ -188,7 +190,7 @@ public class Bonus2SectorAreaCalculator {
         contentPanel.add(prompt, gbc);
 
         answerField = new JTextField(10);
-        JButton submitButton = new JButton("Submit");
+        submitButton = new JButton("Submit");
         submitButton.setFont(new Font("Comic Sans MS", Font.PLAIN, 13));
         submitButton.addActionListener(this::handleSubmit);
 
@@ -292,6 +294,7 @@ public class Bonus2SectorAreaCalculator {
                     case 2 -> 2;
                     default -> 0;
                 };
+                submitButton.setVisible(false);
                 scoreManager.addScore(score);
                 feedbackLabel.setText("✅ Correct! +" + score + " points");
                 mascotSpeechBubble.setText("<html><div style='padding:10px; background:#e0ffe0; border-radius:10px; border:1px solid #8bc34a;'>Great! You got it right!🎉</div></html>");
@@ -299,6 +302,7 @@ public class Bonus2SectorAreaCalculator {
             } else {
                 attemptCount++;
                 if (attemptCount >= 3) {
+                    submitButton.setEnabled(false);
                     feedbackLabel.setText("❌ Incorrect. " + explanations.get(currentShapeId));
                     mascotSpeechBubble.setText("<html><div style='padding:10px; background:#ffe0e0; border-radius:10px; border:1px solid #e57373;'>Never mind, the correct answer is: " + explanations.get(currentShapeId) + " 🐰</div></html>");
                     completeCurrentShape();

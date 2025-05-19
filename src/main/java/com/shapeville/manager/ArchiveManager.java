@@ -136,14 +136,12 @@ public class ArchiveManager {
         private static final long serialVersionUID = 7L;
 
         public int completedTasks;
-        public int currentShapeId;
-        public int attemptCount;
+        public boolean[] completed;
         public int score;
 
-        public bonus2State(int completedTasks, int currentShapeId, int attemptCount, int score) {
+        public bonus2State(int completedTasks, boolean[] completed,int score) {
             this.completedTasks = completedTasks;
-            this.currentShapeId = currentShapeId;
-            this.attemptCount = attemptCount;
+            this.completed = completed.clone();
             this.score = score;
         }
     }
@@ -225,10 +223,10 @@ public class ArchiveManager {
         }
     }
 
-    public static void saveBonus2State(int completedTasks, int currentShapeId, int attemptCount, int score) {
+    public static void saveBonus2State(int completedTasks, boolean[] completed, int score) {
         try (ObjectOutputStream oos = new ObjectOutputStream(
                 new FileOutputStream(BONUS2_SAVE_FILE))) {
-            bonus2State state = new bonus2State(completedTasks, currentShapeId, attemptCount, score);
+            bonus2State state = new bonus2State(completedTasks, completed, score);
             oos.writeObject(state);
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(null,
