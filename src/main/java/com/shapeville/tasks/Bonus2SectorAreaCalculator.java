@@ -12,7 +12,7 @@ import java.util.Map;
 public class Bonus2SectorAreaCalculator {
     public JPanel taskPanel;
     public Runnable onReturnHome;
-    private ScoreManager scoreManager;
+    public ScoreManager scoreManager;
     public int completedTasks = 0;
 
     private JPanel selectPanel;
@@ -22,10 +22,10 @@ public class Bonus2SectorAreaCalculator {
     private JLabel imageLabel;
     private JTextField answerField;
     private JLabel feedbackLabel;
-    private JLabel scoreLabel;
+    public JLabel scoreLabel;
 
-    private int currentShapeId;
-    private int attemptCount;
+    public int currentShapeId;
+    public int attemptCount;
     private Map<Integer, Double> correctAnswers;
     private Map<Integer, String> explanations;
 

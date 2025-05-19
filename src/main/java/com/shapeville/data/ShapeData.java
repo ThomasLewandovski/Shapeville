@@ -1,10 +1,12 @@
 package com.shapeville.data;
 
+import java.io.Serializable;
 import java.util.*;
 
 public class ShapeData {
     // 内部类：封装一个图形（名字 + 图片）
-    public static class ShapeItem {
+    public static class ShapeItem implements Serializable {
+        private static final long serialVersionUID = 1L;
         private final String name;
         private final String imageFilename;
 
@@ -22,13 +24,17 @@ public class ShapeData {
         }
     }
 
-    public static class Shape2D extends ShapeItem {
+    public static class Shape2D extends ShapeItem implements Serializable {
+        private static final long serialVersionUID = 2L;
+
         public Shape2D(String name, String imageFilename) {
             super(name, imageFilename);
         }
     }
 
-    public static class Shape3D extends ShapeItem {
+    public static class Shape3D extends ShapeItem implements Serializable {
+        private static final long serialVersionUID = 3L;
+
         public Shape3D(String name, String imageFilename) {
             super(name, imageFilename);
         }
@@ -68,5 +74,4 @@ public class ShapeData {
     public static List<Shape3D> getAll3DShapes() {
         return Collections.unmodifiableList(shapes3D);
     }
-
 }

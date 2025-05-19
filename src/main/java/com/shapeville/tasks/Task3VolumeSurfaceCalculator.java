@@ -12,7 +12,7 @@ import java.util.*;
 public class Task3VolumeSurfaceCalculator {
     public JPanel task3;
     public Runnable onReturnHome;
-    private ScoreManager scoreManager;
+    public ScoreManager scoreManager;
     public JLabel score;
     public Set<String> CompletedShapes = new HashSet<>();
 
@@ -24,14 +24,16 @@ public class Task3VolumeSurfaceCalculator {
     private JLabel timerLabel;
     private DrawingPanel drawingPanel;
 
-    private String currentShape;
-    private int param1, param2, param3;
-    private int correctAnswer;
-    private int attemptsLeft;
-    private int timeRemaining;
+    public String currentShape;
+    public int param1;
+    public int param2;
+    public int param3;
+    public int correctAnswer;
+    public int attemptsLeft;
+    public int timeRemaining;
     public Runnable onComplete;
 
-    private Set<String> completedShapes;
+    public Set<String> completedShapes;
 
     public Task3VolumeSurfaceCalculator(ScoreManager scoreManager) {
         this.scoreManager = scoreManager;

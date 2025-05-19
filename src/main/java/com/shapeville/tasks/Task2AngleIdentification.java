@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Task2AngleIdentification {
-    private ScoreManager scoreManager;
+    public ScoreManager scoreManager;
     private final String[] encouragements = {
     "🎉 Well done!",
     "👍 Great job!",
@@ -27,13 +27,13 @@ public class Task2AngleIdentification {
     private JButton submitButton;
     public JButton goHomeButton;
     public Runnable onReturnHome;
-    private JLabel scoreLabel;
+    public JLabel scoreLabel;
     public int result = 0;
     public Runnable onComplete;
 
     public int currentAngle = -1;
     public int attempt = 1;
-    public final Set<String> identifiedTypes = new HashSet<>();
+    public Set<String> identifiedTypes = new HashSet<>();
     public boolean waitingForAngleInput = true;
 
     private AngleCanvas angleCanvas;
@@ -47,7 +47,7 @@ public class Task2AngleIdentification {
 
         // 顶部面板 - 包含分数和问题描述
         JPanel topPanel = new JPanel(new BorderLayout());
-        scoreLabel = new JLabel("points: 0");
+        scoreLabel = new JLabel("points:" + scoreManager.getScore());
         scoreLabel.setFont(new Font("Arial", Font.BOLD, 16));
         topPanel.add(scoreLabel, BorderLayout.NORTH);
 
@@ -239,13 +239,16 @@ public class Task2AngleIdentification {
             if (userAnswer.equalsIgnoreCase(correct)) {
                 String encouragement = encouragements[(int) (Math.random() * encouragements.length)];
                 questionLabel.setText("<html>✅ Correct! It was a " + correct + " angle.<br>" + encouragement + "</html>");
-                
-                int points = switch (attempt) {
-                    case 1 -> 3;
-                    case 2 -> 2;
-                    case 3 -> 1;
-                    default -> 0;
-                };
+                int points = 0;
+                if (!identifiedTypes.contains(correct)) {
+                    points = switch (attempt) {
+                        case 1 -> 3;
+                        case 2 -> 2;
+                        case 3 -> 1;
+                        default -> 0;
+                    };
+                }
+                waitingForAngleInput = true;
                 scoreManager.addScore(points);
                 result += points;
                 scoreLabel.setText("points: " + result);
@@ -261,6 +264,7 @@ public class Task2AngleIdentification {
                     // questionLabel.setText("⚠️ The correct answer was: " + correct);
                     // identifiedTypes.add(correct.toLowerCase());
                     // checkCompletion();
+                    waitingForAngleInput = true;
                     questionLabel.setText("<html>⚠️ The correct answer was: <b>" + correct + "</b></html>");
                     identifiedTypes.add(correct.toLowerCase());
 

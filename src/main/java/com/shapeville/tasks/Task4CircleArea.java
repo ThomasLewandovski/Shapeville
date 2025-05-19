@@ -8,14 +8,14 @@ import java.util.Random;
 
 public class Task4CircleArea {
     private static final String[] MODES = {"Area", "Perimeter"};
-    private boolean[] completedModes = new boolean[2];
+    public boolean[] completedModes = new boolean[2];
 
     public JPanel task4;
     private JPanel modeSelectionPanel;
     private JPanel calculationPanel;
     private JButton[] modeButtons = new JButton[2]; // 保存按钮引用，便于刷新状态
 
-    private JLabel score;
+    public JLabel score;
     private JLabel questionLabel;
     private JTextField input;
     private JButton submitButton;
@@ -23,11 +23,11 @@ public class Task4CircleArea {
     private JLabel formulaLabel;
     private DrawCirclePanel drawPanel;
 
-    private ScoreManager scoreManager;
+    public ScoreManager scoreManager;
     public Runnable onReturnHome;
     public Runnable onComplete;
 
-    private int currentMode;
+    public int currentMode;
     public int radius;
     public int attempts;
 

@@ -13,8 +13,8 @@ import java.util.Map;
 public class Bonus1CompoundShapeArea {
     public JPanel taskPanel;
     public Runnable onReturnHome;
-    private ScoreManager scoreManager;
-    private JLabel score;
+    public ScoreManager scoreManager;
+    public JLabel score;
     public int completedTasks = 0;
 
     private JPanel shapeSelectPanel;
@@ -27,8 +27,8 @@ public class Bonus1CompoundShapeArea {
     // 存储原始图像，用于缩放
     private Map<Integer, Image> originalImages = new HashMap<>();
 
-    private int currentShapeId;
-    private int attemptCount = 0;
+    public int currentShapeId;
+    public int attemptCount = 0;
     private Map<Integer, Double> correctAnswers;
     private Map<Integer, String> explanations;
 

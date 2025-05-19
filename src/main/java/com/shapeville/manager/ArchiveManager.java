@@ -1,12 +1,10 @@
 package com.shapeville.manager;
 
+import com.shapeville.data.ShapeData;
 import com.shapeville.data.ShapeData.*;
 
 import javax.swing.*;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -54,89 +52,47 @@ public class ArchiveManager {
         public int isIdentifiedShapes;
         public int[] is_played_task1;
         public int score;
-        public boolean[] taskCompletionStatus;
-        public boolean isAdvanced;
-        public boolean isSubtaskStarted;
-        public boolean isSubtaskCompleted;
-        public int currentIndex;
-        public int attempt;
-        public List<ShapeItem> currentShapes;
-        public String currentShapeName; // 保存当前形状名称而非整个对象
 
         public task1State(
                 int isIdentifiedShapes,
                 int[] is_played_task1,
-                int score,
-                boolean isAdvanced,
-                boolean isSubtaskStarted,
-                boolean isSubtaskCompleted,
-                int currentIndex,
-                int attempt,
-                List<ShapeItem> currentShapes,
-                ShapeItem currentShape) {
+                int score
+
+        ) {
 
             this.isIdentifiedShapes = isIdentifiedShapes;
             this.is_played_task1 = is_played_task1.clone();
             this.score = score;
-            this.taskCompletionStatus = taskCompletionStatus.clone();
-            this.isAdvanced = isAdvanced;
-            this.isSubtaskStarted = isSubtaskStarted;
-            this.isSubtaskCompleted = isSubtaskCompleted;
-            this.currentIndex = currentIndex;
-            this.attempt = attempt;
 
-            // 克隆当前形状列表
-            this.currentShapes = new ArrayList<>();
-            for (ShapeItem shape : currentShapes) {
-                this.currentShapes.add(new ShapeItem(shape.getName(), shape.getImageFilename()));
-            }
-
-            // 保存当前形状的名称而非整个对象
-            this.currentShapeName = currentShape != null ? currentShape.getName() : null;
         }
     }
 
     public static class task2State implements Serializable {
         private static final long serialVersionUID = 3L;
 
-        public int result;
-        public int currentAngle;
-        public int attempt;
         public Set<String> identifiedTypes;
         public boolean waitingForAngleInput;
+        public int score;
 
-        public task2State(int result, int currentAngle, int attempt, Set<String> identifiedTypes, boolean waitingForAngleInput) {
-            this.result = result;
-            this.currentAngle = currentAngle;
-            this.attempt = attempt;
+        public task2State(
+                Set<String> identifiedTypes,
+                boolean waitingForAngleInput,
+                int score
+        ) {
             this.identifiedTypes = new HashSet<>(identifiedTypes); // 克隆集合以确保状态隔离
             this.waitingForAngleInput = waitingForAngleInput;
+            this.score = score;
         }
     }
 
     public static class task3State implements Serializable {
         private static final long serialVersionUID = 4L;
 
-        public String currentShape;
-        public int param1;
-        public int param2;
-        public int param3;
-        public int correctAnswer;
-        public int attemptsLeft;
-        public int timeRemaining;
         public Set<String> completedShapes;
         public int score;
 
-        public task3State(String currentShape, int param1, int param2, int param3,
-                          int correctAnswer, int attemptsLeft, int timeRemaining,
-                          Set<String> completedShapes, int score) {
-            this.currentShape = currentShape;
-            this.param1 = param1;
-            this.param2 = param2;
-            this.param3 = param3;
-            this.correctAnswer = correctAnswer;
-            this.attemptsLeft = attemptsLeft;
-            this.timeRemaining = timeRemaining;
+        public task3State(Set<String> completedShapes, int score) {
+
             this.completedShapes = new HashSet<>(completedShapes); // 克隆集合
             this.score = score;
         }
@@ -195,31 +151,17 @@ public class ArchiveManager {
     public static void saveTask1State(
             int isIdentifiedShapes,
             int[] is_played_task1,
-            int score,
-            boolean isAdvanced,
-            boolean isSubtaskStarted,
-            boolean isSubtaskCompleted,
-            int currentIndex,
-            int attempt,
-            List<ShapeItem> currentShapes,
-            ShapeItem currentShape
+            int score
+
     ) {
         try (ObjectOutputStream oos = new ObjectOutputStream(
                 new FileOutputStream(TASK1_SAVE_FILE))) {
             task1State state = new task1State(
                     isIdentifiedShapes,
                     is_played_task1,
-                    score,
-                    isAdvanced,
-                    isSubtaskStarted,
-                    isSubtaskCompleted,
-                    currentIndex,
-                    attempt,
-                    currentShapes,
-                    currentShape
+                    score
             );
             oos.writeObject(state);
-            JOptionPane.showMessageDialog(null, "Task1进度已保存", "保存成功", JOptionPane.INFORMATION_MESSAGE);
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(null,
                     "Task1存档失败：" + ex.getMessage(),
@@ -229,16 +171,12 @@ public class ArchiveManager {
     }
 
     public static void saveTask2State(
-            int result,
-            int currentAngle,
-            int attempt,
             Set<String> identifiedTypes,
-            boolean waitingForAngleInput) {
+            boolean waitingForAngleInput,int score) {
         try (ObjectOutputStream oos = new ObjectOutputStream(
                 new FileOutputStream(TASK2_SAVE_FILE))) {
-            task2State state = new task2State(result, currentAngle, attempt, identifiedTypes, waitingForAngleInput);
+            task2State state = new task2State(identifiedTypes, waitingForAngleInput,score);
             oos.writeObject(state);
-            JOptionPane.showMessageDialog(null, "Task2进度已保存", "保存成功", JOptionPane.INFORMATION_MESSAGE);
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(null,
                     "Task2存档失败：" + ex.getMessage(),
@@ -247,14 +185,11 @@ public class ArchiveManager {
         }
     }
 
-    private static void saveTask3State(String currentShape, int param1, int param2, int param3,
-                                       int correctAnswer, int attemptsLeft, int timeRemaining,
-                                       Set<String> completedShapes, int score) {
+    public static void saveTask3State(Set<String> completedShapes, int score) {
         try (ObjectOutputStream oos = new ObjectOutputStream(
                 new FileOutputStream(TASK3_SAVE_FILE))) {
-            task3State state = new task3State(currentShape, param1, param2, param3, correctAnswer, attemptsLeft, timeRemaining, completedShapes, score);
+            task3State state = new task3State(completedShapes, score);
             oos.writeObject(state);
-            JOptionPane.showMessageDialog(null, "Task3进度已保存", "保存成功", JOptionPane.INFORMATION_MESSAGE);
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(null,
                     "Task3存档失败：" + ex.getMessage(),
@@ -263,12 +198,11 @@ public class ArchiveManager {
         }
     }
 
-    private static void saveTask4State(boolean[] completedModes, int currentMode, int radius, int attempts, int score) {
+    public static void saveTask4State(boolean[] completedModes, int currentMode, int radius, int attempts, int score) {
         try (ObjectOutputStream oos = new ObjectOutputStream(
                 new FileOutputStream(TASK4_SAVE_FILE))) {
             task4State state = new task4State(completedModes, currentMode, radius, attempts, score);
             oos.writeObject(state);
-            JOptionPane.showMessageDialog(null, "Task4进度已保存", "保存成功", JOptionPane.INFORMATION_MESSAGE);
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(null,
                     "Task4存档失败：" + ex.getMessage(),
@@ -277,13 +211,12 @@ public class ArchiveManager {
         }
     }
 
-    private static void saveBonus1State(int completedTasks, int currentShapeId, int attemptCount, int score) {
+    public static void saveBonus1State(int completedTasks, int currentShapeId, int attemptCount, int score) {
         try (ObjectOutputStream oos = new ObjectOutputStream(
                 new FileOutputStream(BONUS1_SAVE_FILE))) {
             bonus1State state = new bonus1State(completedTasks, currentShapeId, attemptCount, score);
             oos.writeObject(state);
-            JOptionPane.showMessageDialog(null, "Bonus1进度已保存", "保存成功", JOptionPane.INFORMATION_MESSAGE);
-        } catch (IOException ex) {
+            } catch (IOException ex) {
             JOptionPane.showMessageDialog(null,
                     "Bonus1存档失败：" + ex.getMessage(),
                     "错误",
@@ -291,17 +224,100 @@ public class ArchiveManager {
         }
     }
 
-    private static void saveBonus2State(int completedTasks, int currentShapeId, int attemptCount, int score) {
+    public static void saveBonus2State(int completedTasks, int currentShapeId, int attemptCount, int score) {
         try (ObjectOutputStream oos = new ObjectOutputStream(
                 new FileOutputStream(BONUS2_SAVE_FILE))) {
             bonus2State state = new bonus2State(completedTasks, currentShapeId, attemptCount, score);
             oos.writeObject(state);
-            JOptionPane.showMessageDialog(null, "Bonus2进度已保存", "保存成功", JOptionPane.INFORMATION_MESSAGE);
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(null,
                     "Bonus2存档失败：" + ex.getMessage(),
                     "错误",
                     JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public static task1State loadTask1State() {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(TASK1_SAVE_FILE))) {
+            return (task1State) ois.readObject();
+        } catch (FileNotFoundException ex) {
+            return null;
+        } catch (IOException | ClassNotFoundException ex) {
+            JOptionPane.showMessageDialog(null,
+                    "加载Task1存档失败：" + ex.getMessage(),
+                    "错误",
+                    JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+    }
+
+    public static task2State loadTask2State() {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(TASK2_SAVE_FILE))) {
+            return (task2State) ois.readObject();
+        } catch (FileNotFoundException ex) {
+            return null;
+        } catch (IOException | ClassNotFoundException ex) {
+            JOptionPane.showMessageDialog(null,
+                    "加载Task2存档失败：" + ex.getMessage(),
+                    "错误",
+                    JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+    }
+
+    public static task3State loadTask3State() {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(TASK3_SAVE_FILE))) {
+            return (task3State) ois.readObject();
+        } catch (FileNotFoundException ex) {
+            return null;
+        } catch (IOException | ClassNotFoundException ex) {
+            JOptionPane.showMessageDialog(null,
+                    "加载Task3存档失败：" + ex.getMessage(),
+                    "错误",
+                    JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+    }
+
+    public static task4State loadTask4State() {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(TASK4_SAVE_FILE))) {
+            return (task4State) ois.readObject();
+        } catch (FileNotFoundException ex) {
+            return null;
+        } catch (IOException | ClassNotFoundException ex) {
+            JOptionPane.showMessageDialog(null,
+                    "加载Task4存档失败：" + ex.getMessage(),
+                    "错误",
+                    JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+    }
+
+    public static bonus1State loadBonus1State() {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(BONUS1_SAVE_FILE))) {
+            return (bonus1State) ois.readObject();
+        } catch (FileNotFoundException ex) {
+            return null;
+        } catch (IOException | ClassNotFoundException ex) {
+            JOptionPane.showMessageDialog(null,
+                    "加载Bonus1存档失败：" + ex.getMessage(),
+                    "错误",
+                    JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+    }
+
+    public static bonus2State loadBonus2State() {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(BONUS2_SAVE_FILE))) {
+            return (bonus2State) ois.readObject();
+        } catch (FileNotFoundException ex) {
+            return null;
+        } catch (IOException | ClassNotFoundException ex) {
+            JOptionPane.showMessageDialog(null,
+                    "加载Bonus2存档失败：" + ex.getMessage(),
+                    "错误",
+                    JOptionPane.ERROR_MESSAGE);
+            return null;
         }
     }
 }

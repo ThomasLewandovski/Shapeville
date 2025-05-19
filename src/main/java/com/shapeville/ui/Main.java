@@ -1,7 +1,7 @@
 package com.shapeville.ui;
 
-import com.shapeville.data.ShapeData;
-import com.shapeville.manager.ArchiveManager.*;
+import com.shapeville.data.ShapeData.*;
+import static com.shapeville.manager.ArchiveManager.*;
 import com.shapeville.manager.ScoreManager;
 import com.shapeville.tasks.Task1ShapeIdentification;
 import com.shapeville.tasks.Task2AngleIdentification;
@@ -14,11 +14,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import static com.shapeville.manager.ArchiveManager.saveTask1State;
-import static com.shapeville.manager.ArchiveManager.saveTask2State;
 
 public class Main {
     // 定义存档文件名
@@ -52,15 +50,12 @@ public class Main {
     private static Task4CircleArea task4;
     private static Bonus1CompoundShapeArea bonus1;
     private static Bonus2SectorAreaCalculator bonus2;
-
-
     // 游戏状态封装类（需实现Serializable）
 
     public static void main(String[] args) {
         // 禁用输入法特殊处理
         System.setProperty("java.awt.im.useInputMethodKeys", "false");
         System.setProperty("apple.awt.im.disable", "true"); // 新增 macOS 专用属性
-
         // 创建Main实例
         Main main = new Main();
         main.initializeGame();
@@ -189,7 +184,7 @@ public class Main {
                 // 新建默认状态
                 gameState = new GameState(taskCompletionStatus, is_played_task1, 0, 0, 0, 0, 0, 0, 0);
             }
-
+            useTasksState();
             useGameState(gameState);
             cardLayout.show(cardPanel, "continuePanel");
         });
@@ -408,24 +403,43 @@ public class Main {
                     "错误",
                     JOptionPane.ERROR_MESSAGE);
         }
-        saveTask1State(task1.isIdentifiedShapes,
+        saveTask1State(
+                task1.isIdentifiedShapes,
                 task1.getIs_played_task1(),
-                task1.scoreManager.getScore(),
-                task1.isAdvanced,
-                task1.isSubtaskStarted,
-                task1.isSubtaskCompleted,
-                task1.currentIndex,
-                task1.attempt,
-                task1.currentShapes,
-                task1.currentShape
+                task1.scoreManager.getScore()
+        );
+//        System.out.println(task1.scoreManager.getScore());
+        saveTask2State(
+                task2.identifiedTypes,
+                task2.waitingForAngleInput,
+                task2.scoreManager.getScore()
         );
 
-        saveTask2State(
-            task2.result,
-            task2.currentAngle,
-            task2.attempt,
-            task2.identifiedTypes,
-            task2.waitingForAngleInput
+        saveTask3State(
+                task3.completedShapes,
+                task3.scoreManager.getScore()
+        );
+
+        saveTask4State(
+                task4.completedModes,
+                task4.currentMode,
+                task4.radius,
+                task4.attempts,
+                task4.scoreManager.getScore()
+        );
+
+        saveBonus1State(
+                bonus1.completedTasks,
+                bonus1.currentShapeId,
+                bonus1.attemptCount,
+                bonus1.scoreManager.getScore()
+        );
+
+        saveBonus2State(
+                bonus2.completedTasks,
+                bonus2.currentShapeId,
+                bonus2.attemptCount,
+                bonus2.scoreManager.getScore()
         );
     }
 
@@ -433,8 +447,7 @@ public class Main {
      * 从文件加载游戏状态
      */
     private static GameState loadGameState() {
-        try (ObjectInputStream ois = new ObjectInputStream(
-                new FileInputStream(SAVE_FILE))) {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(SAVE_FILE))) {
             return (GameState) ois.readObject();
         } catch (FileNotFoundException ex) {
             // 新游戏，无存档
@@ -446,6 +459,7 @@ public class Main {
                     JOptionPane.ERROR_MESSAGE);
             return null;
         }
+
     }
 
     /**
@@ -489,5 +503,133 @@ public class Main {
 
         // 显示关卡选择面板
         cardLayout.show(cardPanel, "startPanel");
+    }
+
+    private void useTasksState(){
+        task1State state1 = loadTask1State();
+        useTask1State(state1);
+        task2State state2 = loadTask2State();
+        useTask2State(state2);
+        task3State state3 = loadTask3State();
+        useTask3State(state3);
+        task4State state4 = loadTask4State();
+        useTask4State(state4);
+        bonus1State state5 = loadBonus1State();
+        useBonus1State(state5);
+        bonus2State state6 = loadBonus2State();
+        useBonus2State(state6);
+    }
+
+    // 任务1状态恢复方法
+    private void useTask1State(task1State state) {
+        if (state == null) return;
+
+        // 更新任务1状态
+        task1.isIdentifiedShapes = state.isIdentifiedShapes;
+        task1.is_played_task1 = state.is_played_task1.clone();
+        task1.scoreManager.setScore(state.score);
+        task1.score.setText("points: " + state.score);
+
+        System.out.println(task1.scoreManager.getScore());
+        // 检查任务是否完成
+        if (state.isIdentifiedShapes >= 8) {
+            taskCompletionStatus[0] = true;
+            task1Button.setBackground(new Color(144, 238, 144));
+            task1Button.setEnabled(false);
+        }
+    }
+
+    // 任务2状态恢复方法
+    private void useTask2State(task2State state) {
+        if (state == null) return;
+        task2.identifiedTypes = new HashSet<>(state.identifiedTypes);
+        task2.waitingForAngleInput = state.waitingForAngleInput;
+        task2.scoreManager.setScore(state.score);
+        task2.scoreLabel.setText("points: " + state.score);
+
+        // 检查任务是否完成
+        if (state.identifiedTypes.size() >= 4) {
+            taskCompletionStatus[1] = true;
+            task2Button.setBackground(new Color(144, 238, 144));
+            task2Button.setEnabled(false);
+        }
+    }
+
+    // 任务3状态恢复方法
+    private void useTask3State(task3State state) {
+        if (state == null) return;
+
+        // 更新任务3状态
+        task3.completedShapes = new HashSet<>(state.completedShapes);
+        task3.scoreManager.setScore(state.score);
+        task3.score.setText("points: " + state.score);
+
+        // 更新任务3进度条
+        task3ProgressBar.setValue(state.completedShapes.size());
+
+        // 检查任务是否完成
+        if (state.completedShapes.size() >= 4) {
+            taskCompletionStatus[2] = true;
+            task3Button.setBackground(new Color(144, 238, 144));
+            task3Button.setEnabled(false);
+        }
+    }
+
+    // 任务4状态恢复方法
+    private void useTask4State(task4State state) {
+        if (state == null) return;
+
+        // 更新任务4状态
+        task4.completedModes = state.completedModes.clone();
+        task4.currentMode = state.currentMode;
+        task4.radius = state.radius;
+        task4.attempts = state.attempts;
+        task4.scoreManager.setScore(state.score);
+        task4.score.setText("points: " + state.score);
+
+        // 更新任务4进度条
+        int progress = 0;
+        for (boolean completed : state.completedModes) {
+            if (completed) progress++;
+        }
+        task4ProgressBar.setValue(progress);
+
+        // 检查任务是否完成
+        boolean allCompleted = true;
+        for (boolean completed : state.completedModes) {
+            if (!completed) {
+                allCompleted = false;
+                break;
+            }
+        }
+        if (allCompleted) {
+            taskCompletionStatus[3] = true;
+            task4Button.setBackground(new Color(144, 238, 144));
+            task4Button.setEnabled(false);
+        }
+    }
+
+    // 奖励任务1状态恢复方法
+    private void useBonus1State(bonus1State state) {
+        if (state == null) return;
+
+        // 更新奖励任务1状态
+        bonus1.completedTasks = state.completedTasks;
+        bonus1.currentShapeId = state.currentShapeId;
+        bonus1.attemptCount = state.attemptCount;
+        bonus1.scoreManager.setScore(state.score);
+        bonus1.score.setText("points: " + state.score);
+    }
+
+    // 奖励任务2状态恢复方法
+    private void useBonus2State(bonus2State state) {
+        if (state == null) return;
+
+        // 更新奖励任务2状态
+        bonus2.completedTasks = state.completedTasks;
+        bonus2.currentShapeId = state.currentShapeId;
+        bonus2.attemptCount = state.attemptCount;
+        bonus2.scoreManager.setScore(state.score);
+        bonus2.scoreLabel.setText("points: " + state.score);
     }
 }

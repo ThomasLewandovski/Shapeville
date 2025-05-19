@@ -6,8 +6,6 @@ import com.shapeville.manager.ScoreManager;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.net.URL;
@@ -16,7 +14,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class Task1ShapeIdentification {
-    private final int[] is_played_task1;
+    public int[] is_played_task1;
     public int isIdentifiedShapes;
     private final String[] encouragements = {
             "🎉 Well done!",
@@ -60,8 +58,9 @@ public class Task1ShapeIdentification {
         task1.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         // 顶部面板
+//        System.out.println("1"+scoreManager.getScore());
         JPanel topPanel = new JPanel(new BorderLayout());
-        score = new JLabel("points: 0");
+        score = new JLabel("points:" + scoreManager.getScore());
         score.setFont(new Font("Arial", Font.BOLD, 16));
         topPanel.add(score, BorderLayout.NORTH);
 
@@ -196,8 +195,7 @@ public class Task1ShapeIdentification {
         String choice = input.getText().trim();
         switch (choice) {
             case "2D":
-                if (is_played_task1[0] == 0) {
-                    is_played_task1[0] = 1;
+                if (is_played_task1[0] <=3) {
                     startSubtask("2D");
                 } else {
                     JOptionPane.showMessageDialog(null, "<html>You have played this module,<br>" +
@@ -205,8 +203,7 @@ public class Task1ShapeIdentification {
                 }
                 break;
             case "3D":
-                if (is_played_task1[1] == 0) {
-                    is_played_task1[1] = 1;
+                if (is_played_task1[1] <=3) {
                     startSubtask("3D");
                 } else {
                     JOptionPane.showMessageDialog(null, "<html>You have played this module,<br>" +
@@ -229,18 +226,24 @@ public class Task1ShapeIdentification {
         isSubtaskCompleted = false;
         goBackButton.setVisible(false); // 答题中隐藏返回按钮
 
-        int maxQuestions = 4;
-        if (currentShapes.size() > maxQuestions) {
-            currentShapes = currentShapes.subList(0, maxQuestions);
+        int maxQuestions =4;
+        if (type.equals("2D")) {
+            maxQuestions = 4 - is_played_task1[0];
+        }else if (type.equals("3D")) {
+            maxQuestions = 4 - is_played_task1[1];
         }
-        if (currentShapes.size() > 0) {
+
+        if (currentShapes.size() > maxQuestions) {
+            // 创建新的ArrayList实例，确保可序列化
+            currentShapes = new ArrayList<>(currentShapes.subList(0, maxQuestions));
+        }
+        if (currentIndex < currentShapes.size()) {
             currentShape = currentShapes.get(currentIndex);
             showShape();
         } else {
             finishTask(); // 无题目时直接完成
         }
     }
-
     private void showShape() {
         String imgPath = "images/" + currentShape.getImageFilename();
         URL imageUrl = getClass().getClassLoader().getResource(imgPath);
@@ -274,6 +277,12 @@ public class Task1ShapeIdentification {
         String answer = input.getText().trim();
         input.setText("");
         if (checkAnswer(answer, currentShape.getName())) {
+            if(currentShape instanceof ShapeData.Shape2D) {
+                is_played_task1[0] += 1;
+            }else if(currentShape instanceof ShapeData.Shape3D) {
+                is_played_task1[1] += 1;
+            }
+
             int points = calculatePoints();
             scoreManager.addScore(points);
             score.setText("points: " + scoreManager.getScore());
@@ -288,6 +297,11 @@ public class Task1ShapeIdentification {
                 output.setText("❌ Incorrect. Try again.");
 
             } else {
+                if(currentShape instanceof ShapeData.Shape2D) {
+                    is_played_task1[0] += 1;
+                }else if(currentShape instanceof ShapeData.Shape3D) {
+                    is_played_task1[1] += 1;
+                }
                 output.setText("⚠️ The correct answer was: " + currentShape.getName());
                 input.setEnabled(false);
                 nextButton.setVisible(true);
