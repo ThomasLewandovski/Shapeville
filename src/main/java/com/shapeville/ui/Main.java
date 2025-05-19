@@ -20,10 +20,10 @@ import java.util.Set;
 
 public class Main {
     // 定义存档文件名
-    private static final String SAVE_FILE = "Archive/shapeville_save.dat";
+    private static final String SAVE_FILE = "src/main/resources/Archive/shapeville_save.dat";
 
     // 成员变量定义
-    private JLabel counter1;
+//    private JLabel counter1;
     private JLabel counter2;
     private ScoreManager scoreManager;
     private boolean[] taskCompletionStatus = new boolean[6];
@@ -213,7 +213,7 @@ public class Main {
         cardPanel.add(task1.task1, "task1");
         task1.onReturnHome = () -> {
             cardLayout.show(cardPanel, "startPanel");
-            counter1.setText("积分：" + scoreManager.getScore());
+//            counter1.setText("积分：" + scoreManager.getScore());
             counter2.setText("积分：" + scoreManager.getScore());
             is_played_task1 = task1.getIs_played_task1(); // 更新游戏状态
 
@@ -245,7 +245,7 @@ public class Main {
 
         task2.onReturnHome = () -> {
             cardLayout.show(cardPanel, "startPanel");
-            counter1.setText("积分：" + scoreManager.getScore());
+//            counter1.setText("积分：" + scoreManager.getScore());
             counter2.setText("积分：" + scoreManager.getScore());
 
             task2ProgressBar.setValue(task2.identifiedTypes.size());
@@ -271,7 +271,7 @@ public class Main {
 
         task3.onReturnHome = () -> {
             cardLayout.show(cardPanel, "startPanel");
-            counter1.setText("积分：" + scoreManager.getScore());
+//            counter1.setText("积分：" + scoreManager.getScore());
             counter2.setText("积分：" + scoreManager.getScore());
 
             task3ProgressBar.setValue(task3.CompletedShapes.size());
@@ -316,7 +316,7 @@ public class Main {
         // 保持原有的 onReturnHome 回调
         task4.onReturnHome = () -> {
             cardLayout.show(cardPanel, "startPanel");
-            counter1.setText("积分：" + scoreManager.getScore());
+//            counter1.setText("积分：" + scoreManager.getScore());
             counter2.setText("积分：" + scoreManager.getScore());
             task4ProgressBar.setValue(task4.Completed);
         };
@@ -326,7 +326,7 @@ public class Main {
         cardPanel.add(bonus1.taskPanel, "bonus1");
         bonus1.onReturnHome = () -> {
             cardLayout.show(cardPanel, "startPanel");
-            counter1.setText("积分：" + scoreManager.getScore());
+//            counter1.setText("积分：" + scoreManager.getScore());
             counter2.setText("积分：" + scoreManager.getScore());
 
             bonus1ProgressBar.setValue(bonus1.completedTasks);
@@ -340,7 +340,7 @@ public class Main {
         cardPanel.add(bonus2.taskPanel, "bonus2");
         bonus2.onReturnHome = () -> {
             cardLayout.show(cardPanel, "startPanel");
-            counter1.setText("积分：" + scoreManager.getScore());
+//            counter1.setText("积分：" + scoreManager.getScore());
             counter2.setText("积分：" + scoreManager.getScore());
 
             bonus2ProgressBar.setValue(bonus2.completedTasks);
@@ -496,7 +496,7 @@ public class Main {
      */
     private void useGameState(GameState state) {
         // 更新积分显示
-        counter1.setText("积分：" + state.score);
+//        counter1.setText("积分：" + state.score);
         counter2.setText("积分：" + state.score);
         scoreManager.setScore(state.score);
 
