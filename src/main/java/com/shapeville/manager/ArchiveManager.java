@@ -11,12 +11,12 @@ import java.util.List;
 import java.util.Set;
 
 public class ArchiveManager {
-    private static final String TASK1_SAVE_FILE = "task1_saved_file.dat";
-    private static final String TASK2_SAVE_FILE = "task2_saved_file.dat";
-    private static final String TASK3_SAVE_FILE = "task3_saved_file.dat";
-    private static final String TASK4_SAVE_FILE = "task4_saved_file.dat";
-    private static final String BONUS1_SAVE_FILE = "bonus1_saved_file.dat";
-    private static final String BONUS2_SAVE_FILE = "bonus2_saved_file.dat";
+    private static final String TASK1_SAVE_FILE = "Archive/task1_saved_file.dat";
+    private static final String TASK2_SAVE_FILE = "Archive/task2_saved_file.dat";
+    private static final String TASK3_SAVE_FILE = "Archive/task3_saved_file.dat";
+    private static final String TASK4_SAVE_FILE = "Archive/task4_saved_file.dat";
+    private static final String BONUS1_SAVE_FILE = "Archive/bonus1_saved_file.dat";
+    private static final String BONUS2_SAVE_FILE = "Archive/bonus2_saved_file.dat";
 
     public static class GameState implements Serializable {
         private static final long serialVersionUID = 1L;
