@@ -145,6 +145,18 @@ public class Main {
             cardLayout.show(cardPanel, "mainPanel");
         });
 
+        JButton score_display = new JButton("Score Display");
+        score_display.setBounds(600, 0, 180, 30);
+        startpanel.add(score_display);
+
+        score_detail scoreDetail = new score_detail(score_for_tasks, cardLayout, cardPanel);
+        JPanel scorePanel = scoreDetail.panel;
+
+        score_display.addActionListener(e -> {
+            scoreDetail.updateScores(score_for_tasks);
+            cardLayout.show(cardPanel, "score_display");
+        });
+
         // 4个task按钮居中横排
         task1Button = new JButton("task1:");
         task2Button = new JButton("task2:");
@@ -225,6 +237,7 @@ public class Main {
         // 将面板添加到卡片面板
         cardPanel.add(mainpanel, "mainPanel");
         cardPanel.add(startpanel, "startPanel");
+        cardPanel.add(scorePanel, "score_display");
 
         scoreManager = new ScoreManager();
 
@@ -752,14 +765,22 @@ public class Main {
 
         // 返回按钮
         Component backButton = null;
+        Component detailButton = null;
         for (Component c : startpanel.getComponents()) {
             if (c instanceof JButton && "Back".equals(((JButton) c).getText())) {
                 backButton = c;
                 break;
             }
+            if (c instanceof JButton && "Score Display".equals(((JButton) c).getText())) {
+                detailButton = c;
+                break;
+            }
         }
         if (backButton != null) {
             backButton.setBounds(width / 80, height*7/8, width / 8, height / 20);
+        }
+        if (detailButton != null) {
+            detailButton.setBounds(width * 9/10, 0, width / 10, height / 20);
         }
 
         // 任务按钮 task1-task4
