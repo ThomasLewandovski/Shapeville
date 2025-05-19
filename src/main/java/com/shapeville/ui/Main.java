@@ -316,7 +316,7 @@ public class Main {
 
         task3.onReturnHome = () -> {
             cardLayout.show(cardPanel, "startPanel");
-            counter2.setText("积分：" + scoreManager.getScore());
+            counter2.setText("points: " + scoreManager.getScore());
             task3ProgressBar.setValue(task3.CompletedShapes.size());
             updateScoreProgress(); // 更新积分进度条
         };
