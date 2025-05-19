@@ -54,6 +54,7 @@ public class Task1ShapeIdentification {
 
     private CardLayout cardLayout;
     private JPanel cardPanel; // 主内容面板
+    private JLabel mascotLabel;
 
     private String getRandomEncouragement() {
         int idx = (int) (Math.random() * encouragements.length);
@@ -63,14 +64,21 @@ public class Task1ShapeIdentification {
     public Task1ShapeIdentification(ScoreManager scoreManager, int[] is_played_task1) {
         this.scoreManager = scoreManager;
         this.is_played_task1 = is_played_task1.clone();
+        Color backgroundColor = new Color(255, 250, 200);
 
         task1 = new JPanel(new BorderLayout(10, 10));
         task1.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        task1.setBackground(new Color(255, 250, 240)); // Floral White
 
         // 顶部面板（分数和提示）
         JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.setBackground(backgroundColor); // 顶部背景设为米黄色
+
         score = new JLabel("points:" + scoreManager.getScore());
         score.setFont(new Font("Arial", Font.BOLD, 16));
+        score.setOpaque(true); // 让标签背景生效
+        score.setBackground(backgroundColor);    // 标签背景设为相同色
+
         topPanel.add(score, BorderLayout.NORTH);
 
         output = new JLabel();
@@ -82,10 +90,40 @@ public class Task1ShapeIdentification {
 
         task1.add(topPanel, BorderLayout.NORTH);
 
+        JLabel mascot = new JLabel();
+        ImageIcon raccoonIcon = new ImageIcon(getClass().getClassLoader().getResource("images/Raccoon.png"));
+        Image raccoonImage = raccoonIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
+        //mascot.setIcon(new ImageIcon(raccoonImage));
+        //mascot.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        //mascot.setHorizontalAlignment(SwingConstants.LEFT);
+        //mascot.setVerticalAlignment(SwingConstants.TOP);
+
+        // 输出标签（吉祥物说话）
+        output = new JLabel();
+        output.setFont(new Font("Arial", Font.PLAIN, 16));
+        output.setVerticalAlignment(SwingConstants.TOP);
+        output.setHorizontalAlignment(SwingConstants.LEFT);
+        output.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+
+        JPanel speechPanel = new JPanel(new BorderLayout());
+        speechPanel.setBackground(backgroundColor);
+        //speechPanel.add(score, BorderLayout.NORTH);
+        speechPanel.add(output, BorderLayout.CENTER);
+
+        topPanel.add(mascot, BorderLayout.WEST);
+        topPanel.add(speechPanel, BorderLayout.CENTER);
+
+        //task1.add(topPanel, BorderLayout.NORTH);
+
+
         // 使用CardLayout管理不同视图
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
+        cardPanel.setBackground(backgroundColor);
         task1.add(cardPanel, BorderLayout.CENTER);
+
+        cardPanel.setBackground(new Color(255, 239, 190));
+        cardPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));  // 预防缝隙
 
         // 初始化各视图面板
         initModeSelectionPanel();
@@ -94,13 +132,15 @@ public class Task1ShapeIdentification {
 
         // 底部按钮面板
         JPanel bottomPanel = new JPanel(new GridBagLayout());
+        bottomPanel.setBackground(backgroundColor);
         GridBagConstraints gbcBottom = new GridBagConstraints();
         gbcBottom.insets = new Insets(5, 5, 5, 5);
         gbcBottom.fill = GridBagConstraints.HORIZONTAL;
 
         // 主页/返回按钮
         goHomeButton = new JButton(" Return to Home");
-        goHomeButton.setFont(new Font("Arial", Font.PLAIN, 14));
+        styleButton(goHomeButton);
+        //goHomeButton.setFont(new Font("Arial", Font.PLAIN, 14));
         gbcBottom.gridx = 0;
         gbcBottom.gridy = 0;
         gbcBottom.gridwidth = 1;
@@ -109,7 +149,8 @@ public class Task1ShapeIdentification {
 
         // 下一题按钮
         nextButton = new JButton("Next Question ▶");
-        nextButton.setFont(new Font("Arial", Font.PLAIN, 14));
+        styleButton(nextButton);
+        //nextButton.setFont(new Font("Arial", Font.PLAIN, 14));
         nextButton.setVisible(false);
         gbcBottom.gridx = 1;
         gbcBottom.gridy = 0;
@@ -155,36 +196,62 @@ public class Task1ShapeIdentification {
 
         // 初始化显示模式选择界面
         showModeSelection();
+
+
     }
 
     private void initModeSelectionPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBackground(new Color(255, 239, 190));
+
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.insets = new Insets(20, 20, 20, 20);
+        gbc.fill = GridBagConstraints.BOTH;
+
+        // 左侧吉祥物
+        JLabel mascot = new JLabel();
+        mascot.setIcon(new ImageIcon(
+                new ImageIcon(getClass().getClassLoader().getResource("images/Raccoon.png"))
+                        .getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH)
+        ));
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.gridheight = 2;
+        panel.add(mascot, gbc);
 
-        // 2D/3D选择按钮
+        // 右侧按钮面板（竖排）
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridLayout(2, 1, 10, 10));
+        buttonPanel.setBackground(new Color(255, 239, 190));
+        mascot.setOpaque(true);
+        mascot.setBackground(new Color(255, 239, 190));
+
         btn2D = new JButton("2D Shapes");
-        btn2D.setFont(new Font("Arial", Font.PLAIN, 16));
+        btn2D.setFont(new Font("Arial", Font.BOLD, 18));
         btn2D.addActionListener(e -> selectShapeType("2D"));
-        panel.add(btn2D, gbc);
+        buttonPanel.add(btn2D);
 
-        gbc.gridy = 1;
         btn3D = new JButton("3D Shapes");
-        btn3D.setFont(new Font("Arial", Font.PLAIN, 16));
+        btn3D.setFont(new Font("Arial", Font.BOLD, 18));
         btn3D.addActionListener(e -> selectShapeType("3D"));
-        panel.add(btn3D, gbc);
+        buttonPanel.add(btn3D);
+
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.gridheight = 2;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        panel.add(buttonPanel, gbc);
 
         cardPanel.add(panel, MODE_SELECTION);
     }
-
     private void initQuestionPanel() {
         JPanel panel = new JPanel(new BorderLayout(10, 10));
+        panel.setBackground(new Color(255, 239, 190));
 
         // 图像面板
         JPanel imagePanel = new JPanel(new GridBagLayout());
+        imagePanel.setBackground(new Color(255, 239, 190));
         img = new JLabel();
         img.setHorizontalAlignment(JLabel.CENTER);
         img.setVerticalAlignment(JLabel.CENTER);
@@ -194,15 +261,40 @@ public class Task1ShapeIdentification {
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.weightx = 1.0;
-        gbc.weighty = 1.0;
+        gbc.weighty = 0.8;
         gbc.fill = GridBagConstraints.BOTH;
         imagePanel.add(img, gbc);
 
-        panel.add(imagePanel, BorderLayout.CENTER);
+        // 吉祥物 + 输出区域
+        JPanel feedbackPanel = new JPanel(new BorderLayout(5, 5));
+        feedbackPanel.setBackground(new Color(255, 239, 190));
+
+        mascotLabel = new JLabel();
+        mascotLabel.setIcon(new ImageIcon(
+                new ImageIcon(getClass().getClassLoader().getResource("images/Raccoon.png"))
+                        .getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH)));
+        mascotLabel.setHorizontalAlignment(SwingConstants.LEFT);
+
+        output = new JLabel(" ", JLabel.LEFT);
+        output.setFont(new Font("Arial", Font.PLAIN, 16));
+        output.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        output.setVerticalAlignment(SwingConstants.TOP);
+
+        feedbackPanel.add(mascotLabel, BorderLayout.WEST);
+        feedbackPanel.add(output, BorderLayout.CENTER);
+
+        JPanel center = new JPanel(new BorderLayout(10, 10));
+        center.setBackground(new Color(255, 239, 190));
+        center.add(imagePanel, BorderLayout.CENTER);
+        center.add(feedbackPanel, BorderLayout.SOUTH);
+
+        panel.add(center, BorderLayout.CENTER);
 
         // 输入框
         input = new JTextField();
         input.setFont(new Font("Arial", Font.PLAIN, 16));
+        input.setBackground(new Color(255, 239, 190));
+        input.setPreferredSize(new Dimension(200, 30));
         panel.add(input, BorderLayout.SOUTH);
 
         cardPanel.add(panel, QUESTION);
@@ -211,6 +303,7 @@ public class Task1ShapeIdentification {
     private void initResultPanel() {
         JPanel panel = new JPanel(new BorderLayout());
         JLabel resultLabel = new JLabel();
+        panel.setBackground(new Color(255, 239, 190));
         resultLabel.setFont(new Font("Arial", Font.PLAIN, 16));
         resultLabel.setHorizontalAlignment(JLabel.CENTER);
         resultLabel.setVerticalAlignment(JLabel.CENTER);
@@ -328,6 +421,7 @@ public class Task1ShapeIdentification {
         nextButton.setVisible(false);
     }
 
+    // 替换原有的 handleShapeAnswer 方法
     private void handleShapeAnswer() {
         String answer = input.getText().trim();
         input.setText("");
@@ -337,18 +431,21 @@ public class Task1ShapeIdentification {
             int points = calculatePoints();
             scoreManager.addScore(points);
             score.setText("points: " + scoreManager.getScore());
-            output.setText("<html> Correct! +" + points + " points.<br>" +
-                    getRandomEncouragement() + "</html>");
+
+            output.setText("<html><div style='padding:5px;border:2px solid rgb(255,239,190);background:#fff;border-radius:10px;'>"
+                    + "Correct! +" + points + " points<br>" + getRandomEncouragement() + "</div></html>");
             input.setEnabled(false);
             isIdentifiedShapes++;
             nextButton.setVisible(true);
         } else {
             attempt++;
             if (attempt <= 3) {
-                output.setText("Incorrect. Try again.");
+                output.setText("<html><div style='padding:5px;border:2px solid rgb(255,239,190);background:#fff;border-radius:10px;'>"
+                        + "Incorrect. Try again.</div></html>");
             } else {
                 updatePlayCount();
-                output.setText("The correct answer was: " + currentShape.getName());
+                output.setText("<html><div style='padding:5px;border:2px solid rgb(255,239,190);background:#fff;border-radius:10px;'>"
+                        + "The correct answer was: <b>" + currentShape.getName() + "</b></div></html>");
                 input.setEnabled(false);
                 nextButton.setVisible(true);
                 isIdentifiedShapes++;
@@ -397,4 +494,15 @@ public class Task1ShapeIdentification {
             onComplete.run();
         }
     }
+
+    private void styleButton(JButton btn) {
+        btn.setFont(new Font("Arial", Font.BOLD, 14));
+        btn.setBackground(new Color(255, 228, 196)); // 更深一点的米色
+        btn.setFocusPainted(false);
+        btn.setContentAreaFilled(true);
+        btn.setOpaque(true);
+        btn.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+    }
+
 }

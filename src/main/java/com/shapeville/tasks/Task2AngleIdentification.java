@@ -135,7 +135,7 @@ public class Task2AngleIdentification {
         gbcBottom.gridx = 1;
         bottomPanel.add(submitButton, gbcBottom);
 
-        goHomeButton = new JButton("🏠 Return to Home");
+        goHomeButton = new JButton("Return to Home");
         goHomeButton.setFont(new Font("Arial", Font.PLAIN, 14));
         goHomeButton.setVisible(true);  // ✅ 改为始终可见
         gbcBottom.gridx = 0;
@@ -164,7 +164,7 @@ public class Task2AngleIdentification {
         // 下一题按钮事件处理
         nextButton.addActionListener(e -> {
             if (identifiedTypes.size() >= 5) {
-                questionLabel.setText("🎉 You have identified all required angle types! Task Complete!");
+                questionLabel.setText("You have identified all required angle types! Task Complete!");
                 inputField.setVisible(false);
                 submitButton.setVisible(false);
                 nextButton.setVisible(false); // ✅ 禁止继续做题
@@ -205,7 +205,7 @@ public class Task2AngleIdentification {
             try {
                 int angle = Integer.parseInt(userInput);
                 if (angle < 0 || angle > 360 || angle % 10 != 0) {
-                    questionLabel.setText("❌ Invalid angle. Must be 0-360 and a multiple of 10.");
+                    questionLabel.setText("Invalid angle. Must be 0-360 and a multiple of 10.");
                     return;
                 }
                 currentAngle = angle;
@@ -216,7 +216,7 @@ public class Task2AngleIdentification {
                 waitingForAngleInput = false;
                 attempt = 1;
             } catch (NumberFormatException ex) {
-                questionLabel.setText("❌ Please enter a number between 0 and 360.");
+                questionLabel.setText("Please enter a number between 0 and 360.");
             }
         } else {
             String userAnswer = userInput;
@@ -238,7 +238,7 @@ public class Task2AngleIdentification {
             // }
             if (userAnswer.equalsIgnoreCase(correct)) {
                 String encouragement = encouragements[(int) (Math.random() * encouragements.length)];
-                questionLabel.setText("<html>✅ Correct! It was a " + correct + " angle.<br>" + encouragement + "</html>");
+                questionLabel.setText("<html>Correct! It was a " + correct + " angle.<br>" + encouragement + "</html>");
                 int points = 0;
                 if (!identifiedTypes.contains(correct)) {
                     points = switch (attempt) {
@@ -261,18 +261,18 @@ public class Task2AngleIdentification {
             else {
                 attempt++;
                 if (attempt > 3) {
-                    // questionLabel.setText("⚠️ The correct answer was: " + correct);
+                    // questionLabel.setText("The correct answer was: " + correct);
                     // identifiedTypes.add(correct.toLowerCase());
                     // checkCompletion();
                     waitingForAngleInput = true;
-                    questionLabel.setText("<html>⚠️ The correct answer was: <b>" + correct + "</b></html>");
+                    questionLabel.setText("<html>The correct answer was: <b>" + correct + "</b></html>");
                     identifiedTypes.add(correct.toLowerCase());
 
                     inputField.setVisible(false);
                     submitButton.setVisible(false);
                     nextButton.setVisible(true);  // ⏭️ 等待点击“下一题”
                 } else {
-                    questionLabel.setText("❌ Incorrect. Try again. What type of angle? (Acute / Right / Obtuse / Reflex / Straight / Full)");
+                    questionLabel.setText("Incorrect. Try again. What type of angle? (Acute / Right / Obtuse / Reflex / Straight / Full)");
 
                 }
             }
@@ -285,7 +285,7 @@ public class Task2AngleIdentification {
             if (onComplete != null) {
                 onComplete.run();
             }
-            questionLabel.setText("🎉 You have identified all 4 types of angles! Task Complete!");
+            questionLabel.setText("You have identified all 4 types of angles! Task Complete!");
             inputField.setVisible(false);
             submitButton.setVisible(false);
             goHomeButton.setVisible(false);
