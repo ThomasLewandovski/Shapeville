@@ -401,7 +401,7 @@ public class Main {
             public void windowClosing(WindowEvent e) {
                 int choice = JOptionPane.showOptionDialog(
                         frame,
-                        "是否保存当前游戏进度？",
+                        "<html>您当前的得分是:"+scoreManager.getScore() + "<br>是否保存当前游戏进度？</html>",
                         "退出确认",
                         JOptionPane.YES_NO_CANCEL_OPTION,
                         JOptionPane.QUESTION_MESSAGE,
