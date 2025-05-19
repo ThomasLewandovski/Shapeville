@@ -26,7 +26,7 @@ public class Task1ShapeIdentification {
             "💡 Smart thinking!",
             "🔥 Keep it up!"
     };
-    private ScoreManager scoreManager;
+    public ScoreManager scoreManager;
     public Runnable onReturnHome;
     public JButton nextButton;
     public JButton goHomeButton;
@@ -39,13 +39,13 @@ public class Task1ShapeIdentification {
     private KeyAdapter keyAdapter;
     public Runnable onComplete;
 
-    private List<ShapeItem> currentShapes;
-    private ShapeItem currentShape;
-    private int currentIndex = 0;
-    private int attempt = 1;
-    private boolean isAdvanced = false;
-    private boolean isSubtaskStarted = false;
-    private boolean isSubtaskCompleted = false; // 新增：子任务完成标记
+    public List<ShapeItem> currentShapes;
+    public ShapeItem currentShape;
+    public int currentIndex = 0;
+    public int attempt = 1;
+    public boolean isAdvanced = false;
+    public boolean isSubtaskStarted = false;
+    public boolean isSubtaskCompleted = false; // 新增：子任务完成标记
 
     private String getRandomEncouragement() {
         int idx = (int) (Math.random() * encouragements.length);
@@ -54,7 +54,7 @@ public class Task1ShapeIdentification {
 
     public Task1ShapeIdentification(ScoreManager scoreManager, int[] is_played_task1) {
         this.scoreManager = scoreManager;
-        this.is_played_task1 = is_played_task1;
+        this.is_played_task1 = is_played_task1.clone();
 
         task1 = new JPanel(new BorderLayout(10, 10));
         task1.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));

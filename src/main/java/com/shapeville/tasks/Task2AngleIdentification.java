@@ -28,13 +28,13 @@ public class Task2AngleIdentification {
     public JButton goHomeButton;
     public Runnable onReturnHome;
     private JLabel scoreLabel;
-    private int result = 0;
+    public int result = 0;
     public Runnable onComplete;
 
-    private int currentAngle = -1;
-    private int attempt = 1;
+    public int currentAngle = -1;
+    public int attempt = 1;
     public final Set<String> identifiedTypes = new HashSet<>();
-    private boolean waitingForAngleInput = true;
+    public boolean waitingForAngleInput = true;
 
     private AngleCanvas angleCanvas;
 

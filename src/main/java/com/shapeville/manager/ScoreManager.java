@@ -20,6 +20,10 @@ public class ScoreManager {
         return score;
     }
 
+    public void setScore(int score){
+        this.score = score;
+    }
+
     public void resetScore() {
         score = 0;
     }
