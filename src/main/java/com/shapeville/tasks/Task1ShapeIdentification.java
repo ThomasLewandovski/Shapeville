@@ -29,6 +29,8 @@ public class Task1ShapeIdentification {
     public JButton nextButton;
     public JButton goHomeButton;
     public JButton goBackButton;
+    public JButton btn2D;
+    public JButton btn3D;
     public JPanel task1;
     public JLabel img;
     public JLabel output;
@@ -43,7 +45,15 @@ public class Task1ShapeIdentification {
     public int attempt = 1;
     public boolean isAdvanced = false;
     public boolean isSubtaskStarted = false;
-    public boolean isSubtaskCompleted = false; // 新增：子任务完成标记
+    public boolean isSubtaskCompleted = false;
+
+    // 定义CardLayout的面板标识符
+    private static final String MODE_SELECTION = "MODE_SELECTION";
+    private static final String QUESTION = "QUESTION";
+    private static final String RESULT = "RESULT";
+
+    private CardLayout cardLayout;
+    private JPanel cardPanel; // 主内容面板
 
     private String getRandomEncouragement() {
         int idx = (int) (Math.random() * encouragements.length);
@@ -57,8 +67,7 @@ public class Task1ShapeIdentification {
         task1 = new JPanel(new BorderLayout(10, 10));
         task1.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // 顶部面板
-//        System.out.println("1"+scoreManager.getScore());
+        // 顶部面板（分数和提示）
         JPanel topPanel = new JPanel(new BorderLayout());
         score = new JLabel("points:" + scoreManager.getScore());
         score.setFont(new Font("Arial", Font.BOLD, 16));
@@ -73,7 +82,108 @@ public class Task1ShapeIdentification {
 
         task1.add(topPanel, BorderLayout.NORTH);
 
-        // 中间图像面板
+        // 使用CardLayout管理不同视图
+        cardLayout = new CardLayout();
+        cardPanel = new JPanel(cardLayout);
+        task1.add(cardPanel, BorderLayout.CENTER);
+
+        // 初始化各视图面板
+        initModeSelectionPanel();
+        initQuestionPanel();
+        initResultPanel();
+
+        // 底部按钮面板
+        JPanel bottomPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbcBottom = new GridBagConstraints();
+        gbcBottom.insets = new Insets(5, 5, 5, 5);
+        gbcBottom.fill = GridBagConstraints.HORIZONTAL;
+
+        // 主页/返回按钮
+        goHomeButton = new JButton("🏠 Return to Home");
+        goHomeButton.setFont(new Font("Arial", Font.PLAIN, 14));
+        gbcBottom.gridx = 0;
+        gbcBottom.gridy = 0;
+        gbcBottom.gridwidth = 1;
+        gbcBottom.weightx = 0.5;
+        bottomPanel.add(goHomeButton, gbcBottom);
+
+        // 下一题按钮
+        nextButton = new JButton("Next Question ▶");
+        nextButton.setFont(new Font("Arial", Font.PLAIN, 14));
+        nextButton.setVisible(false);
+        gbcBottom.gridx = 1;
+        gbcBottom.gridy = 0;
+        gbcBottom.gridwidth = 1;
+        gbcBottom.weightx = 0.5;
+        bottomPanel.add(nextButton, gbcBottom);
+
+        task1.add(bottomPanel, BorderLayout.SOUTH);
+
+        // 按钮事件处理
+        goHomeButton.addActionListener(e -> {
+            if (!isSubtaskStarted) {
+                // 在模式选择界面点击Home，返回主菜单
+                if (onReturnHome != null) onReturnHome.run();
+            } else {
+                // 在答题界面点击Home，返回模式选择
+                showModeSelection();
+            }
+        });
+
+        nextButton.addActionListener(e -> {
+            currentIndex++;
+            attempt = 1;
+            if (currentIndex < currentShapes.size()) {
+                currentShape = currentShapes.get(currentIndex);
+                showShape();
+                cardLayout.show(cardPanel, QUESTION);
+            } else {
+                finishTask();
+            }
+        });
+
+        // 键盘事件
+        keyAdapter = new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER && isSubtaskStarted && !isSubtaskCompleted) {
+                    handleShapeAnswer();
+                }
+            }
+        };
+        input.addKeyListener(keyAdapter);
+
+        // 初始化显示模式选择界面
+        showModeSelection();
+    }
+
+    private void initModeSelectionPanel() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.CENTER;
+
+        // 2D/3D选择按钮
+        btn2D = new JButton("2D Shapes");
+        btn2D.setFont(new Font("Arial", Font.PLAIN, 16));
+        btn2D.addActionListener(e -> selectShapeType("2D"));
+        panel.add(btn2D, gbc);
+
+        gbc.gridy = 1;
+        btn3D = new JButton("3D Shapes");
+        btn3D.setFont(new Font("Arial", Font.PLAIN, 16));
+        btn3D.addActionListener(e -> selectShapeType("3D"));
+        panel.add(btn3D, gbc);
+
+        cardPanel.add(panel, MODE_SELECTION);
+    }
+
+    private void initQuestionPanel() {
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
+
+        // 图像面板
         JPanel imagePanel = new JPanel(new GridBagLayout());
         img = new JLabel();
         img.setHorizontalAlignment(JLabel.CENTER);
@@ -88,162 +198,104 @@ public class Task1ShapeIdentification {
         gbc.fill = GridBagConstraints.BOTH;
         imagePanel.add(img, gbc);
 
-        task1.add(imagePanel, BorderLayout.CENTER);
+        panel.add(imagePanel, BorderLayout.CENTER);
 
-        // 底部按钮面板
-        JPanel bottomPanel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbcBottom = new GridBagConstraints();
-        gbcBottom.insets = new Insets(5, 5, 5, 5);
-        gbcBottom.fill = GridBagConstraints.HORIZONTAL;
-
+        // 输入框
         input = new JTextField();
         input.setFont(new Font("Arial", Font.PLAIN, 16));
-        gbcBottom.gridx = 0;
-        gbcBottom.gridy = 0;
-        gbcBottom.gridwidth = 3;
-        gbcBottom.weightx = 1.0;
-        bottomPanel.add(input, gbcBottom);
+        panel.add(input, BorderLayout.SOUTH);
 
-        goHomeButton = new JButton("🏠 Return to Home");
-        goHomeButton.setFont(new Font("Arial", Font.PLAIN, 14));
-        gbcBottom.gridx = 0;
-        gbcBottom.gridy = 1;
-        gbcBottom.gridwidth = 1;
-        gbcBottom.weightx = 0.5;
-        bottomPanel.add(goHomeButton, gbcBottom);
-
-        goBackButton = new JButton("🔙 Back to Selection");
-        goBackButton.setFont(new Font("Arial", Font.PLAIN, 14));
-        goBackButton.setVisible(false); // 初始隐藏
-        gbcBottom.gridx = 1;
-        gbcBottom.gridy = 1;
-        gbcBottom.gridwidth = 1;
-        gbcBottom.weightx = 0.5;
-        bottomPanel.add(goBackButton, gbcBottom);
-
-        nextButton = new JButton("Next Question ▶");
-        nextButton.setFont(new Font("Arial", Font.PLAIN, 14));
-        nextButton.setVisible(false);
-        gbcBottom.gridx = 2;
-        gbcBottom.gridy = 1;
-        gbcBottom.weightx = 0.5;
-        bottomPanel.add(nextButton, gbcBottom);
-
-        task1.add(bottomPanel, BorderLayout.SOUTH);
-
-        // 按钮事件
-        goHomeButton.addActionListener(e -> {
-            if (onReturnHome != null) onReturnHome.run();
-        });
-
-        goBackButton.addActionListener(e -> {
-            this.start(); // 重新启动任务
-            isSubtaskStarted = false;
-            isSubtaskCompleted = false;
-            img.setIcon(null);
-            input.setEnabled(true);
-            input.requestFocus();
-        });
-
-        nextButton.addActionListener(e -> {
-            currentIndex++;
-            attempt = 1;
-            if (currentIndex < currentShapes.size()) {
-                currentShape = currentShapes.get(currentIndex);
-                showShape();
-                input.setEnabled(true);
-                input.requestFocus();
-                nextButton.setVisible(false);
-            } else {
-                finishTask();
-            }
-        });
-
-        // 键盘事件
-        keyAdapter = new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    if (!isSubtaskStarted) {
-                        handleInput();
-                    } else if (!isSubtaskCompleted) { // 未完成时处理答案
-                        handleShapeAnswer();
-                    }
-                }
-            }
-        };
-        input.addKeyListener(keyAdapter);
-
-        start();
+        cardPanel.add(panel, QUESTION);
     }
 
-    public void start() {
-        output.setText("<html>📐 Task 1: Identify 2D / 3D Shapes<br>" +
-                "1. 2D Shapes (Basic Level)<br>" +
-                "2. 3D Shapes (Advanced Level)<br><br>" +
-                "Type '2D' or '3D' to start:</html>");
+    private void initResultPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        JLabel resultLabel = new JLabel();
+        resultLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+        resultLabel.setHorizontalAlignment(JLabel.CENTER);
+        resultLabel.setVerticalAlignment(JLabel.CENTER);
+        resultLabel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        panel.add(resultLabel, BorderLayout.CENTER);
+
+        cardPanel.add(panel, RESULT);
+    }
+
+    public void showModeSelection() {
         isSubtaskStarted = false;
         isSubtaskCompleted = false;
-        goBackButton.setVisible(false);
         img.setIcon(null);
-        input.setEnabled(true);
-        input.requestFocus();
+        input.setText("");
+
+        output.setText("<html>📐 Task 1: Identify 2D / 3D Shapes<br><br>" +
+                "Select the type of shapes you want to practice:</html>");
+
+        // 显示模式选择面板
+        cardLayout.show(cardPanel, MODE_SELECTION);
+
+        // 检查是否已达到最大练习次数
+        if (is_played_task1[0] >= 3) {
+            btn2D.setEnabled(false);
+            btn2D.setText("2D Shapes (Completed)");
+        } else {
+            btn2D.setEnabled(true);
+            btn2D.setText("2D Shapes");
+        }
+
+        if (is_played_task1[1] >= 3) {
+            btn3D.setEnabled(false);
+            btn3D.setText("3D Shapes (Completed)");
+        } else {
+            btn3D.setEnabled(true);
+            btn3D.setText("3D Shapes");
+        }
+
+        // 更新Home按钮文本
+        goHomeButton.setText("🏠 Return to Home");
+        nextButton.setVisible(false);
+
         score.setText("points: " + scoreManager.getScore());
     }
 
-    private void handleInput() {
-        String choice = input.getText().trim();
-        switch (choice) {
-            case "2D":
-                if (is_played_task1[0] <=3) {
-                    startSubtask("2D");
-                } else {
-                    JOptionPane.showMessageDialog(null, "<html>You have played this module,<br>" +
-                            "please try other modules</html>", "Prompt", JOptionPane.INFORMATION_MESSAGE);
-                }
-                break;
-            case "3D":
-                if (is_played_task1[1] <=3) {
-                    startSubtask("3D");
-                } else {
-                    JOptionPane.showMessageDialog(null, "<html>You have played this module,<br>" +
-                            "please try other modules</html>", "Prompt", JOptionPane.INFORMATION_MESSAGE);
-                }
-                break;
-            default:
-                output.setText("Invalid input. Please type '2D' or '3D'.");
+    private void selectShapeType(String type) {
+        if ((type.equals("2D") && is_played_task1[0] >= 3) ||
+                (type.equals("3D") && is_played_task1[1] >= 3)) {
+            JOptionPane.showMessageDialog(null,
+                    "<html>This module is completed.<br>Please try other modules.</html>",
+                    "Prompt", JOptionPane.INFORMATION_MESSAGE);
+            return;
         }
-        input.setText("");
+
+        startSubtask(type);
+
+        // 更新Home按钮文本为返回
+        goHomeButton.setText("🔙 Back to Selection");
     }
 
     private void startSubtask(String type) {
-        currentShapes = new ArrayList<>((type.equals("2D") ? ShapeData.getAll2DShapes() : ShapeData.getAll3DShapes()));
-        isAdvanced = type.equals("3D");
+        currentShapes = new ArrayList<>(type.equals("2D") ? ShapeData.getAll2DShapes() : ShapeData.getAll3DShapes());
         Collections.shuffle(currentShapes);
+        isAdvanced = type.equals("3D");
         currentIndex = 0;
         attempt = 1;
         isSubtaskStarted = true;
         isSubtaskCompleted = false;
-        goBackButton.setVisible(false); // 答题中隐藏返回按钮
 
-        int maxQuestions =4;
-        if (type.equals("2D")) {
-            maxQuestions = 4 - is_played_task1[0];
-        }else if (type.equals("3D")) {
-            maxQuestions = 4 - is_played_task1[1];
-        }
+        int maxQuestions = type.equals("2D") ?
+                4 - is_played_task1[0] : 4 - is_played_task1[1];
 
         if (currentShapes.size() > maxQuestions) {
-            // 创建新的ArrayList实例，确保可序列化
-            currentShapes = new ArrayList<>(currentShapes.subList(0, maxQuestions));
+            currentShapes = currentShapes.subList(0, maxQuestions);
         }
-        if (currentIndex < currentShapes.size()) {
+
+        if (!currentShapes.isEmpty()) {
             currentShape = currentShapes.get(currentIndex);
             showShape();
+            cardLayout.show(cardPanel, QUESTION);
         } else {
-            finishTask(); // 无题目时直接完成
+            finishTask();
         }
     }
+
     private void showShape() {
         String imgPath = "images/" + currentShape.getImageFilename();
         URL imageUrl = getClass().getClassLoader().getResource(imgPath);
@@ -256,8 +308,10 @@ public class Task1ShapeIdentification {
                 panelSize = new Dimension(400, 400);
             }
 
-            double ratio = Math.min((double) panelSize.width / originalImage.getWidth(null),
-                    (double) panelSize.height / originalImage.getHeight(null));
+            double ratio = Math.min(
+                    (double) panelSize.width / originalImage.getWidth(null),
+                    (double) panelSize.height / originalImage.getHeight(null)
+            );
             int newWidth = (int) (originalImage.getWidth(null) * ratio);
             int newHeight = (int) (originalImage.getHeight(null) * ratio);
             Image scaledImage = originalImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
@@ -268,45 +322,45 @@ public class Task1ShapeIdentification {
         }
 
         output.setText("<html>What is the name of this shape?<br>" +
-                "Your answer: ");
+                "Your answer: </html>");
         input.setEnabled(true);
         input.requestFocus();
+        nextButton.setVisible(false);
     }
 
     private void handleShapeAnswer() {
         String answer = input.getText().trim();
         input.setText("");
-        if (checkAnswer(answer, currentShape.getName())) {
-            if(currentShape instanceof ShapeData.Shape2D) {
-                is_played_task1[0] += 1;
-            }else if(currentShape instanceof ShapeData.Shape3D) {
-                is_played_task1[1] += 1;
-            }
 
+        if (checkAnswer(answer, currentShape.getName())) {
+            updatePlayCount();
             int points = calculatePoints();
             scoreManager.addScore(points);
             score.setText("points: " + scoreManager.getScore());
             output.setText("<html>✅ Correct! +" + points + " points.<br>" +
                     getRandomEncouragement() + "</html>");
             input.setEnabled(false);
-            isIdentifiedShapes+=1;
+            isIdentifiedShapes++;
             nextButton.setVisible(true);
         } else {
             attempt++;
             if (attempt <= 3) {
                 output.setText("❌ Incorrect. Try again.");
-
             } else {
-                if(currentShape instanceof ShapeData.Shape2D) {
-                    is_played_task1[0] += 1;
-                }else if(currentShape instanceof ShapeData.Shape3D) {
-                    is_played_task1[1] += 1;
-                }
+                updatePlayCount();
                 output.setText("⚠️ The correct answer was: " + currentShape.getName());
                 input.setEnabled(false);
                 nextButton.setVisible(true);
-                isIdentifiedShapes+=1;
+                isIdentifiedShapes++;
             }
+        }
+    }
+
+    private void updatePlayCount() {
+        if (currentShape instanceof ShapeData.Shape2D) {
+            is_played_task1[0]++;
+        } else if (currentShape instanceof ShapeData.Shape3D) {
+            is_played_task1[1]++;
         }
     }
 
@@ -326,16 +380,18 @@ public class Task1ShapeIdentification {
     }
 
     private void finishTask() {
-        int finalScore = scoreManager.getScore();
-        output.setText("<html>🎉 You've completed the " + (isAdvanced ? "3D" : "2D") + " shape task!<br>" +
-                "🏆 Your total score: <b>" + finalScore + "</b> points.<br>" +
-                "Click 'Back to Selection' to choose another module or 'Return to Home' to exit.</html>");
+        isSubtaskCompleted = true;
 
-        input.setEnabled(false);
-//        input.removeKeyListener(keyAdapter);
+        // 更新结果面板
+        JLabel resultLabel = (JLabel) ((JPanel) cardPanel.getComponent(2)).getComponent(0);
+        String taskType = isAdvanced ? "3D" : "2D";
+        resultLabel.setText("<html>🎉 Task Complete! (" + taskType + " Shapes)<br>" +
+                "🏆 Total Score: <b>" + scoreManager.getScore() + "</b> points<br><br>" +
+                "Click 'Back to Selection' to try another module or 'Return to Home' to exit.</html>");
+        output.setText("");
+
+        cardLayout.show(cardPanel, RESULT);
         nextButton.setVisible(false);
-        isSubtaskCompleted = true; // 标记任务完成
-        goBackButton.setVisible(true); // 仅完成后显示返回按钮
 
         if (onComplete != null) {
             onComplete.run();
