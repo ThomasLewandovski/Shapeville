@@ -2,7 +2,6 @@ package com.shapeville.ui;
 
 import static com.shapeville.manager.ArchiveManager.*;
 
-import com.shapeville.manager.ArchiveManager;
 import com.shapeville.manager.ScoreManager;
 import com.shapeville.tasks.Task1ShapeIdentification;
 import com.shapeville.tasks.Task2AngleIdentification;
@@ -272,7 +271,7 @@ public class Main {
             cardLayout.show(cardPanel, "startPanel");
             counter2.setText("积分：" + scoreManager.getScore());
             is_played_task1 = task1.getIs_played_task1();
-
+            score_for_tasks[0] = task1.scores;
             task1ProgressBar.setValue(task1.isIdentifiedShapes);
             updateScoreProgress(); // 更新积分进度条
 
@@ -304,6 +303,7 @@ public class Main {
             cardLayout.show(cardPanel, "startPanel");
             counter2.setText("积分：" + scoreManager.getScore());
             task2ProgressBar.setValue(task2.identifiedTypes.size());
+            score_for_tasks[1] = task2.scores;
             updateScoreProgress(); // 更新积分进度条
         };
 
@@ -328,6 +328,7 @@ public class Main {
         task3.onReturnHome = () -> {
             cardLayout.show(cardPanel, "startPanel");
             counter2.setText("points: " + scoreManager.getScore());
+            score_for_tasks[2] = task3.scores;
             task3ProgressBar.setValue(task3.CompletedShapes.size());
             updateScoreProgress(); // 更新积分进度条
         };
@@ -368,6 +369,7 @@ public class Main {
         task4.onReturnHome = () -> {
             cardLayout.show(cardPanel, "startPanel");
             counter2.setText("积分：" + scoreManager.getScore());
+            score_for_tasks[3] = task4.scores;
             task4ProgressBar.setValue(task4.Completed);
             updateScoreProgress(); // 更新积分进度条
         };
@@ -378,6 +380,7 @@ public class Main {
         bonus1.onReturnHome = () -> {
             cardLayout.show(cardPanel, "startPanel");
             counter2.setText("积分：" + scoreManager.getScore());
+            score_for_tasks[4] = bonus1.scores;
             bonus1ProgressBar.setValue(bonus1.completedTasks);
             updateScoreProgress(); // 更新积分进度条
         };
@@ -391,6 +394,7 @@ public class Main {
         bonus2.onReturnHome = () -> {
             cardLayout.show(cardPanel, "startPanel");
             counter2.setText("积分：" + scoreManager.getScore());
+            score_for_tasks[5] = bonus2.scores;
             bonus2ProgressBar.setValue(bonus2.completedTasks);
             updateScoreProgress(); // 更新积分进度条
         };
@@ -488,7 +492,7 @@ public class Main {
         saveTask2State(
                 task2.identifiedTypes,
                 task2.waitingForAngleInput,
-                task2.result
+                task2.scores
         );
 
         saveTask3State(
