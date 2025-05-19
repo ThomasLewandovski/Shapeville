@@ -98,6 +98,8 @@ public class Task3VolumeSurfaceCalculator {
         centerPanel.add(submitButton, gbc);
 
         task3.add(centerPanel, BorderLayout.CENTER);
+  
+
 
         // 底部面板 - 包含绘图区域和返回按钮
         JPanel bottomPanel = new JPanel(new BorderLayout(10, 10));
@@ -107,7 +109,7 @@ public class Task3VolumeSurfaceCalculator {
         drawingPanel.setMinimumSize(new Dimension(300, 150));
         drawingPanel.setBackground(Color.WHITE);
         bottomPanel.add(drawingPanel, BorderLayout.CENTER);
-
+        
         homeButton = new JButton("Home");
         homeButton.setFont(new Font("Arial", Font.PLAIN, 14));
         homeButton.setAlignmentX(Component.RIGHT_ALIGNMENT);
@@ -254,7 +256,7 @@ public class Task3VolumeSurfaceCalculator {
                     // 🛑 溢出检查：如果长宽有一项超出画板最大尺寸，缩放
                     double overflowScale = Math.min(
                         shapeWidth / (double) rectWidth,
-                        shapeHeight / (double) rectHeight
+                        shapeHeight *0.7/ (double) rectHeight
                     );
                     if (overflowScale < 1.0) {
                         rectWidth = (int) (rectWidth * overflowScale);
@@ -283,7 +285,7 @@ public class Task3VolumeSurfaceCalculator {
                     // 判断是否需要缩放
                     double overflowScale = Math.min(
                         shapeWidth / (double) (rawWidth + rawSkew), // 宽度包括倾斜偏移
-                        availableHeight / (double) rawHeight
+                        availableHeight*0.7 / (double) rawHeight
                     );
 
                     if (overflowScale < 1.0) {
@@ -300,8 +302,17 @@ public class Task3VolumeSurfaceCalculator {
 
                     g2.setColor(Color.BLUE);
                     g2.drawPolygon(xPoints, yPoints, 4);
+                    
+                    // 🔵 绘制高度虚线（从左上角垂直到底边）
+                    g2.setColor(Color.GRAY);
+                    Stroke dashed = new BasicStroke(1.5f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{5}, 0);
+                    g2.setStroke(dashed);
+                    g2.drawLine(x + rawSkew, y, x + rawSkew, y + rawHeight);
+                    g2.setStroke(new BasicStroke(1.2f)); // 恢复实线
+                    
 
                     // 标签绘制
+                    g2.setColor(Color.BLUE);
                     g2.setFont(new Font("Arial", Font.PLAIN, 12));
                     g2.drawString("base: " + param1, x + rawWidth / 2 - 15, y - 5);
                     g2.drawString("height: " + param2, x - 40, y + rawHeight / 2);
@@ -340,33 +351,56 @@ public class Task3VolumeSurfaceCalculator {
                     g2.drawString("height: " + param2, xTop + 5, (yTop + yBase) / 2);
                 }
                 case "Trapezium" -> {
-                    double scale = Math.min(shapeWidth / (double)(param1 + param2), shapeHeight / (double)param3);
-                    int aLen = (int)(param1 * scale); // 上底
-                    int bLen = (int)(param2 * scale); // 下底
-                    int heightVal = (int)(param3 * scale);
-                    int x = (width - bLen) / 2;
-                    int y = (height - heightVal - 30) / 2;
+                    int reservedBottom = 40;
+                    int availableHeight = height - reservedBottom;
 
+                    double baseScale = 15.0;
+                    int aLen = (int)(param1 * baseScale); // 上底
+                    int bLen = (int)(param2 * baseScale); // 下底
+                    int hLen = (int)(param3 * baseScale);
+
+                    // 🔁 判断是否溢出 → 缩放
+                    double overflowScale = Math.min(
+                        shapeWidth / (double)bLen,
+                        availableHeight*0.7 / (double)hLen
+                    );
+                    if (overflowScale < 1.0) {
+                        aLen = (int)(aLen * overflowScale);
+                        bLen = (int)(bLen * overflowScale);
+                        hLen = (int)(hLen * overflowScale);
+                    }
+
+                    int x = (width - bLen) / 2;
+                    int y = (availableHeight - hLen) / 2;
+
+                    // 梯形坐标（等腰梯形）
                     int[] xPoints = {
                         x + (bLen - aLen) / 2,        // 左上
                         x + (bLen - aLen) / 2 + aLen, // 右上
                         x + bLen,                     // 右下
                         x                             // 左下
                     };
-                    int[] yPoints = {y, y, y + heightVal, y + heightVal};
+                    int[] yPoints = {y, y, y + hLen, y + hLen};
 
+                    g2.setColor(Color.BLUE);
                     g2.drawPolygon(xPoints, yPoints, 4);
-                    g2.drawString("a: " + param1, x + bLen / 2 - 10, y - 10);
-                    g2.drawString("b: " + param2, x + bLen / 2 - 10, y + heightVal + 20);
 
+                    // 标签 a b
+                    g2.setFont(new Font("Arial", Font.PLAIN, 12));
+                    g2.drawString("a: " + param1, x + bLen / 2 - 10, y - 10);
+                    g2.drawString("b: " + param2, x + bLen / 2 - 10, y + hLen + 20);
+
+                    // 高度线：虚线
                     int midX = x + bLen / 2;
                     g2.setColor(Color.GRAY);
                     Stroke dashed = new BasicStroke(1.5f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{5}, 0);
                     g2.setStroke(dashed);
-                    g2.drawLine(midX, y, midX, y + heightVal);
+                    g2.drawLine(midX, y, midX, y + hLen);
+
+                    // 恢复实线，绘制高度标注
                     g2.setStroke(new BasicStroke(1.2f));
                     g2.setColor(Color.BLUE);
-                    g2.drawString("height: " + param3, midX - 40, y + heightVal / 2);
+                    g2.drawString("height: " + param3, midX - 40, y + hLen / 2);
                 }
             }
 
