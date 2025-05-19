@@ -13,11 +13,11 @@ import java.util.Set;
 public class Task2AngleIdentification {
     public ScoreManager scoreManager;
     private final String[] encouragements = {
-    "🎉 Well done!",
-    "👍 Great job!",
-    "🌟 You're getting better!",
-    "👏 Excellent thinking!",
-    "💡 Smart answer!"
+    "Well done!",
+    "Great job!",
+    "You're getting better!",
+    "Excellent thinking!",
+    "Smart answer!"
     };
 
     private JButton nextButton;  // ⏭️ 下一题按钮
@@ -30,6 +30,8 @@ public class Task2AngleIdentification {
     public JLabel scoreLabel;
     public int result = 0;
     public Runnable onComplete;
+    private JLabel mascotImageLabel;
+    private JLabel mascotSpeechBubble;
 
     public int currentAngle = -1;
     public int attempt = 1;
@@ -41,26 +43,30 @@ public class Task2AngleIdentification {
     public Task2AngleIdentification(ScoreManager scoreManager) {
         this.scoreManager = scoreManager;
 
-        // 使用BorderLayout作为主面板布局
+        // 设置主任务面板，米黄色背景
         task2 = new JPanel(new BorderLayout(10, 10));
+        task2.setBackground(new Color(255, 250, 205)); // 米黄色
         task2.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // 顶部面板 - 包含分数和问题描述
+        // 顶部面板
         JPanel topPanel = new JPanel(new BorderLayout());
-        scoreLabel = new JLabel("points:" + scoreManager.getScore());
-        scoreLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        topPanel.setBackground(new Color(255, 250, 205));
+
+        scoreLabel = new JLabel("points: " + scoreManager.getScore());
+        scoreLabel.setFont(new Font("Comic Sans MS", Font.BOLD, 16));
         topPanel.add(scoreLabel, BorderLayout.NORTH);
 
         questionLabel = new JLabel("Enter an angle (0-360, multiple of 10):");
-        questionLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+        questionLabel.setFont(new Font("Comic Sans MS", Font.PLAIN, 16));
         questionLabel.setVerticalAlignment(JLabel.TOP);
         questionLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
         topPanel.add(questionLabel, BorderLayout.CENTER);
 
         task2.add(topPanel, BorderLayout.NORTH);
 
-        // 中间面板 - 包含角度画布
+        // 中间画布区域
         JPanel canvasPanel = new JPanel(new GridBagLayout());
+        canvasPanel.setBackground(new Color(255, 250, 205));
         angleCanvas = new AngleCanvas();
         angleCanvas.setPreferredSize(new Dimension(300, 300));
         angleCanvas.setMinimumSize(new Dimension(200, 200));
@@ -75,100 +81,85 @@ public class Task2AngleIdentification {
 
         task2.add(canvasPanel, BorderLayout.CENTER);
 
-        // // 底部面板 - 包含输入框、按钮
-        // JPanel bottomPanel = new JPanel(new GridBagLayout());
-        // GridBagConstraints gbcBottom = new GridBagConstraints();
-        // gbcBottom.insets = new Insets(5, 5, 5, 5);
-        // gbcBottom.fill = GridBagConstraints.HORIZONTAL;
-
-        // inputField = new JTextField();
-        // inputField.setFont(new Font("Arial", Font.PLAIN, 16));
-        // gbcBottom.gridx = 0;
-        // gbcBottom.gridy = 0;
-        // gbcBottom.weightx = 0.8;
-        // bottomPanel.add(inputField, gbcBottom);
-
-        // submitButton = new JButton("Submit");
-        // submitButton.setFont(new Font("Arial", Font.PLAIN, 14));
-        // gbcBottom.gridx = 1;
-        // gbcBottom.gridy = 0;
-        // gbcBottom.weightx = 0.2;
-        // bottomPanel.add(submitButton, gbcBottom);
-
-        // goHomeButton = new JButton("🏠 Return to Home");
-        // goHomeButton.setFont(new Font("Arial", Font.PLAIN, 14));
-        // gbcBottom.gridx = 0;
-        // gbcBottom.gridy = 1;
-        // gbcBottom.gridwidth = 2;
-        // gbcBottom.anchor = GridBagConstraints.CENTER;
-        // gbcBottom.fill = GridBagConstraints.NONE;
-        // goHomeButton.setVisible(true);
-        // bottomPanel.add(goHomeButton, gbcBottom);
-
-        // task2.add(bottomPanel, BorderLayout.SOUTH);
-        
-        
-        
-        // ✅ 新版本底部布局开始 —— 替换原本的 bottomPanel 构建区域
+        // 底部区域（输入 + 按钮）
         JPanel bottomPanel = new JPanel(new GridBagLayout());
+        bottomPanel.setBackground(new Color(255, 250, 205));
         GridBagConstraints gbcBottom = new GridBagConstraints();
-        gbcBottom.insets = new Insets(5, 5, 5, 5); // 元素间留白
+        gbcBottom.insets = new Insets(5, 5, 5, 5);
 
-        // 第 0 行：输入框（加点内边距，上移）
+        inputField = new JTextField();
+        inputField.setFont(new Font("Comic Sans MS", Font.PLAIN, 16));
         gbcBottom.gridx = 0;
         gbcBottom.gridy = 0;
         gbcBottom.gridwidth = 2;
         gbcBottom.fill = GridBagConstraints.HORIZONTAL;
         gbcBottom.weightx = 1.0;
-        inputField = new JTextField();
-        inputField.setFont(new Font("Arial", Font.PLAIN, 16));
         bottomPanel.add(inputField, gbcBottom);
 
-        // 第 1 行：Submit 和 Return to Home 按钮（等宽并排）
+        submitButton = new JButton("Submit");
+        submitButton.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
         gbcBottom.gridy = 1;
+        gbcBottom.gridx = 1;
         gbcBottom.gridwidth = 1;
         gbcBottom.weightx = 0.5;
-        gbcBottom.fill = GridBagConstraints.HORIZONTAL;
-
-        submitButton = new JButton("Submit");
-        submitButton.setFont(new Font("Arial", Font.PLAIN, 14));
-        gbcBottom.gridx = 1;
         bottomPanel.add(submitButton, gbcBottom);
 
         goHomeButton = new JButton("Return to Home");
-        goHomeButton.setFont(new Font("Arial", Font.PLAIN, 14));
-        goHomeButton.setVisible(true);  // ✅ 改为始终可见
+        goHomeButton.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
         gbcBottom.gridx = 0;
         bottomPanel.add(goHomeButton, gbcBottom);
 
-        //下一题按钮
         nextButton = new JButton("Next ▶");
-        nextButton.setFont(new Font("Arial", Font.BOLD, 16));
-        nextButton.setVisible(false);  // 初始隐藏
+        nextButton.setFont(new Font("Comic Sans MS", Font.BOLD, 16));
+        nextButton.setVisible(false);
         gbcBottom.gridx = 0;
         gbcBottom.gridy = 2;
         gbcBottom.gridwidth = 2;
-        gbcBottom.fill = GridBagConstraints.HORIZONTAL; // ✅ 让按钮也等宽
         gbcBottom.weightx = 1.0;
-        //gbcBottom.ipady = 2; // ✅ 增加高度
+        gbcBottom.fill = GridBagConstraints.HORIZONTAL;
         bottomPanel.add(nextButton, gbcBottom);
 
-        // 添加底部面板到主界面
         task2.add(bottomPanel, BorderLayout.SOUTH);
 
-        // 按钮事件处理
+        // ✅ 右侧狐狸吉祥物区域
+        JPanel mascotWrapper = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        mascotWrapper.setBackground(new Color(255, 250, 205));
+
+        JPanel mascotPanel = new JPanel();
+        mascotPanel.setLayout(new BoxLayout(mascotPanel, BoxLayout.Y_AXIS));
+        mascotPanel.setOpaque(false);
+
+        mascotSpeechBubble = new JLabel("<html><div style='padding:10px; background:#fff8dc; border-radius:10px; border:1px solid #ccc;'>Let's start identifying angles! </div></html>");
+        mascotSpeechBubble.setFont(new Font("Comic Sans MS", Font.PLAIN, 13));
+        mascotSpeechBubble.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        try {
+            ImageIcon KuromiIcon = new ImageIcon(getClass().getClassLoader().getResource("images/Kuromi.png"));
+            Image scaledKuromi = KuromiIcon.getImage().getScaledInstance(160, 120, Image.SCALE_SMOOTH);
+            mascotImageLabel = new JLabel(new ImageIcon(scaledKuromi));
+        } catch (Exception ex) {
+            //mascotImageLabel = new JLabel("🦊");
+        }
+
+        mascotImageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        mascotPanel.add(mascotSpeechBubble);
+        mascotPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        mascotPanel.add(mascotImageLabel);
+
+        mascotWrapper.add(mascotPanel);
+        task2.add(mascotWrapper, BorderLayout.EAST);
+
+        // 按钮交互逻辑
         goHomeButton.addActionListener(e -> {
             if (onReturnHome != null) onReturnHome.run();
         });
-        
-        // 下一题按钮事件处理
+
         nextButton.addActionListener(e -> {
             if (identifiedTypes.size() >= 5) {
                 questionLabel.setText("You have identified all required angle types! Task Complete!");
                 inputField.setVisible(false);
                 submitButton.setVisible(false);
-                nextButton.setVisible(false); // ✅ 禁止继续做题
-                // goHomeButton 保持可见
+                nextButton.setVisible(false);
             } else {
                 questionLabel.setText("Enter an angle (0-360, multiple of 10):");
                 inputField.setText("");
@@ -183,6 +174,7 @@ public class Task2AngleIdentification {
 
         submitButton.addActionListener(this::handleInput);
 
+        // 启动初始化状态
         start();
     }
 
@@ -239,6 +231,8 @@ public class Task2AngleIdentification {
             if (userAnswer.equalsIgnoreCase(correct)) {
                 String encouragement = encouragements[(int) (Math.random() * encouragements.length)];
                 questionLabel.setText("<html>Correct! It was a " + correct + " angle.<br>" + encouragement + "</html>");
+                mascotSpeechBubble.setText("<html><div style='padding:10px; background:#e0ffe0; border-radius:10px; border:1px solid #8bc34a;'>Yay! It's a " + correct + " angle! </div></html>");
+
                 int points = 0;
                 if (!identifiedTypes.contains(correct)) {
                     points = switch (attempt) {
@@ -266,6 +260,7 @@ public class Task2AngleIdentification {
                     // checkCompletion();
                     waitingForAngleInput = true;
                     questionLabel.setText("<html>The correct answer was: <b>" + correct + "</b></html>");
+                    mascotSpeechBubble.setText("<html><div style='padding:10px; background:#ffe0e0; border-radius:10px; border:1px solid #e57373;'>Oops! It was " + correct + "! Try harder next time! </div></html>");
                     identifiedTypes.add(correct.toLowerCase());
 
                     inputField.setVisible(false);
@@ -273,6 +268,7 @@ public class Task2AngleIdentification {
                     nextButton.setVisible(true);  // ⏭️ 等待点击“下一题”
                 } else {
                     questionLabel.setText("Incorrect. Try again. What type of angle? (Acute / Right / Obtuse / Reflex / Straight / Full)");
+                    mascotSpeechBubble.setText("<html><div style='padding:10px; background:#fff3cd; border-radius:10px; border:1px solid #ffeb3b;'>Hmm... not quite! Guess again! </div></html>");
 
                 }
             }
@@ -297,6 +293,10 @@ public class Task2AngleIdentification {
 
     static class AngleCanvas extends JPanel {
         private int angle = -1;
+
+        public AngleCanvas() {
+            setBackground(new Color(255, 250, 220)); // ✅ 设置画布背景为白色
+        }
 
         public void setAngle(int angle) {
             this.angle = angle;
