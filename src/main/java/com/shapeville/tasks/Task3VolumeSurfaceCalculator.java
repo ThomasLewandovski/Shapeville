@@ -179,7 +179,16 @@ public class Task3VolumeSurfaceCalculator {
             timerLabel.setText("Time left: " + timeRemaining + "s");
             if (timeRemaining <= 0) {
                 ((Timer) e.getSource()).stop();
-                showExplanation();
+                //showExplanation();
+                // 👇 追加操作使其行为与答错三次一致
+                attemptsLeft = 0;
+                submitButton.setEnabled(false);
+                CompletedShapes.add(currentShape);
+
+                // 更新题目显示（与 checkAnswer 中逻辑一致）
+                questionLabel.setText("<html>" + currentQuestionText + "<br>⏰ Time's up! The correct answer is shown below.</html>");
+
+                showExplanation(); // 展示图形和答案
             }
         });
         countdownTimer.start();
