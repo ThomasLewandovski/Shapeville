@@ -23,6 +23,7 @@ public class Task3VolumeSurfaceCalculator {
     private Timer countdownTimer;
     private JLabel timerLabel;
     private DrawingPanel drawingPanel;
+    private String currentQuestionText = "";  // ✅ 新增：当前题目的纯描述文本
 
     public String currentShape;
     public int param1;
@@ -89,6 +90,7 @@ public class Task3VolumeSurfaceCalculator {
         gbc.gridwidth = 1;
         gbc.weightx = 0.7;
         centerPanel.add(inputField, gbc);
+        inputField.setEnabled(false);     // ✅ 新增：初始禁用输入框
 
         submitButton = new JButton("Submit");
         submitButton.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -96,6 +98,7 @@ public class Task3VolumeSurfaceCalculator {
         gbc.gridy = 2;
         gbc.weightx = 0.3;
         centerPanel.add(submitButton, gbc);
+        submitButton.setEnabled(false);  // ✅ 新增：初始禁用提交按钮
 
         task3.add(centerPanel, BorderLayout.CENTER);
   
@@ -127,7 +130,7 @@ public class Task3VolumeSurfaceCalculator {
             if (onReturnHome != null) onReturnHome.run();
         });
 
-        start();
+        //start();
     }
 
     public void start() {
@@ -149,23 +152,26 @@ public class Task3VolumeSurfaceCalculator {
         switch (currentShape) {
             case "Rectangle" -> {
                 correctAnswer = param1 * param2;
-                questionLabel.setText("📐 Rectangle: length = " + param1 + ", width = " + param2 + ". Calculate area:");
+                currentQuestionText = "📐 Rectangle: length = " + param1 + ", width = " + param2 + ". Calculate area:";
             }
             case "Parallelogram" -> {
                 correctAnswer = param1 * param2;
-                questionLabel.setText("📐 Parallelogram: base = " + param1 + ", height = " + param2 + ". Calculate area:");
+                currentQuestionText = "📐 Parallelogram: base = " + param1 + ", height = " + param2 + ". Calculate area:";
             }
             case "Triangle" -> {
                 correctAnswer = (param1 * param2) / 2;
-                questionLabel.setText("📐 Triangle: base = " + param1 + ", height = " + param2 + ". Calculate area:");
+                currentQuestionText = "📐 Triangle: base = " + param1 + ", height = " + param2 + ". Calculate area:";
             }
             case "Trapezium" -> {
                 correctAnswer = ((param1 + param2) * param3) / 2;
-                questionLabel.setText("📐 Trapezium: a = " + param1 + ", b = " + param2 + ", height = " + param3 + ". Calculate area:");
+                currentQuestionText = "📐 Trapezium: a = " + param1 + ", b = " + param2 + ", height = " + param3 + ". Calculate area:";
             }
         }
+        questionLabel.setText(currentQuestionText);  // ✅ 用统一变量设置显示
 
         inputField.setText("");
+        inputField.setEnabled(true);     // ✅ 新增：启用输入框
+        submitButton.setEnabled(true);  // ✅ 新增：启用提交按钮
         if (countdownTimer != null) countdownTimer.stop();
         countdownTimer = new Timer(1000, e -> {
             timeRemaining--;
@@ -193,16 +199,26 @@ public class Task3VolumeSurfaceCalculator {
                 scoreManager.addScore(score);
                 CompletedShapes.add(currentShape);
                 checkAllShapesCompleted(); // 新增完成检测
-                questionLabel.setText("✅ Great job! +" + score + " points");
+                questionLabel.setText("<html>✅ Great job! +" + score + " points<br>👉 Please select a new shape and click Generate Problem to continue.</html>");
+                //System.out.println("1");
+                submitButton.setEnabled(false); // ✅ 禁用提交按钮
+                attemptsLeft = 0; // ✅ 强制绘图逻辑触发
+                CompletedShapes.add(currentShape);
+                showExplanation();
             } else {
                 attemptsLeft--;
                 if (attemptsLeft <= 0) {
+                    //questionLabel.setText("❌ Incorrect. Attempts left: " + attemptsLeft);
+                    questionLabel.setText("<html>" + currentQuestionText + "<br>❌ Incorrect. Attempts left: 0</html>");
                     countdownTimer.stop();
-                    CompletedShapes.add(currentShape);
+                    CompletedShapes.add(currentShape);//标记该图形已完成
+                    //System.out.println("1");
+                    submitButton.setEnabled(false); // ✅ 禁用提交按钮
                     showExplanation();
 
                 } else {
-                    questionLabel.setText("❌ Incorrect. Attempts left: " + attemptsLeft);
+                    //questionLabel.setText("❌ Incorrect. Attempts left: " + attemptsLeft);
+                    questionLabel.setText("<html>" + currentQuestionText + "<br>❌ Incorrect. come on！！ try again！ Attempts left: " + attemptsLeft + "</html>");
                 }
             }
         } catch (Exception e) {
@@ -276,7 +292,6 @@ public class Task3VolumeSurfaceCalculator {
                     int reservedBottomSpace = 40;
                     int availableHeight = height - reservedBottomSpace;
 
-                    // 使用基础比例（像素/单位）
                     double baseScale = 15.0;
                     int rawWidth = (int) (param1 * baseScale);
                     int rawHeight = (int) (param2 * baseScale);
@@ -284,8 +299,8 @@ public class Task3VolumeSurfaceCalculator {
 
                     // 判断是否需要缩放
                     double overflowScale = Math.min(
-                        shapeWidth / (double) (rawWidth + rawSkew), // 宽度包括倾斜偏移
-                        availableHeight*0.7 / (double) rawHeight
+                        shapeWidth / (double) (rawWidth + rawSkew + 50),  // 多留 50px 画延长线
+                        availableHeight * 0.7 / (double) rawHeight
                     );
 
                     if (overflowScale < 1.0) {
@@ -297,26 +312,37 @@ public class Task3VolumeSurfaceCalculator {
                     int x = (width - rawWidth) / 2;
                     int y = (availableHeight - rawHeight) / 2;
 
+                    // 平行四边形顶点
                     int[] xPoints = {x, x + rawSkew, x + rawWidth, x + rawWidth - rawSkew};
                     int[] yPoints = {y + rawHeight, y, y, y + rawHeight};
 
                     g2.setColor(Color.BLUE);
                     g2.drawPolygon(xPoints, yPoints, 4);
-                    
-                    // 🔵 绘制高度虚线（从左上角垂直到底边）
-                    g2.setColor(Color.GRAY);
-                    Stroke dashed = new BasicStroke(1.5f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{5}, 0);
-                    g2.setStroke(dashed);
-                    g2.drawLine(x + rawSkew, y, x + rawSkew, y + rawHeight);
-                    g2.setStroke(new BasicStroke(1.2f)); // 恢复实线
-                    
 
-                    // 标签绘制
+                    // ⬛ 延长线（底边向左延伸 40px）
+                    int extension = 40;
+                    g2.setColor(Color.GRAY);
+                    Stroke dashed = new BasicStroke(1.2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{5}, 0);
+                    g2.setStroke(dashed);
+                    //上下延长线都从 x + rawWidth 开始，保持对齐
+                    g2.drawLine(x + rawWidth-rawSkew, y + rawHeight, x + rawWidth + extension, y + rawHeight);//下
+                    g2.drawLine(x + rawWidth, y, x + rawWidth + extension, y);//上
+
+                    // 🔵 高度线：从左上角垂直到底边延长线
+                    //g2.drawLine(x + rawSkew, y, x + rawSkew, y + rawHeight);
+                    // int highX = x + rawWidth + 20;  // 👉 平行四边形右侧外 20px
+                    g2.drawLine(x+rawWidth, y, x+rawWidth, y + rawHeight);
+
+                    // 还原画笔
+                    g2.setStroke(new BasicStroke(1.2f));
                     g2.setColor(Color.BLUE);
+
+                    // 标签
                     g2.setFont(new Font("Arial", Font.PLAIN, 12));
                     g2.drawString("base: " + param1, x + rawWidth / 2 - 15, y - 5);
-                    g2.drawString("height: " + param2, x - 40, y + rawHeight / 2);
+                    g2.drawString("height: " + param2, x + rawWidth + 5, y + rawHeight / 2);
                 }
+
                 case "Triangle" -> {
                     // 计算比例缩放
                     double scale = Math.min(shapeWidth / (double)param1, shapeHeight / (double)param2);
