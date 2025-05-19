@@ -30,6 +30,10 @@ public class Bonus1CompoundShapeArea {
     private JLabel mascotImageLabel;
     private JButton backButton;
 
+    private Timer countdownTimer;
+    private int timeRemaining = 300; // 单位：秒（5分钟）
+    private JLabel timerLabel;
+
     private Map<Integer, Image> originalImages = new HashMap<>();
     private Map<Integer, Image> answerImages = new HashMap<>();
     public Map<Integer, JButton> shapeButtons = new HashMap<>();
@@ -156,6 +160,7 @@ public class Bonus1CompoundShapeArea {
         backButton = new JButton("Back");
         backButton.setVisible(false);
         backButton.addActionListener(e -> {
+            stopTimer(); // 返回选择界面时，停止定时器
             answerField.setText("");
             feedbackLabel.setText("");
             imageLabel.setIcon(null);
@@ -163,6 +168,14 @@ public class Bonus1CompoundShapeArea {
             ((CardLayout) taskPanel.getLayout()).show(taskPanel, "select");
         });
         backPanel.add(backButton);
+
+        // ➕ 计时器
+        timerLabel = new JLabel("Time left: 05:00");
+        timerLabel.setFont(new Font("Comic Sans MS", Font.BOLD, 14));
+        timerLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        rightPanel.add(timerLabel);
+        rightPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+
 
         // ➕ 题目输入部分
         JLabel prompt = new JLabel("Enter the calculated area:");
@@ -226,6 +239,51 @@ public class Bonus1CompoundShapeArea {
         questionPanel.add(content, BorderLayout.CENTER);
     }
 
+    private void startTimer() {
+        stopTimer(); // 防止旧计时器残留
+        timeRemaining = 300; // 重置时间
+        updateTimerLabel();
+
+        countdownTimer = new Timer(1000, e -> {
+            timeRemaining--;
+            updateTimerLabel();
+
+            if (timeRemaining <= 0) {
+                stopTimer();
+                handleTimeUp();
+            }
+        });
+        countdownTimer.start();
+    }
+
+    private void stopTimer() {
+        if (countdownTimer != null) {
+            countdownTimer.stop();
+            countdownTimer = null;
+        }
+    }
+
+    private void updateTimerLabel() {
+        int minutes = timeRemaining / 60;
+        int seconds = timeRemaining % 60;
+        timerLabel.setText(String.format("Time left: %02d:%02d", minutes, seconds));
+    }
+
+    private void handleTimeUp() {
+        double correct = correctAnswers.get(currentShapeId);
+        Image explanationImg = answerImages.get(currentShapeId);
+        if (explanationImg != null) {
+            imageLabel.setIcon(new ImageIcon(getScaledImage(explanationImg, 400, 300)));
+        }
+        feedbackLabel.setText("⏰ Time's up!");
+        mascotSpeechBubble.setText("<html><div style='padding:10px; background:#ffe0e0; border-radius:10px; border:1px solid #e57373;'>Oops! Time is up. The correct answer is " + correct + " 🦊</div></html>");
+
+        completedTasks++;
+        updateButtonState(currentShapeId);
+        backButton.setVisible(true);
+        submitButton.setEnabled(false);
+    }
+
     private void showQuestion(int shapeId) {
         currentShapeId = shapeId;
         Image originalImage = originalImages.getOrDefault(shapeId, null);
@@ -241,6 +299,8 @@ public class Bonus1CompoundShapeArea {
         backButton.setVisible(false);
         mascotSpeechBubble.setText("<html><div style='padding:10px; background:#fff8dc; border-radius:10px; border:1px solid #ccc;'>Hmm... can you find the area? 🦊</div></html>");
         ((CardLayout) taskPanel.getLayout()).show(taskPanel, "question");
+
+        startTimer(); // 进入题目时启动计时器
     }
 
     private void handleSubmit(ActionEvent e) {
@@ -262,9 +322,20 @@ public class Bonus1CompoundShapeArea {
                 updateButtonState(currentShapeId);
                 submitButton.setEnabled(false);
                 backButton.setVisible(true);
+
+                stopTimer();// 停止计时器
+
+                // ✅ 新增：显示答案解析图
+                Image explanationImg = answerImages.get(currentShapeId);
+                if (explanationImg != null) {
+                    imageLabel.setIcon(new ImageIcon(getScaledImage(explanationImg, 400, 300)));
+                }
+                //到这里，若不想要，删掉
+
             } else {
                 attemptCount++;
                 if (attemptCount >= 3) {
+                    stopTimer(); // 停止计时器
                     Image explanationImg = answerImages.get(currentShapeId);
                     if (explanationImg != null) {
                         imageLabel.setIcon(new ImageIcon(getScaledImage(explanationImg, 400, 300)));
