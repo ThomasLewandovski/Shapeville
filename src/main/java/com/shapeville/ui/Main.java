@@ -84,6 +84,14 @@ public class Main {
                 }
             }
         };
+        JButton openIntroButton = new JButton("Introduction");
+        openIntroButton.setBounds(310,300,180,30);
+        openIntroButton.addActionListener(e -> {
+            // 创建并显示Introduction对话框
+            Introduction intro = new Introduction(frame);
+            intro.show();
+        });
+        mainpanel.add(openIntroButton);
 
         // 开始按钮
         JButton startButton = new JButton("Start a new game!");
@@ -716,6 +724,8 @@ public class Main {
                     button.setBounds(width / 2 - width / 8, height * 2 / 3, width / 4, height / 15);
                 } else if (text.contains("Continue")) {
                     button.setBounds(width / 2 - width / 8, height * 2 / 3 + height / 12 + 10, width / 4, height / 15);
+                }else{
+                    button.setBounds(width / 2 - width / 8, height * 2 / 3 + height / 6 + 20, width / 4, height / 15);
                 }
             }
         }
