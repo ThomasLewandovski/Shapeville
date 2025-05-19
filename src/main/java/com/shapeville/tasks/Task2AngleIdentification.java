@@ -163,7 +163,7 @@ public class Task2AngleIdentification {
         
         // 下一题按钮事件处理
         nextButton.addActionListener(e -> {
-            if (identifiedTypes.size() >= 4) {
+            if (identifiedTypes.size() >= 5) {
                 questionLabel.setText("🎉 You have identified all required angle types! Task Complete!");
                 inputField.setVisible(false);
                 submitButton.setVisible(false);
