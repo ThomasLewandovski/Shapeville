@@ -143,7 +143,7 @@ public class Bonus1CompoundShapeArea {
         rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
         rightPanel.setBackground(new Color(255, 250, 205));
 
-        // 🟢 Back 按钮单独置顶
+        // 🟢 Back 按钮单独置底
         JPanel backPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         backPanel.setOpaque(false);
         backButton = new JButton("Back");
@@ -156,7 +156,6 @@ public class Bonus1CompoundShapeArea {
             ((CardLayout) taskPanel.getLayout()).show(taskPanel, "select");
         });
         backPanel.add(backButton);
-        rightPanel.add(backPanel);
 
         // ➕ 题目输入部分
         JLabel prompt = new JLabel("Enter the calculated area:");
@@ -210,6 +209,7 @@ public class Bonus1CompoundShapeArea {
         rightPanel.add(feedbackLabel);
         rightPanel.add(Box.createVerticalGlue());
         rightPanel.add(mascotPanel);
+        rightPanel.add(backPanel);
 
         JPanel content = new JPanel(new GridLayout(1, 2));
         content.setBackground(new Color(255, 250, 205));
