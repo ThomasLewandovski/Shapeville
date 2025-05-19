@@ -416,12 +416,12 @@ public class Main {
                             taskCompletionStatus,
                             is_played_task1,
                             scoreManager.getScore(),
-                            task1ProgressBar.getValue(),
-                            task2ProgressBar.getValue(),
-                            task3ProgressBar.getValue(),
-                            task4ProgressBar.getValue(),
-                            bonus1ProgressBar.getValue(),
-                            bonus2ProgressBar.getValue()
+                            task1.isIdentifiedShapes,
+                            task2.identifiedTypes.size(),
+                            task3.CompletedShapes.size(),
+                            task4.Completed,
+                            bonus1.completedTasks,
+                            bonus2.completedTasks
                     );
                     frame.dispose();
                 } else if (choice == JOptionPane.NO_OPTION) {
@@ -502,8 +502,7 @@ public class Main {
 
         saveBonus2State(
                 bonus2.completedTasks,
-                bonus2.currentShapeId,
-                bonus2.attemptCount,
+                bonus2.completed,
                 bonus2.scoreManager.getScore()
         );
     }
@@ -683,10 +682,19 @@ public class Main {
 
         // 更新奖励任务2状态
         bonus2.completedTasks = state.completedTasks;
-        bonus2.currentShapeId = state.currentShapeId;
-        bonus2.attemptCount = state.attemptCount;
+        bonus2.completed = state.completed;
         bonus2.scoreManager.setScore(state.score);
         bonus2.scoreLabel.setText("points: " + state.score);
+
+        for(int i = 1;i<=8;i++){
+            if(bonus2.completed[i]){
+                if (bonus2.shapeButtons.containsKey(i)) {
+                    JButton btn = bonus2.shapeButtons.get(i);
+                    btn.setEnabled(false);
+                    btn.setBackground(Color.LIGHT_GRAY);
+                }
+            }
+        }
     }
 
     private void resizeMainPanel(JPanel mainpanel) {
