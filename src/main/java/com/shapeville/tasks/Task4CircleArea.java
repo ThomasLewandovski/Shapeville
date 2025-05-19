@@ -257,7 +257,7 @@ public class Task4CircleArea {
         attempts = 1;
         isCurrentModeFailed = false;
         // 重置计时器
-        timeRemaining = 10;
+        timeRemaining = 180;
         timerLabel.setText("Time: 180s");
 
         if (countdownTimer != null) {
