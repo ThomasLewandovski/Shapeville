@@ -23,6 +23,7 @@ public class Bonus2SectorAreaCalculator {
     private JTextField answerField;
     private JLabel feedbackLabel;
     public JLabel scoreLabel;
+    public  JLabel score;
 
     private JLabel mascotSpeechBubble;
     private JLabel mascotImageLabel;
@@ -37,7 +38,7 @@ public class Bonus2SectorAreaCalculator {
     public Bonus2SectorAreaCalculator(ScoreManager scoreManager) {
         this.scoreManager = scoreManager;
         this.taskPanel = new JPanel(new CardLayout());
-        taskPanel.setBackground(new Color(255, 250, 205)); // 温柔米黄背景
+        taskPanel.setBackground(new Color(255, 250, 205));
 
         initAnswers();
         initSelectPanel();
@@ -80,11 +81,21 @@ public class Bonus2SectorAreaCalculator {
         selectPanel = new JPanel(new BorderLayout());
         selectPanel.setBackground(new Color(255, 250, 205));
 
-        JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+
+
+        JPanel titlePanel = new JPanel();
+        titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.Y_AXIS)); // 设置垂直布局
         titlePanel.setBackground(new Color(255, 250, 205));
         JLabel title = new JLabel("Select a Sector Shape:");
         title.setFont(new Font("Comic Sans MS", Font.BOLD, 18));
+
+        score = new JLabel("points: " + scoreManager.getScore());
+        score.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
+        score.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+
+        titlePanel.add(score);
         titlePanel.add(title);
+
         selectPanel.add(titlePanel, BorderLayout.NORTH);
 
         JPanel buttonPanel = new JPanel(new GridLayout(2, 4, 20, 20));
@@ -130,11 +141,29 @@ public class Bonus2SectorAreaCalculator {
         questionPanel = new JPanel(new BorderLayout());
         questionPanel.setBackground(new Color(255, 250, 205));
 
+        // ✅ 修复：使用嵌套面板和强制最小尺寸
+        JPanel scoreContainer = new JPanel(new BorderLayout());
+        scoreContainer.setBackground(new Color(255, 250, 205));
+        scoreContainer.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        // 分数面板 - 使用FlowLayout并设置最小尺寸
+        JPanel scorePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        scorePanel.setBackground(new Color(255, 250, 205));
+        scorePanel.setMinimumSize(new Dimension(0, 40)); // 强制最小高度
+
         scoreLabel = new JLabel("Score: " + scoreManager.getScore());
         scoreLabel.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
-        scoreLabel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 10));
-        questionPanel.add(scoreLabel, BorderLayout.NORTH);
+        scoreLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        scorePanel.add(scoreLabel);
 
+        // 添加分隔线
+        JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
+
+        scoreContainer.add(scorePanel, BorderLayout.NORTH);
+        scoreContainer.add(separator, BorderLayout.SOUTH);
+
+        questionPanel.add(scoreContainer, BorderLayout.NORTH);
+        // 主内容区域
         JPanel contentPanel = new JPanel(new GridBagLayout());
         contentPanel.setBackground(new Color(255, 250, 205));
         GridBagConstraints gbc = new GridBagConstraints();
@@ -179,7 +208,7 @@ public class Bonus2SectorAreaCalculator {
 
         questionPanel.add(contentPanel, BorderLayout.CENTER);
 
-        // ✅ 分离 bottomPanel（Back 按钮）与 mascotWrapper（吉祥物）
+        // 底部面板
         bottomPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         bottomPanel.setBackground(new Color(255, 250, 205));
         JButton backButton = new JButton("Back");
@@ -191,7 +220,7 @@ public class Bonus2SectorAreaCalculator {
         backButton.setVisible(false);
         bottomPanel.add(backButton);
 
-        // 🐰 吉祥物面板
+        // 吉祥物面板
         JPanel mascotWrapper = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         mascotWrapper.setBackground(new Color(255, 250, 205));
 
@@ -216,7 +245,7 @@ public class Bonus2SectorAreaCalculator {
         mascotPanel.add(mascotImageLabel);
         mascotWrapper.add(mascotPanel);
 
-        // 🌟 合并成底部主面板（左右布局）
+        // 合并底部面板
         JPanel unifiedBottomPanel = new JPanel(new BorderLayout());
         unifiedBottomPanel.setBackground(new Color(255, 250, 205));
         unifiedBottomPanel.add(bottomPanel, BorderLayout.WEST);
@@ -231,7 +260,7 @@ public class Bonus2SectorAreaCalculator {
         answerField.setText("");
         feedbackLabel.setText("");
         mascotSpeechBubble.setText("<html><div style='padding:10px; background:#fff8dc; border-radius:10px; border:1px solid #ccc;'>Let's take a look at this question!🐰</div></html>");
-        scoreLabel.setText("Score: " + scoreManager.getScore());
+        scoreLabel.setText("Score: " + scoreManager.getScore()); // 确保每次显示问题时更新分数
         answerField.setEnabled(true);
 
         try {
@@ -278,7 +307,8 @@ public class Bonus2SectorAreaCalculator {
                     mascotSpeechBubble.setText("<html><div style='padding:10px; background:#fff3cd; border-radius:10px; border:1px solid #ffeb3b;'>Think again! You can do it!🌟</div></html>");
                 }
             }
-            scoreLabel.setText("Score: " + scoreManager.getScore());
+            scoreLabel.setText("Score: " + scoreManager.getScore()); // 更新分数显示
+            score.setText("Score: " + scoreManager.getScore());
         } catch (Exception ex) {
             feedbackLabel.setText("❌ Please enter a valid number.");
             mascotSpeechBubble.setText("<html><div style='padding:10px; background:#ffe0e0; border-radius:10px; border:1px solid #e57373;'>Please enter a valid number. 🐰</div></html>");
