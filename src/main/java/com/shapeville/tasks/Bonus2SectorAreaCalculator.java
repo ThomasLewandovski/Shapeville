@@ -1,3 +1,4 @@
+// 包名保持不变
 package com.shapeville.tasks;
 
 import com.shapeville.manager.ScoreManager;
@@ -178,7 +179,8 @@ public class Bonus2SectorAreaCalculator {
 
         questionPanel.add(contentPanel, BorderLayout.CENTER);
 
-        bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        // ✅ 分离 bottomPanel（Back 按钮）与 mascotWrapper（吉祥物）
+        bottomPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         bottomPanel.setBackground(new Color(255, 250, 205));
         JButton backButton = new JButton("Back");
         backButton.setFont(new Font("Comic Sans MS", Font.PLAIN, 13));
@@ -188,9 +190,8 @@ public class Bonus2SectorAreaCalculator {
         });
         backButton.setVisible(false);
         bottomPanel.add(backButton);
-        questionPanel.add(bottomPanel, BorderLayout.SOUTH);
 
-        // 🐰 添加吉祥物到右下角
+        // 🐰 吉祥物面板
         JPanel mascotWrapper = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         mascotWrapper.setBackground(new Color(255, 250, 205));
 
@@ -198,12 +199,10 @@ public class Bonus2SectorAreaCalculator {
         mascotPanel.setLayout(new BoxLayout(mascotPanel, BoxLayout.Y_AXIS));
         mascotPanel.setOpaque(false);
 
-        // 对话气泡
         mascotSpeechBubble = new JLabel("<html><div style='padding:10px; background:#fff8dc; border-radius:10px; border:1px solid #ccc;'>Let's solve this problem together!</div></html>");
         mascotSpeechBubble.setFont(new Font("Comic Sans MS", Font.PLAIN, 13));
         mascotSpeechBubble.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // 图像加载
         try {
             ImageIcon bunnyIcon = new ImageIcon(getClass().getClassLoader().getResource("images/Bunny.png"));
             Image scaled = bunnyIcon.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
@@ -212,15 +211,18 @@ public class Bonus2SectorAreaCalculator {
             mascotImageLabel = new JLabel("🐰");
         }
         mascotImageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        // 组合吉祥物 panel
         mascotPanel.add(mascotSpeechBubble);
         mascotPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         mascotPanel.add(mascotImageLabel);
-
-        // 加入底部右下
         mascotWrapper.add(mascotPanel);
-        questionPanel.add(mascotWrapper, BorderLayout.SOUTH);
+
+        // 🌟 合并成底部主面板（左右布局）
+        JPanel unifiedBottomPanel = new JPanel(new BorderLayout());
+        unifiedBottomPanel.setBackground(new Color(255, 250, 205));
+        unifiedBottomPanel.add(bottomPanel, BorderLayout.WEST);
+        unifiedBottomPanel.add(mascotWrapper, BorderLayout.EAST);
+
+        questionPanel.add(unifiedBottomPanel, BorderLayout.SOUTH);
     }
 
     private void showQuestion(int shapeId) {
@@ -269,7 +271,7 @@ public class Bonus2SectorAreaCalculator {
                 attemptCount++;
                 if (attemptCount >= 3) {
                     feedbackLabel.setText("❌ Incorrect. " + explanations.get(currentShapeId));
-                    mascotSpeechBubble.setText("<html><div style='padding:10px; background:#ffe0e0; border-radius:10px; border:1px solid #e57373;'>Never mind, the correct answer is:" + explanations.get(currentShapeId) + " 🐰</div></html>");
+                    mascotSpeechBubble.setText("<html><div style='padding:10px; background:#ffe0e0; border-radius:10px; border:1px solid #e57373;'>Never mind, the correct answer is: " + explanations.get(currentShapeId) + " 🐰</div></html>");
                     completeCurrentShape();
                 } else {
                     feedbackLabel.setText("❌ Try again. Attempts left: " + (3 - attemptCount));
@@ -279,7 +281,7 @@ public class Bonus2SectorAreaCalculator {
             scoreLabel.setText("Score: " + scoreManager.getScore());
         } catch (Exception ex) {
             feedbackLabel.setText("❌ Please enter a valid number.");
-            mascotSpeechBubble.setText("<html><div style='padding:10px; background:#ffe0e0; border-radius:10px; border:1px solid #e57373;'>Please enter a valid number.！🐰</div></html>");
+            mascotSpeechBubble.setText("<html><div style='padding:10px; background:#ffe0e0; border-radius:10px; border:1px solid #e57373;'>Please enter a valid number. 🐰</div></html>");
         }
     }
 
