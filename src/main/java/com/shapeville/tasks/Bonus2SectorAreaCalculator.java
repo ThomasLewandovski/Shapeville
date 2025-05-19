@@ -23,6 +23,9 @@ public class Bonus2SectorAreaCalculator {
     private JLabel feedbackLabel;
     public JLabel scoreLabel;
 
+    private JLabel mascotSpeechBubble;
+    private JLabel mascotImageLabel;
+
     public int currentShapeId;
     public int attemptCount;
     private Map<Integer, Double> correctAnswers;
@@ -33,7 +36,7 @@ public class Bonus2SectorAreaCalculator {
     public Bonus2SectorAreaCalculator(ScoreManager scoreManager) {
         this.scoreManager = scoreManager;
         this.taskPanel = new JPanel(new CardLayout());
-        taskPanel.setBackground(new Color(255, 250, 205)); // 米黄色背景
+        taskPanel.setBackground(new Color(255, 250, 205)); // 温柔米黄背景
 
         initAnswers();
         initSelectPanel();
@@ -79,7 +82,7 @@ public class Bonus2SectorAreaCalculator {
         JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         titlePanel.setBackground(new Color(255, 250, 205));
         JLabel title = new JLabel("Select a Sector Shape:");
-        title.setFont(new Font("Arial", Font.BOLD, 18));
+        title.setFont(new Font("Comic Sans MS", Font.BOLD, 18));
         titlePanel.add(title);
         selectPanel.add(titlePanel, BorderLayout.NORTH);
 
@@ -127,6 +130,7 @@ public class Bonus2SectorAreaCalculator {
         questionPanel.setBackground(new Color(255, 250, 205));
 
         scoreLabel = new JLabel("Score: " + scoreManager.getScore());
+        scoreLabel.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
         scoreLabel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 10));
         questionPanel.add(scoreLabel, BorderLayout.NORTH);
 
@@ -145,7 +149,7 @@ public class Bonus2SectorAreaCalculator {
         contentPanel.add(imageLabel, gbc);
 
         JLabel prompt = new JLabel("Enter the calculated area (2 decimals):");
-        prompt.setFont(new Font("Arial", Font.PLAIN, 14));
+        prompt.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
         gbc.gridx = 1;
         gbc.gridy = 0;
         gbc.gridheight = 1;
@@ -155,6 +159,7 @@ public class Bonus2SectorAreaCalculator {
 
         answerField = new JTextField(10);
         JButton submitButton = new JButton("Submit");
+        submitButton.setFont(new Font("Comic Sans MS", Font.PLAIN, 13));
         submitButton.addActionListener(this::handleSubmit);
 
         JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -166,7 +171,7 @@ public class Bonus2SectorAreaCalculator {
         contentPanel.add(inputPanel, gbc);
 
         feedbackLabel = new JLabel("");
-        feedbackLabel.setFont(new Font("Arial", Font.PLAIN, 13));
+        feedbackLabel.setFont(new Font("Comic Sans MS", Font.PLAIN, 13));
         gbc.gridx = 1;
         gbc.gridy = 2;
         contentPanel.add(feedbackLabel, gbc);
@@ -176,6 +181,7 @@ public class Bonus2SectorAreaCalculator {
         bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         bottomPanel.setBackground(new Color(255, 250, 205));
         JButton backButton = new JButton("Back");
+        backButton.setFont(new Font("Comic Sans MS", Font.PLAIN, 13));
         backButton.addActionListener(e -> {
             resetQuestion();
             ((CardLayout) taskPanel.getLayout()).show(taskPanel, "select");
@@ -183,6 +189,38 @@ public class Bonus2SectorAreaCalculator {
         backButton.setVisible(false);
         bottomPanel.add(backButton);
         questionPanel.add(bottomPanel, BorderLayout.SOUTH);
+
+        // 🐰 添加吉祥物到右下角
+        JPanel mascotWrapper = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        mascotWrapper.setBackground(new Color(255, 250, 205));
+
+        JPanel mascotPanel = new JPanel();
+        mascotPanel.setLayout(new BoxLayout(mascotPanel, BoxLayout.Y_AXIS));
+        mascotPanel.setOpaque(false);
+
+        // 对话气泡
+        mascotSpeechBubble = new JLabel("<html><div style='padding:10px; background:#fff8dc; border-radius:10px; border:1px solid #ccc;'>Let's solve this problem together!</div></html>");
+        mascotSpeechBubble.setFont(new Font("Comic Sans MS", Font.PLAIN, 13));
+        mascotSpeechBubble.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // 图像加载
+        try {
+            ImageIcon bunnyIcon = new ImageIcon(getClass().getClassLoader().getResource("images/Bunny.png"));
+            Image scaled = bunnyIcon.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+            mascotImageLabel = new JLabel(new ImageIcon(scaled));
+        } catch (Exception ex) {
+            mascotImageLabel = new JLabel("🐰");
+        }
+        mascotImageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // 组合吉祥物 panel
+        mascotPanel.add(mascotSpeechBubble);
+        mascotPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        mascotPanel.add(mascotImageLabel);
+
+        // 加入底部右下
+        mascotWrapper.add(mascotPanel);
+        questionPanel.add(mascotWrapper, BorderLayout.SOUTH);
     }
 
     private void showQuestion(int shapeId) {
@@ -190,6 +228,7 @@ public class Bonus2SectorAreaCalculator {
         attemptCount = 0;
         answerField.setText("");
         feedbackLabel.setText("");
+        mascotSpeechBubble.setText("<html><div style='padding:10px; background:#fff8dc; border-radius:10px; border:1px solid #ccc;'>Let's take a look at this question!🐰</div></html>");
         scoreLabel.setText("Score: " + scoreManager.getScore());
         answerField.setEnabled(true);
 
@@ -224,19 +263,23 @@ public class Bonus2SectorAreaCalculator {
                 };
                 scoreManager.addScore(score);
                 feedbackLabel.setText("✅ Correct! +" + score + " points");
+                mascotSpeechBubble.setText("<html><div style='padding:10px; background:#e0ffe0; border-radius:10px; border:1px solid #8bc34a;'>Great! You got it right!🎉</div></html>");
                 completeCurrentShape();
             } else {
                 attemptCount++;
                 if (attemptCount >= 3) {
                     feedbackLabel.setText("❌ Incorrect. " + explanations.get(currentShapeId));
+                    mascotSpeechBubble.setText("<html><div style='padding:10px; background:#ffe0e0; border-radius:10px; border:1px solid #e57373;'>Never mind, the correct answer is:" + explanations.get(currentShapeId) + " 🐰</div></html>");
                     completeCurrentShape();
                 } else {
                     feedbackLabel.setText("❌ Try again. Attempts left: " + (3 - attemptCount));
+                    mascotSpeechBubble.setText("<html><div style='padding:10px; background:#fff3cd; border-radius:10px; border:1px solid #ffeb3b;'>Think again! You can do it!🌟</div></html>");
                 }
             }
             scoreLabel.setText("Score: " + scoreManager.getScore());
         } catch (Exception ex) {
             feedbackLabel.setText("❌ Please enter a valid number.");
+            mascotSpeechBubble.setText("<html><div style='padding:10px; background:#ffe0e0; border-radius:10px; border:1px solid #e57373;'>Please enter a valid number.！🐰</div></html>");
         }
     }
 
@@ -264,6 +307,8 @@ public class Bonus2SectorAreaCalculator {
         answerField.setText("");
         feedbackLabel.setText("");
         answerField.setEnabled(true);
+
+        mascotSpeechBubble.setText("<html><div style='padding:10px; background:#fff8dc; border-radius:10px; border:1px solid #ccc;'>Let's solve this problem!🐰</div></html>");
 
         for (Component comp : bottomPanel.getComponents()) {
             if (comp instanceof JButton && ((JButton) comp).getText().equals("Back")) {
