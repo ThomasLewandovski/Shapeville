@@ -495,8 +495,7 @@ public class Main {
 
         saveBonus1State(
                 bonus1.completedTasks,
-                bonus1.currentShapeId,
-                bonus1.attemptCount,
+                bonus1.completedShapes,
                 bonus1.scoreManager.getScore()
         );
 
@@ -670,10 +669,16 @@ public class Main {
 
         // 更新奖励任务1状态
         bonus1.completedTasks = state.completedTasks;
-        bonus1.currentShapeId = state.currentShapeId;
-        bonus1.attemptCount = state.attemptCount;
+        bonus1.completedShapes = state.completedShapes;
         bonus1.scoreManager.setScore(state.score);
         bonus1.score.setText("points: " + state.score);
+
+        for(int i = 0; i < 6; i++) {
+            JButton btn = bonus1.shapeButtons.get(i);
+            if (bonus1.completedShapes[i] == 1) {
+                btn.setEnabled(false);
+            }
+        }
     }
 
     // 奖励任务2状态恢复方法

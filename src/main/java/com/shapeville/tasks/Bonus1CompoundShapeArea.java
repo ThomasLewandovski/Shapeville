@@ -15,6 +15,7 @@ public class Bonus1CompoundShapeArea {
     public ScoreManager scoreManager;
     public JLabel score;
     public int completedTasks = 0;
+    public int[] completedShapes = new int[7];
 
     private JPanel shapeSelectPanel;
     private JPanel questionPanel;
@@ -22,6 +23,7 @@ public class Bonus1CompoundShapeArea {
     private JLabel imageLabel;
     private JLabel feedbackLabel;
     private JTextField answerField;
+    private JButton submitButton;
 
     private JLabel mascotSpeechBubble;
     private JLabel mascotImageLabel;
@@ -29,7 +31,7 @@ public class Bonus1CompoundShapeArea {
 
     private Map<Integer, Image> originalImages = new HashMap<>();
     private Map<Integer, Image> answerImages = new HashMap<>();
-    private Map<Integer, JButton> shapeButtons = new HashMap<>();
+    public Map<Integer, JButton> shapeButtons = new HashMap<>();
 
     public int currentShapeId;
     public int attemptCount = 0;
@@ -99,10 +101,14 @@ public class Bonus1CompoundShapeArea {
                 JButton btn = new JButton(new ImageIcon(getScaledImage(rawIcon.getImage(), 200, 130)));
                 btn.addActionListener(e -> showQuestion(shapeId));
                 buttonPanel.add(btn);
+                completedShapes[i] = 0;
                 shapeButtons.put(shapeId, btn);
             } catch (Exception ex) {
                 JButton btn = new JButton("Shape " + i);
-                btn.addActionListener(e -> showQuestion(shapeId));
+                btn.addActionListener(e ->{
+                    submitButton.setEnabled(true);
+                    showQuestion(shapeId);
+                });
                 buttonPanel.add(btn);
                 shapeButtons.put(shapeId, btn);
             }
@@ -166,7 +172,7 @@ public class Bonus1CompoundShapeArea {
         answerField.setMaximumSize(new Dimension(200, 30));
         answerField.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JButton submitButton = new JButton("Submit");
+        submitButton = new JButton("Submit");
         submitButton.setAlignmentX(Component.LEFT_ALIGNMENT);
         submitButton.addActionListener(this::handleSubmit);
 
@@ -252,6 +258,7 @@ public class Bonus1CompoundShapeArea {
                 scoreManager.addScore(points);
                 completedTasks++;
                 updateButtonState(currentShapeId);
+                submitButton.setEnabled(false);
                 backButton.setVisible(true);
             } else {
                 attemptCount++;
@@ -265,6 +272,7 @@ public class Bonus1CompoundShapeArea {
                     completedTasks++;
                     updateButtonState(currentShapeId);
                     backButton.setVisible(true);
+                    submitButton.setEnabled(false);
                 } else {
                     feedbackLabel.setText("❌ Try again. Attempts left: " + (3 - attemptCount));
                     mascotSpeechBubble.setText("<html><div style='padding:10px; background:#fff3cd; border-radius:10px; border:1px solid #ffeb3b;'>Almost there! Try once more! 🦊</div></html>");
@@ -279,6 +287,7 @@ public class Bonus1CompoundShapeArea {
 
     private void updateButtonState(int shapeId) {
         JButton btn = shapeButtons.get(shapeId);
+        completedShapes[shapeId] = 1;
         if (btn != null) {
             btn.setEnabled(false);
         }
