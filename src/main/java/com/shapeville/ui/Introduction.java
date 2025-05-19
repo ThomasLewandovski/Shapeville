@@ -36,12 +36,9 @@ public class Introduction {
         panel.add(home);
 
         // 设置按钮点击事件：关闭对话框
-        home.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (dialog != null) {
-                    dialog.dispose(); // 关闭对话框
-                }
+        home.addActionListener(e -> {
+            if (dialog != null) {
+                dialog.dispose(); // 关闭对话框
             }
         });
 

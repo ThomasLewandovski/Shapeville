@@ -25,17 +25,17 @@ public class Task1ShapeIdentification {
             "Keep it up!"
     };
     public ScoreManager scoreManager;
+    public int scores=0;
     public Runnable onReturnHome;
     public JButton nextButton;
     public JButton goHomeButton;
-    public JButton goBackButton;
     public JButton btn2D;
     public JButton btn3D;
     public JPanel task1;
     public JLabel img;
     public JLabel output;
     public JTextField input;
-    public JLabel score;
+    public JLabel scorelabel;
     private KeyAdapter keyAdapter;
     public Runnable onComplete;
 
@@ -74,12 +74,12 @@ public class Task1ShapeIdentification {
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setBackground(backgroundColor); // 顶部背景设为米黄色
 
-        score = new JLabel("points:" + scoreManager.getScore());
-        score.setFont(new Font("Arial", Font.BOLD, 16));
-        score.setOpaque(true); // 让标签背景生效
-        score.setBackground(backgroundColor);    // 标签背景设为相同色
+        scorelabel = new JLabel("points:" + scores);
+        scorelabel.setFont(new Font("Arial", Font.BOLD, 16));
+        scorelabel.setOpaque(true); // 让标签背景生效
+        scorelabel.setBackground(backgroundColor);    // 标签背景设为相同色
 
-        topPanel.add(score, BorderLayout.NORTH);
+        topPanel.add(scorelabel, BorderLayout.NORTH);
 
         output = new JLabel();
         output.setFont(new Font("Arial", Font.PLAIN, 16));
@@ -346,7 +346,7 @@ public class Task1ShapeIdentification {
         goHomeButton.setText(" Return to Home");
         nextButton.setVisible(false);
 
-        score.setText("points: " + scoreManager.getScore());
+        scorelabel.setText("points: " + scoreManager.getScore());
     }
 
     private void selectShapeType(String type) {
@@ -430,7 +430,8 @@ public class Task1ShapeIdentification {
             updatePlayCount();
             int points = calculatePoints();
             scoreManager.addScore(points);
-            score.setText("points: " + scoreManager.getScore());
+            scores+=points;
+            scorelabel.setText("points: " + scores);
 
             output.setText("<html><div style='padding:5px;border:2px solid rgb(255,239,190);background:#fff;border-radius:10px;'>"
                     + "Correct! +" + points + " points<br>" + getRandomEncouragement() + "</div></html>");
