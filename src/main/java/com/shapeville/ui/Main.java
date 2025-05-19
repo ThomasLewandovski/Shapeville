@@ -201,7 +201,7 @@ public class Main {
             task1ProgressBar.setValue(task1.isIdentifiedShapes);
 
             // 检查任务是否完成
-            if (task1.isIdentifiedShapes >= 8) {
+            if (task1.is_played_task1[0] == 1 && task1.is_played_task1[1] == 1) {
                 taskCompletionStatus[0] = true;
                 task1Button.setBackground(new Color(144, 238, 144));
                 task1Button.setEnabled(false);
