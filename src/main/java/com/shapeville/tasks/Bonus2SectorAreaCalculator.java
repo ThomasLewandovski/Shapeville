@@ -30,6 +30,11 @@ public class Bonus2SectorAreaCalculator {
     private JLabel mascotSpeechBubble;
     private JLabel mascotImageLabel;
 
+    private Timer countdownTimer;
+    private int timeRemaining; // 单位：秒
+    private final int TOTAL_TIME = 300; // 5分钟 = 300秒
+    private JLabel timerLabel;
+
     public int currentShapeId;
     public int attemptCount;
     private Map<Integer, Double> correctAnswers;
@@ -55,28 +60,59 @@ public class Bonus2SectorAreaCalculator {
         explanations = new HashMap<>();
 
         correctAnswers.put(1, 50.24);
-        explanations.put(1, "Area = (90 / 360) × 3.14 × 8² = 50.24");
-
+        explanations.put(1, """
+            Area = (central angle / 360) × π × r²
+                = (90 / 360) × 3.14 × 8 × 8
+                = 50.24
+            """);
         correctAnswers.put(2, 659.22);
-        explanations.put(2, "Area = (130 / 360) × 3.14 × 18² = 659.22");
+        explanations.put(2, """
+            Area = (central angle / 360) × π × r²
+                = (130 / 360) × 3.14 × 18 × 18
+                = 659.22
+            """);
 
         correctAnswers.put(3, 189.65);
-        explanations.put(3, "Area = (240 / 360) × 3.14 × 19² = 189.65");
+        explanations.put(3, """
+            Area = (central angle / 360) × π × r²
+                = (240 / 360) × 3.14 × 19 × 19
+                = 189.65
+            """);
+        // correctAnswers.put(3, 377.85);
+        // explanations.put(3, "Area = (120 / 360) × 3.14 × 19² = 377.85");//？？
 
         correctAnswers.put(4, 467.06);
-        explanations.put(4, "Area = (110 / 360) × 3.14 × 22² = 467.06");
+        explanations.put(4, """
+            Area = (central angle / 360) × π × r²
+                = (110 / 360) × 3.14 × 22 × 22
+                = 467.06
+            """);
 
         correctAnswers.put(5, 107.24);
-        explanations.put(5, "Area = (100 / 360) × 3.14 × 3.5² = 107.24");
+        explanations.put(5, """
+            Area = (central angle / 360) × π × r²
+                = (100 / 360) × 3.14 × 3.5 × 3.5
+                = 107.24
+            """);
 
         correctAnswers.put(6, 150.72);
-        explanations.put(6, "Area = (270 / 360) × 3.14 × 8² = 150.72");
-
+        explanations.put(6, """
+            Area = (central angle / 360) × π × r²
+                = (270 / 360) × 3.14 × 8 × 8
+                = 150.72
+            """);
         correctAnswers.put(7, 377.0);
-        explanations.put(7, "Area = (280 / 360) × 3.14 × 12² = 377.0");
-
+        explanations.put(7, """
+            Area = (central angle / 360) × π × r²
+                = (280 / 360) × 3.14 × 12 × 12
+                = 377.00
+            """);
         correctAnswers.put(8, 491.85);
-        explanations.put(8, "Area = (250 / 360) × 3.14 × 15² = 491.85");
+        explanations.put(8, """
+            Area = (central angle / 360) × π × r²
+                = (250 / 360) × 3.14 × 15 × 15
+                = 491.85
+            """);
     }
 
     private void initSelectPanel() {
@@ -158,6 +194,11 @@ public class Bonus2SectorAreaCalculator {
         scoreLabel.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
         scoreLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
         scorePanel.add(scoreLabel);
+        // 添加时钟标签
+        timerLabel = new JLabel("Time Left: 05:00");
+        timerLabel.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
+        timerLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        scorePanel.add(timerLabel);
 
         // 添加分隔线
         JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
@@ -181,7 +222,7 @@ public class Bonus2SectorAreaCalculator {
         gbc.weighty = 1.0;
         contentPanel.add(imageLabel, gbc);
 
-        JLabel prompt = new JLabel("Enter the calculated area (2 decimals):");
+        JLabel prompt = new JLabel("Enter the calculated area (2 decimals, Use π = 3.14):");
         prompt.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
         gbc.gridx = 1;
         gbc.gridy = 0;
@@ -220,7 +261,7 @@ public class Bonus2SectorAreaCalculator {
             resetQuestion();
             ((CardLayout) taskPanel.getLayout()).show(taskPanel, "select");
         });
-        backButton.setVisible(false);
+        backButton.setVisible(true);
         bottomPanel.add(backButton);
 
         // 吉祥物面板
@@ -258,8 +299,10 @@ public class Bonus2SectorAreaCalculator {
     }
 
     private void showQuestion(int shapeId) {
+        startCountdownTimer();
         currentShapeId = shapeId;
         attemptCount = 0;
+        submitButton.setEnabled(true); // ✅ 这里确保按钮重新启用
         answerField.setText("");
         feedbackLabel.setText("");
         mascotSpeechBubble.setText("<html><div style='padding:10px; background:#fff8dc; border-radius:10px; border:1px solid #ccc;'>Let's take a look at this question!🐰</div></html>");
@@ -275,17 +318,53 @@ public class Bonus2SectorAreaCalculator {
             imageLabel.setText("Image not found");
         }
 
-        for (Component comp : bottomPanel.getComponents()) {
-            if (comp instanceof JButton && ((JButton) comp).getText().equals("Back")) {
-                comp.setVisible(false);
-                break;
-            }
-        }
+        //for (Component comp : bottomPanel.getComponents()) {
+            // if (comp instanceof JButton && ((JButton) comp).getText().equals("Back")) {
+            //     comp.setVisible(false);
+            //     break;
+            // }
+        //}
 
         ((CardLayout) taskPanel.getLayout()).show(taskPanel, "question");
+
+        timerLabel.setText("Time Left: 05:00");
+    }
+
+    private void startCountdownTimer() {
+        timeRemaining = TOTAL_TIME;
+
+        countdownTimer = new Timer(1000, e -> {
+            timeRemaining--;
+
+            // ✅ 更新倒计时标签
+            int minutes = timeRemaining / 60;
+            int seconds = timeRemaining % 60;
+            String timeFormatted = String.format("Time Left: %02d:%02d", minutes, seconds);
+            timerLabel.setText(timeFormatted);
+
+            // ✅ 超时处理
+            if (timeRemaining <= 0) {
+                countdownTimer.stop();
+
+                if (submitButton.isEnabled()) {
+                    submitButton.setEnabled(false);
+                    answerField.setEnabled(false);
+                    feedbackLabel.setText("⏰ Time is up! Let's see the solution:");
+
+                    String explanation = explanations.get(currentShapeId).replace("\n", "<br>");
+                    mascotSpeechBubble.setText("<html><div style='padding:10px; background:#ffe0e0;'>Time's up!<br>" + explanation + "</div></html>");
+
+                    completeCurrentShape();
+                }
+            }
+        });
+        countdownTimer.start();
     }
 
     private void handleSubmit(ActionEvent e) {
+        // if (countdownTimer != null && countdownTimer.isRunning()) {
+        //     countdownTimer.stop();
+        // }
         try {
             double userAnswer = Double.parseDouble(answerField.getText());
             double correct = correctAnswers.get(currentShapeId);
@@ -296,7 +375,11 @@ public class Bonus2SectorAreaCalculator {
                     case 2 -> 2;
                     default -> 0;
                 };
-                submitButton.setVisible(false);
+                // submitButton.setVisible(false);
+                if (countdownTimer != null && countdownTimer.isRunning()) {
+                    countdownTimer.stop();// 停止计时器
+                }
+                submitButton.setEnabled(false);  // ✅ 禁用 submitButton
                 scoreManager.addScore(score);
                 scores+=score;
                 feedbackLabel.setText("✅ Correct! +" + score + " points");
@@ -305,9 +388,17 @@ public class Bonus2SectorAreaCalculator {
             } else {
                 attemptCount++;
                 if (attemptCount >= 3) {
+                    if (countdownTimer != null && countdownTimer.isRunning()) {
+                        countdownTimer.stop();// 停止计时器
+                    }
                     submitButton.setEnabled(false);
-                    feedbackLabel.setText("❌ Incorrect. " + explanations.get(currentShapeId));
-                    mascotSpeechBubble.setText("<html><div style='padding:10px; background:#ffe0e0; border-radius:10px; border:1px solid #e57373;'>Never mind, the correct answer is: " + explanations.get(currentShapeId) + " 🐰</div></html>");
+                    //feedbackLabel.setText("❌ Incorrect. " + explanations.get(currentShapeId));
+                    //mascotSpeechBubble.setText("<html><div style='padding:10px; background:#ffe0e0; border-radius:10px; border:1px solid #e57373;'>Never mind, the correct answer is: " + explanations.get(currentShapeId) + " 🐰</div></html>");
+                    feedbackLabel.setText("Oops! Not quite right, but don't worry—we'll figure it out!");
+                     // ✅ 显示换行格式的分步解析
+                    String explanation = explanations.get(currentShapeId).replace("\n", "<br>");
+                    mascotSpeechBubble.setText("<html><div style='padding:10px; background:#ffe0e0;'>Here's the solution:<br>" + explanation + "</div></html>");
+                    
                     completeCurrentShape();
                 } else {
                     feedbackLabel.setText("❌ Try again. Attempts left: " + (3 - attemptCount));
@@ -343,17 +434,22 @@ public class Bonus2SectorAreaCalculator {
     }
 
     private void resetQuestion() {
+        if (countdownTimer != null && countdownTimer.isRunning()) {
+            countdownTimer.stop();
+        }//防止计时器残留
+        timerLabel.setText("Time Left: 05:00");
+
         answerField.setText("");
         feedbackLabel.setText("");
         answerField.setEnabled(true);
 
         mascotSpeechBubble.setText("<html><div style='padding:10px; background:#fff8dc; border-radius:10px; border:1px solid #ccc;'>Let's solve this problem!🐰</div></html>");
 
-        for (Component comp : bottomPanel.getComponents()) {
-            if (comp instanceof JButton && ((JButton) comp).getText().equals("Back")) {
-                comp.setVisible(false);
-                break;
-            }
-        }
+        // for (Component comp : bottomPanel.getComponents()) {
+        //     if (comp instanceof JButton && ((JButton) comp).getText().equals("Back")) {
+        //         comp.setVisible(false);
+        //         break;
+        //     }
+        // }
     }
 }
