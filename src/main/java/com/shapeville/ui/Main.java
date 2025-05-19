@@ -20,7 +20,7 @@ import java.util.Set;
 
 public class Main {
     // 定义存档文件名
-    private static final String SAVE_FILE = "shapeville_save.dat";
+    private static final String SAVE_FILE = "Archive/shapeville_save.dat";
 
     // 成员变量定义
     private JLabel counter1;
