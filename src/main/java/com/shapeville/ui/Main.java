@@ -43,6 +43,8 @@ public class Main {
     private JButton task2Button;
     private JButton task3Button;
     private JButton task4Button;
+    private JButton bonus1Button;
+    private JButton bonus2Button;
 
     private CardLayout cardLayout;
     private JPanel cardPanel;
@@ -171,7 +173,7 @@ public class Main {
 
             // 重置总分
             scoreManager.resetScore();
-            counter2.setText("积分：0");
+            counter2.setText("Points: 0");
 
             // 重置任务状态
             taskCompletionStatus = new boolean[6];
@@ -200,55 +202,7 @@ public class Main {
             task3Button.setBackground(resetColor);
             task4Button.setBackground(resetColor);
 
-            // 重置任务 1
-            task1.isIdentifiedShapes = 0;
-            task1.is_played_task1 = new int[2];
-            task1.scores = 0;
-            task1.scorelabel.setText("points: 0");
-
-            // 重置任务 2
-            task2.identifiedTypes.clear();
-            task2.waitingForAngleInput = false;
-            task2.scores = 0;
-            task2.scoreLabel.setText("points: 0");
-
-            // 重置任务 3
-            task3.CompletedShapes.clear();
-            task3.scores = 0;
-            task3.scorelable.setText("points: 0");
-
-            // 重置任务 4
-            task4.completedModes = new boolean[2];
-            //task4.currentMode = "";
-            task4.radius = 0;
-            task4.attempts = 0;
-            task4.scores = 0;
-            task4.scorelable.setText("points: 0");
-
-            // 重置 Bonus 1
-            bonus1.completedTasks = 0;
-            bonus1.completedShapes = new int[6];
-            bonus1.scores = 0;
-            bonus1.scorelable.setText("points: 0");
-            for (int i = 0; i < 6; i++) {
-                JButton btn = bonus1.shapeButtons.get(i);
-                btn.setEnabled(true);
-                btn.setBackground(resetColor);
-            }
-
-            // 重置 Bonus 2
-            bonus2.completedTasks = 0;
-            bonus2.completed = new boolean[9];
-            bonus2.scores = 0;
-            bonus2.scorelable.setText("Scores: 0");
-            bonus2.scoreLabel.setText("Scores: 0");
-            for (int i = 1; i <= 8; i++) {
-                if (bonus2.shapeButtons.containsKey(i)) {
-                    JButton btn = bonus2.shapeButtons.get(i);
-                    btn.setEnabled(true);
-                    btn.setBackground(resetColor);
-                }
-            }
+            initializeTasks();
 
             // ✅ 弹出提示 —— 无论是否有存档，都会执行
             JOptionPane.showMessageDialog(
@@ -297,8 +251,8 @@ public class Main {
         startpanel.add(task4ProgressBar);
 
         // bonus按钮水平对称放置在下方
-        JButton bonus1Button = new JButton("bonus1");
-        JButton bonus2Button = new JButton("bonus2");
+        bonus1Button = new JButton("bonus1");
+        bonus2Button = new JButton("bonus2");
 
         bonus1Button.setBounds(100, 320, 250, 100);
         bonus2Button.setBounds(450, 320, 250, 100);
@@ -379,7 +333,49 @@ public class Main {
             }
         });
 
-        // 任务1
+        initializeTasks();
+
+        // 添加窗口关闭事件处理
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                int choice = JOptionPane.showOptionDialog(
+                        frame,
+                        "<html>您当前的得分是:"+scoreManager.getScore() + "<br>是否保存当前游戏进度？</html>",
+                        "退出确认",
+                        JOptionPane.YES_NO_CANCEL_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        new Object[]{"保存并退出", "不保存退出", "取消"},
+                        "保存并退出"
+                );
+
+                if (choice == JOptionPane.YES_OPTION) {
+                    // 保存游戏状态
+                    saveGameState(
+                            taskCompletionStatus,
+                            is_played_task1,
+                            scoreManager.getScore(),
+                            task1.isIdentifiedShapes,
+                            task2.identifiedTypes.size(),
+                            task3.CompletedShapes.size(),
+                            task4.Completed,
+                            bonus1.completedTasks,
+                            bonus2.completedTasks
+                    );
+                    frame.dispose();
+                } else if (choice == JOptionPane.NO_OPTION) {
+                    frame.dispose();
+                }
+            }
+        });
+
+        // 将卡片面板添加到主窗口
+        frame.add(cardPanel);
+        frame.setVisible(true);
+    }
+
+    private void initializeTasks() {
         task1 = new Task1ShapeIdentification(scoreManager, is_played_task1);
         cardPanel.add(task1.task1, "task1");
         task1.onReturnHome = () -> {
@@ -516,45 +512,6 @@ public class Main {
         bonus2Button.addActionListener(e -> {
             cardLayout.show(cardPanel, "bonus2");
         });
-
-        // 添加窗口关闭事件处理
-        frame.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                int choice = JOptionPane.showOptionDialog(
-                        frame,
-                        "<html>您当前的得分是:"+scoreManager.getScore() + "<br>是否保存当前游戏进度？</html>",
-                        "退出确认",
-                        JOptionPane.YES_NO_CANCEL_OPTION,
-                        JOptionPane.QUESTION_MESSAGE,
-                        null,
-                        new Object[]{"保存并退出", "不保存退出", "取消"},
-                        "保存并退出"
-                );
-
-                if (choice == JOptionPane.YES_OPTION) {
-                    // 保存游戏状态
-                    saveGameState(
-                            taskCompletionStatus,
-                            is_played_task1,
-                            scoreManager.getScore(),
-                            task1.isIdentifiedShapes,
-                            task2.identifiedTypes.size(),
-                            task3.CompletedShapes.size(),
-                            task4.Completed,
-                            bonus1.completedTasks,
-                            bonus2.completedTasks
-                    );
-                    frame.dispose();
-                } else if (choice == JOptionPane.NO_OPTION) {
-                    frame.dispose();
-                }
-            }
-        });
-
-        // 将卡片面板添加到主窗口
-        frame.add(cardPanel);
-        frame.setVisible(true);
     }
 
     /**
