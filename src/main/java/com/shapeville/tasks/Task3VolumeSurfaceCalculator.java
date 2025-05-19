@@ -36,6 +36,7 @@ public class Task3VolumeSurfaceCalculator {
     public Runnable onComplete;
 
     public Task3VolumeSurfaceCalculator(ScoreManager scoreManager) {
+        Color creamyYellow = new Color(255, 250, 205);
         this.scoreManager = scoreManager;
         this.CompletedShapes = new HashSet<>();
 
@@ -45,6 +46,7 @@ public class Task3VolumeSurfaceCalculator {
 
         // 顶部面板 - 包含分数和标题
         JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.setBackground(creamyYellow);
         scorelable = new JLabel("Score: " + scoreManager.getScore());
         scorelable.setFont(new Font("Arial", Font.BOLD, 16));
         topPanel.add(scorelable, BorderLayout.NORTH);
@@ -59,12 +61,14 @@ public class Task3VolumeSurfaceCalculator {
 
         // 中间面板 - 包含形状选择和输入区域
         JPanel centerPanel = new JPanel(new GridBagLayout());
+        centerPanel.setBackground(creamyYellow);
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         shapeSelector = new JComboBox<>(new String[]{"Rectangle", "Parallelogram", "Triangle", "Trapezium"});
         shapeSelector.setFont(new Font("Arial", Font.PLAIN, 14));
+        shapeSelector.setBackground(new Color(255, 250, 220));
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.weightx = 0.5;
@@ -72,6 +76,7 @@ public class Task3VolumeSurfaceCalculator {
 
         JButton generateButton = new JButton("Generate Problem");
         generateButton.setFont(new Font("Arial", Font.PLAIN, 14));
+        generateButton.setBackground(new Color(255, 250, 220));
         gbc.gridx = 1;
         gbc.gridy = 0;
         gbc.weightx = 0.5;
@@ -79,6 +84,7 @@ public class Task3VolumeSurfaceCalculator {
 
         timerLabel = new JLabel("Time left: 180s");
         timerLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        timerLabel.setBackground(new Color(255, 250, 220));
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.gridwidth = 2;
@@ -86,6 +92,7 @@ public class Task3VolumeSurfaceCalculator {
 
         inputField = new JTextField();
         inputField.setFont(new Font("Arial", Font.PLAIN, 14));
+        inputField.setBackground(new Color(255, 250, 220));
         gbc.gridx = 0;
         gbc.gridy = 2;
         gbc.gridwidth = 1;
@@ -95,6 +102,7 @@ public class Task3VolumeSurfaceCalculator {
 
         submitButton = new JButton("Submit");
         submitButton.setFont(new Font("Arial", Font.PLAIN, 14));
+        submitButton.setBackground(new Color(255, 250, 220));
         gbc.gridx = 1;
         gbc.gridy = 2;
         gbc.weightx = 0.3;
@@ -107,9 +115,10 @@ public class Task3VolumeSurfaceCalculator {
 
         // 底部面板 - 包含绘图区域和返回按钮
         JPanel bottomPanel = new JPanel(new BorderLayout(10, 10));
+        bottomPanel.setBackground(creamyYellow);
 
         drawingPanel = new DrawingPanel();
-        drawingPanel.setPreferredSize(new Dimension(400, 300));
+        drawingPanel.setPreferredSize(new Dimension(320, 260));
         drawingPanel.setMinimumSize(new Dimension(300, 150));
         drawingPanel.setBackground(Color.WHITE);
         bottomPanel.add(drawingPanel, BorderLayout.CENTER);
@@ -118,6 +127,7 @@ public class Task3VolumeSurfaceCalculator {
         homeButton.setFont(new Font("Arial", Font.PLAIN, 14));
         homeButton.setAlignmentX(Component.RIGHT_ALIGNMENT);
         JPanel homeButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        homeButtonPanel.setBackground(creamyYellow);
         homeButtonPanel.add(homeButton);
         bottomPanel.add(homeButtonPanel, BorderLayout.SOUTH);
 
@@ -132,6 +142,40 @@ public class Task3VolumeSurfaceCalculator {
         });
 
         //start();
+
+        // ✅ 创建皮卡丘区域在 bottomPanel 右下角显示
+        JPanel mascotWrapper = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        mascotWrapper.setOpaque(false); // 透明背景
+
+        JPanel mascotPanel = new JPanel();
+        mascotPanel.setLayout(new BoxLayout(mascotPanel, BoxLayout.Y_AXIS));
+        mascotPanel.setOpaque(false);
+
+        // 气泡提示
+        JLabel mascotSpeech = new JLabel("<html><div style='padding:8px; background:#fff8dc; border:1px solid #ccc; border-radius:10px;'>Choose a shape to start the challenge!⚡</div></html>");
+        mascotSpeech.setFont(new Font("Comic Sans MS", Font.PLAIN, 13));
+        mascotSpeech.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // 加载Pikachu图
+        JLabel mascotImageLabel;
+        try {
+            ImageIcon pikaIcon = new ImageIcon(getClass().getClassLoader().getResource("images/Pikachu.png"));
+            Image scaled = pikaIcon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
+            mascotImageLabel = new JLabel(new ImageIcon(scaled));
+        } catch (Exception ex) {
+            mascotImageLabel = new JLabel("⚡");
+        }
+        mascotImageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // 装载进 panel
+        mascotPanel.add(mascotSpeech);
+        mascotPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        mascotPanel.add(mascotImageLabel);
+
+        mascotWrapper.add(mascotPanel);
+
+        // ✅ 添加皮卡丘 Panel 到 bottomPanel（SOUTH 区域的 EAST）
+        bottomPanel.add(mascotWrapper, BorderLayout.EAST);
     }
 
     public void start() {
@@ -157,15 +201,15 @@ public class Task3VolumeSurfaceCalculator {
             }
             case "Parallelogram" -> {
                 correctAnswer = param1 * param2;
-                currentQuestionText = "📐 Parallelogram: base = " + param1 + ", height = " + param2 + ". Calculate area:";
+                currentQuestionText = " Parallelogram: base = " + param1 + ", height = " + param2 + ". Calculate area:";
             }
             case "Triangle" -> {
                 correctAnswer = (param1 * param2) / 2;
-                currentQuestionText = "📐 Triangle: base = " + param1 + ", height = " + param2 + ". Calculate area:";
+                currentQuestionText = " Triangle: base = " + param1 + ", height = " + param2 + ". Calculate area:";
             }
             case "Trapezium" -> {
                 correctAnswer = ((param1 + param2) * param3) / 2;
-                currentQuestionText = "📐 Trapezium: a = " + param1 + ", b = " + param2 + ", height = " + param3 + ". Calculate area:";
+                currentQuestionText = " Trapezium: a = " + param1 + ", b = " + param2 + ", height = " + param3 + ". Calculate area:";
             }
         }
         questionLabel.setText(currentQuestionText);  // ✅ 用统一变量设置显示
@@ -186,7 +230,7 @@ public class Task3VolumeSurfaceCalculator {
                 CompletedShapes.add(currentShape);
 
                 // 更新题目显示（与 checkAnswer 中逻辑一致）
-                questionLabel.setText("<html>" + currentQuestionText + "<br>⏰ Time's up! The correct answer is shown below.</html>");
+                questionLabel.setText("<html>" + currentQuestionText + "<br> Time's up! The correct answer is shown below.</html>");
 
                 showExplanation(); // 展示图形和答案
             }
@@ -210,7 +254,7 @@ public class Task3VolumeSurfaceCalculator {
                 scores+=score;
                 CompletedShapes.add(currentShape);
                 checkAllShapesCompleted(); // 新增完成检测
-                questionLabel.setText("<html>✅ Great job! +" + score + " points<br>👉 Please select a new shape and click Generate Problem to continue.</html>");
+                questionLabel.setText("<html> Great job! +" + score + " points<br>👉 Please select a new shape and click Generate Problem to continue.</html>");
                 //System.out.println("1");
                 submitButton.setEnabled(false); // ✅ 禁用提交按钮
                 attemptsLeft = 0; // ✅ 强制绘图逻辑触发
@@ -219,8 +263,8 @@ public class Task3VolumeSurfaceCalculator {
             } else {
                 attemptsLeft--;
                 if (attemptsLeft <= 0) {
-                    //questionLabel.setText("❌ Incorrect. Attempts left: " + attemptsLeft);
-                    questionLabel.setText("<html>" + currentQuestionText + "<br>❌ Incorrect. Attempts left: 0</html>");
+                    //questionLabel.setText(" Incorrect. Attempts left: " + attemptsLeft);
+                    questionLabel.setText("<html>" + currentQuestionText + "<br> Incorrect. Attempts left: 0</html>");
                     countdownTimer.stop();
                     CompletedShapes.add(currentShape);//标记该图形已完成
                     //System.out.println("1");
@@ -228,8 +272,8 @@ public class Task3VolumeSurfaceCalculator {
                     showExplanation();
 
                 } else {
-                    //questionLabel.setText("❌ Incorrect. Attempts left: " + attemptsLeft);
-                    questionLabel.setText("<html>" + currentQuestionText + "<br>❌ Incorrect. come on！！ try again！ Attempts left: " + attemptsLeft + "</html>");
+                    //questionLabel.setText(" Incorrect. Attempts left: " + attemptsLeft);
+                    questionLabel.setText("<html>" + currentQuestionText + "<br> Incorrect. come on！！ try again！ Attempts left: " + attemptsLeft + "</html>");
                 }
             }
         } catch (Exception e) {
