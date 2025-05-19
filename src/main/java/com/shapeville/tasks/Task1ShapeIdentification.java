@@ -462,6 +462,10 @@ public class Task1ShapeIdentification {
         }
     }
 
+    public void onComplete() {
+
+    }
+
     private int calculatePoints() {
         if (attempt == 1) return isAdvanced ? 6 : 3;
         else if (attempt == 2) return isAdvanced ? 4 : 2;

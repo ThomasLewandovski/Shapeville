@@ -6,7 +6,6 @@ import com.shapeville.data.AngleData;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,7 +27,7 @@ public class Task2AngleIdentification {
     public JButton goHomeButton;
     public Runnable onReturnHome;
     public JLabel scoreLabel;
-    public int result = 0;
+    public int scores = 0;
     public Runnable onComplete;
     private JLabel mascotImageLabel;
     private JLabel mascotSpeechBubble;
@@ -244,8 +243,8 @@ public class Task2AngleIdentification {
                 }
                 waitingForAngleInput = true;
                 scoreManager.addScore(points);
-                result += points;
-                scoreLabel.setText("points: " + result);
+                scores += points;
+                scoreLabel.setText("points: " + scores);
                 identifiedTypes.add(correct.toLowerCase());
 
                 inputField.setVisible(false);
