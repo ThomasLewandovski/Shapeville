@@ -1,0 +1,13 @@
+src/com/shapeville/data/AngleData.java
+src/com/shapeville/data/ShapeData.java
+src/com/shapeville/manager/ArchiveManager.java
+src/com/shapeville/manager/ScoreManager.java
+src/com/shapeville/tasks/Bonus1CompoundShapeArea.java
+src/com/shapeville/tasks/Bonus2SectorAreaCalculator.java
+src/com/shapeville/tasks/Task1ShapeIdentification.java
+src/com/shapeville/tasks/Task2AngleIdentification.java
+src/com/shapeville/tasks/Task3VolumeSurfaceCalculator.java
+src/com/shapeville/tasks/Task4CircleArea.java
+src/com/shapeville/ui/Introduction.java
+src/com/shapeville/ui/Main.java
+src/com/shapeville/ui/score_detail.java
