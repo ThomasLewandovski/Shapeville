@@ -11,7 +11,7 @@ public class Task4CircleArea {
     public boolean[] completedModes;
     public int Completed=0;
     public int scores;
-    private boolean isCurrentModeFailed = false; // ✅ 标记答错三次但尚未跳转
+    private boolean isCurrentModeFailed = false; // 标记答错三次但尚未跳转
 
     public JPanel task4;
     private JPanel modeSelectionPanel;
@@ -244,13 +244,13 @@ public class Task4CircleArea {
     }
 
     public void start() {
-        submitButton.setEnabled(true);  // ✅ 恢复按钮状态
+        submitButton.setEnabled(true);  // 恢复按钮状态
         input.setText("");
         feedbackLabel.setText("");
         formulaLabel.setText("");
         drawPanel.setVisible(false);
 
-         // ✅ 清空吉祥物的提示语，恢复默认状态
+         // 清空吉祥物的提示语，恢复默认状态
         mascotSpeech.setText("<html><div style='padding:8px;background:#fff8dc;border:1px solid #aaa;border-radius:10px;'>Let's go!</div></html>");
 
         radius = new Random().nextInt(20) + 1;
@@ -269,15 +269,15 @@ public class Task4CircleArea {
             timerLabel.setText("Time: " + timeRemaining + "s");
             if (timeRemaining <= 0) {
                 countdownTimer.stop();
-                handleTimeout();  // 🕒 超时逻辑处理
+                handleTimeout();  // 超时逻辑处理
             }
         });
         countdownTimer.start();
 
         String modeText = currentMode == 0 ?
-                "Area（π≈3.14）" :
-                "Circumference（π≈3.14）";
-        questionLabel.setText("The radius of a circle = " + radius + "，calculating" + modeText);
+                "Area(π≈3.14)" :
+                "Circumference(π≈3.14)";
+        questionLabel.setText("The radius of a circle = " + radius + ",calculating" + modeText);
         drawPanel.setMode(currentMode);
     }
 
@@ -287,7 +287,7 @@ public class Task4CircleArea {
                 ? 3.14 * radius * radius
                 : 2 * 3.14 * radius;
 
-        feedbackLabel.setText("⏰ Time's up! Here's the correct answer.");
+        feedbackLabel.setText("Time's up! Here's the correct answer.");
         mascotSpeech.setText("<html><div style='padding:10px;background:#ffe0e0;border:1px solid #cc0000;border-radius:10px;'>Oops! Time is up! The correct formula is:<br>" +
                 formulaLabelFor(currentMode, radius, correctValue) + "</div></html>");
 
@@ -351,17 +351,17 @@ public class Task4CircleArea {
         mascotSpeech.setText("<html><div style='padding:10px;background:#d4edda;border:1px solid #155724;border-radius:10px;'>" +
                 "Well done! You’ve mastered this. <br> You can now return and proceed to the next module.</div></html>");
 
-        // 🎯 显示公式与绘图
+        // 显示公式与绘图
         formulaLabel.setText(formulaLabelFor(currentMode, radius, correctValue));
         drawPanel.setRadius(radius);
         drawPanel.setVisible(true);
 
-        // ✅ 只是标记完成，不跳转界面，用户点击“Back to Mode Select”时才触发 completeCurrentMode()
+        // 只是标记完成，不跳转界面，用户点击“Back to Mode Select”时才触发 completeCurrentMode()
         isCurrentModeFailed = true;
 
-        submitButton.setEnabled(false); // ✅ 答对后禁用
+        submitButton.setEnabled(false); // 答对后禁用
 
-        if (countdownTimer != null) countdownTimer.stop();  // ✅ 停止计时器
+        if (countdownTimer != null) countdownTimer.stop();  // 停止计时器
     }
 
     private void handleWrongAnswer(double correctValue) {
@@ -375,11 +375,11 @@ public class Task4CircleArea {
 
             drawPanel.setRadius(radius);
             drawPanel.setVisible(true);
-            isCurrentModeFailed = true; // ✅ 标记当前模式已失败
+            isCurrentModeFailed = true; // 标记当前模式已失败
 
-            submitButton.setEnabled(false); // ✅ 完全错误后禁用
+            submitButton.setEnabled(false); // 完全错误后禁用
 
-            if (countdownTimer != null) countdownTimer.stop();  // ✅ 停止计时器
+            if (countdownTimer != null) countdownTimer.stop();  // 停止计时器
 
         } else {
             feedbackLabel.setText("Wrong, remaining attempts: " + (3 - attempts));

@@ -39,7 +39,7 @@ public class Task3VolumeSurfaceCalculator {
     public int param1;
     public int param2;
     public int param3;
-    public int correctAnswer;
+    public double correctAnswer;
     public int attemptsLeft;
     public int timeRemaining;
     public Runnable onComplete;
@@ -257,18 +257,18 @@ public class Task3VolumeSurfaceCalculator {
         switch (currentShape) {
             case "Rectangle" -> {
                 correctAnswer = param1 * param2;
-                currentQuestionText = "📐 Rectangle: length = " + param1 + ", width = " + param2 + ". Calculate area:";
+                currentQuestionText = " Rectangle: length = " + param1 + ", width = " + param2 + ". Calculate area:";
             }
             case "Parallelogram" -> {
                 correctAnswer = param1 * param2;
                 currentQuestionText = " Parallelogram: base = " + param1 + ", height = " + param2 + ". Calculate area:";
             }
             case "Triangle" -> {
-                correctAnswer = (param1 * param2) / 2;
+                correctAnswer = (param1 * param2) / 2.0;
                 currentQuestionText = " Triangle: base = " + param1 + ", height = " + param2 + ". Calculate area:";
             }
             case "Trapezium" -> {
-                correctAnswer = ((param1 + param2) * param3) / 2;
+                correctAnswer = ((param1 + param2) * param3) / 2.0;
                 currentQuestionText = " Trapezium: a = " + param1 + ", b = " + param2 + ", height = " + param3 + ". Calculate area:";
             }
         }
@@ -296,8 +296,8 @@ public class Task3VolumeSurfaceCalculator {
 
     private void checkAnswer() {
         try {
-            int userAns = Integer.parseInt(inputField.getText().trim());
-            if (userAns == correctAnswer) {
+            double userAns = Double.parseDouble(inputField.getText().trim());
+            if (Math.abs(userAns - correctAnswer) < 0.0001){
                 countdownTimer.stop();
                 int score = switch (attemptsLeft) {
                     case 3 -> 3;
@@ -326,7 +326,7 @@ public class Task3VolumeSurfaceCalculator {
                 }
             }
         } catch (Exception e) {
-            questionLabel.setText("Please enter a valid number");
+            questionLabel.setText("<html>" + currentQuestionText + "<br>❗ Please enter a valid number.</html>");
         }
         scorelable.setText("Score: " + scores);
     }
@@ -488,10 +488,10 @@ public class Task3VolumeSurfaceCalculator {
 
     private String getFormulaExplanation() {
         return switch (currentShape) {
-            case "Rectangle" -> param1 + " * " + param2 + " = " + correctAnswer;
-            case "Parallelogram" -> param1 + " * " + param2 + " = " + correctAnswer;
-            case "Triangle" -> param1 + " * " + param2 + " / 2 = " + correctAnswer;
-            case "Trapezium" -> "(" + param1 + " + " + param2 + ") * " + param3 + " / 2 = " + correctAnswer;
+            case "Rectangle" -> param1 + " * " + param2 + " = " + String.format("%.1f", correctAnswer);
+            case "Parallelogram" -> param1 + " * " + param2 + " = " + String.format("%.1f", correctAnswer);
+            case "Triangle" -> param1 + " * " + param2 + " / 2 = " + String.format("%.1f", correctAnswer);
+            case "Trapezium" -> "(" + param1 + " + " + param2 + ") * " + param3 + " / 2 = " + String.format("%.1f", correctAnswer);
             default -> "Unknown";
         };
     }
