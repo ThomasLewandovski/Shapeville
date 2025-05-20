@@ -170,18 +170,19 @@ public class Task3VolumeSurfaceCalculator {
 
     private void setComponentPositions(int width, int height) {
         // 百分比布局参数
-        double topPanelHeight = 0.1;
-        double centerPanelHeight = 0.3;
-        double bottomPanelHeight = 0.6;
+        double topPanelHeight = 0.2;
+        double centerPanelHeight = 0.25;
+        double bottomPanelHeight = 0.55;
 
         // 顶部面板
         int topPanelY = 0;
         int topPanelHeightPx = (int) (height * topPanelHeight);
-        task3.getComponent(0).setBounds(0, topPanelY, width, topPanelHeightPx);
+
+        task3.getComponent(0).setBounds(0, topPanelY, width -20, topPanelHeightPx);
 
         // 分数标签
-        scorelable.setBounds(10, 0, width - 20, 30);
-        questionLabel.setBounds(10, topPanelHeightPx/2, width - 20, 40);
+        scorelable.setBounds(10, 0, width - 20, topPanelHeightPx / 3);
+        questionLabel.setBounds(10, topPanelHeightPx /3, width - 20, topPanelHeightPx/2);
 
         // 中间面板
         int centerPanelY = topPanelHeightPx;
@@ -191,22 +192,22 @@ public class Task3VolumeSurfaceCalculator {
         // 形状选择框
         double shapeSelectorWidth = 0.6;
         double shapeSelectorHeight = 0.2;
-        shapeSelector.setBounds(20, 20,
+        shapeSelector.setBounds(20, 0,
                 (int)(width*shapeSelectorWidth), (int)(centerPanelHeightPx*shapeSelectorHeight));
 
         // 生成按钮
         JButton generateButton = (JButton) centerPanel.getComponent(1);
         generateButton.setBounds((int)(width*shapeSelectorWidth) + 20,
-                20, width - shapeSelector.getX() - shapeSelector.getWidth() - 40,  (int)(centerPanelHeightPx*shapeSelectorHeight));
+                0, width - shapeSelector.getX() - shapeSelector.getWidth() - 40,  (int)(centerPanelHeightPx*shapeSelectorHeight));
 
         // 计时器标签
-        timerLabel.setBounds(20, shapeSelector.getY() + shapeSelector.getHeight() + 20,
+        timerLabel.setBounds(20, shapeSelector.getY() + shapeSelector.getHeight() + 10,
                 width - 40, 30);
 
         // 输入框和提交按钮
         double inputFieldWidth = 0.6;
         double inputFieldHeight = 0.2;
-        inputField.setBounds(20, timerLabel.getY() + timerLabel.getHeight() + 20,
+        inputField.setBounds(20, timerLabel.getY() + timerLabel.getHeight() + 10,
                 (int)(width*inputFieldWidth), (int)(centerPanelHeightPx*inputFieldHeight));
         submitButton.setBounds(inputField.getWidth() + 20,
                 inputField.getY(), width - inputField.getX() - inputField.getWidth() - 40, (int)(centerPanelHeightPx*inputFieldHeight));
@@ -228,13 +229,13 @@ public class Task3VolumeSurfaceCalculator {
 
         // 皮卡丘面板
         int mascotWidth = (int)(width * 0.3);
-        int mascotHeight = (int)(bottomPanelHeightPx * 0.8);
-        mascotWrapper.setBounds(width - mascotWidth - 20, bottomPanelHeightPx - mascotHeight - 20,
+        int mascotHeight = (int)(bottomPanelHeightPx);
+        mascotWrapper.setBounds(width - mascotWidth - 40, bottomPanelHeightPx - mascotHeight-40,
                 mascotWidth, mascotHeight);
         mascotPanel.setBounds(0, 0, mascotWidth, mascotHeight);
 
-        mascotSpeech.setBounds((int)(mascotWidth*0.1), (int)(mascotHeight*0.2), (int)(mascotWidth*0.5), (int)(mascotHeight*0.2));
-        mascotImageLabel.setBounds((int)(mascotWidth*0.2), (int)(mascotHeight*0.4), (int)(mascotWidth*0.75), (int)(mascotHeight*0.5));
+        mascotSpeech.setBounds((int)(mascotWidth*0.1), (int)(mascotHeight*0.2), (int)(mascotWidth*0.6), (int)(mascotHeight*0.4));
+        mascotImageLabel.setBounds((int)(mascotWidth*0.3), (int)(mascotHeight*0.5), (int)(mascotWidth*0.75), (int)(mascotHeight*0.5));
 
     }
 
