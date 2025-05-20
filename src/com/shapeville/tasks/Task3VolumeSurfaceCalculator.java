@@ -4,488 +4,501 @@ import com.shapeville.manager.ScoreManager;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Random;
+import javax.swing.Timer;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.util.*;
 
-public class Task4CircleArea {
-    private static final String[] MODES = {"Area", "Circumference"};
-    public boolean[] completedModes;
-    public int Completed=0;
-    public int scores;
-    private boolean isCurrentModeFailed = false; // 标记答错三次但尚未跳转
-
-    public JPanel task4;
-    private JPanel modeSelectionPanel;
-    private JPanel calculationPanel;
-    private JButton[] modeButtons = new JButton[2];
-
-    public JLabel scorelable;
-    private JLabel questionLabel;
-    private JTextField input;
-    private JButton submitButton;
-    private JLabel feedbackLabel;
-    private JLabel formulaLabel;
-    private DrawCirclePanel drawPanel;
-
-    public ScoreManager scoreManager;
+public class Task3VolumeSurfaceCalculator {
+    public JPanel task3;
     public Runnable onReturnHome;
+    public ScoreManager scoreManager;
+    public JLabel scorelable;
+    public int scores = 0;
+    public Set<String> CompletedShapes;
+    private JPanel centerPanel;
+    private JPanel homeButtonPanel;
+
+    private JLabel questionLabel;
+    private JTextField inputField;
+    private JButton submitButton, homeButton;
+    private JComboBox<String> shapeSelector;
+    private Timer countdownTimer;
+    private JLabel timerLabel;
+    private DrawingPanel drawingPanel;
+    private String currentQuestionText = "";
+    private JLabel mascotSpeech;
+    private JLabel mascotImageLabel;
+    private JPanel mascotPanel;
+    private JPanel mascotWrapper;
+    private ImageIcon pikaIcon;
+
+    public String currentShape;
+    public int param1;
+    public int param2;
+    public int param3;
+    public double correctAnswer;
+    public int attemptsLeft;
+    public int timeRemaining;
     public Runnable onComplete;
 
-    public int currentMode;
-    public int radius;
-    public int attempts;
-
-    private JLabel mascotSpeech;
-    private JLabel mascotImage;
-
-    private Timer countdownTimer;
-    private int timeRemaining;
-    private JLabel timerLabel;
-
-    public Task4CircleArea(ScoreManager scoreManager) {
+    public Task3VolumeSurfaceCalculator(ScoreManager scoreManager) {
+        Color creamyYellow = new Color(255, 242, 198);
         this.scoreManager = scoreManager;
-        this.completedModes = new boolean[2];
+        this.CompletedShapes = new HashSet<>();
 
-        task4 = new JPanel(new CardLayout());
-        task4.setBackground(new Color(255, 242, 198)); // 米黄色背景
+        // 使用null布局
+        task3 = new JPanel(null);
+        task3.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        task3.setBackground(creamyYellow);
 
-        createModeSelectionPanel();
-        createCalculationPanel();
+        // 顶部面板 - 包含分数和标题
+        JPanel topPanel = new JPanel(null);
+        topPanel.setBackground(creamyYellow);
+        scorelable = new JLabel("Score: " + scoreManager.getScore());
+        scorelable.setFont(new Font("Arial", Font.BOLD, 16));
+        topPanel.add(scorelable);
 
-        task4.add(modeSelectionPanel, "modeSelection");
-        task4.add(calculationPanel, "calculation");
+        questionLabel = new JLabel("Choose a shape:");
+        questionLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+        questionLabel.setVerticalAlignment(JLabel.TOP);
+        topPanel.add(questionLabel);
 
-        ((CardLayout) task4.getLayout()).show(task4, "modeSelection");
-    }
+        task3.add(topPanel);
 
-    private void createModeSelectionPanel() {
-        // 整体背景为米黄色
-        modeSelectionPanel = new JPanel(new BorderLayout());
-        modeSelectionPanel.setBackground(new Color(255, 242, 198));
+        // 中间面板 - 包含形状选择和输入区域
+        centerPanel = new JPanel(null);
+        centerPanel.setBackground(creamyYellow);
 
-        // 左侧公式面板
-        JPanel formulaPanel = createGuidePanel();
-        formulaPanel.setPreferredSize(new Dimension(250, 400));
-        formulaPanel.setBackground(new Color(255, 242, 198)); // 米黄色
+        shapeSelector = new JComboBox<>(new String[]{"Rectangle", "Parallelogram", "Triangle", "Trapezium"});
+        shapeSelector.setFont(new Font("Arial", Font.PLAIN, 14));
+        shapeSelector.setBackground(new Color(255, 242, 198));
+        centerPanel.add(shapeSelector);
 
-        // 中间按钮区
-        JPanel modePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
-        modePanel.setBackground(new Color(255, 242, 198));
+        JButton generateButton = new JButton("Generate Problem");
+        generateButton.setFont(new Font("Arial", Font.PLAIN, 14));
+        generateButton.setBackground(new Color(255, 242, 198));
+        centerPanel.add(generateButton);
 
-        for (int i = 0; i < MODES.length; i++) {
-            JButton modeButton = new JButton(MODES[i]);
-            modeButtons[i] = modeButton;
-            int modeIndex = i;
+        timerLabel = new JLabel("Time left: 180s");
+        timerLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        timerLabel.setBackground(new Color(255, 242, 198));
+        centerPanel.add(timerLabel);
 
-            modeButton.setPreferredSize(new Dimension(160, 40));
-            modeButton.setFont(new Font("Arial", Font.BOLD, 16));
+        inputField = new JTextField();
+        inputField.setFont(new Font("Arial", Font.PLAIN, 14));
+        inputField.setBackground(new Color(255, 242, 198));
+        centerPanel.add(inputField);
+        inputField.setEnabled(false);
 
-            modeButton.addActionListener(e -> {
-                if (!completedModes[modeIndex]) {
-                    currentMode = modeIndex;
-                    ((CardLayout) task4.getLayout()).show(task4, "calculation");
-                    start();
-                }
-            });
+        submitButton = new JButton("Submit");
+        submitButton.setFont(new Font("Arial", Font.PLAIN, 14));
+        submitButton.setBackground(new Color(255, 242, 198));
+        centerPanel.add(submitButton);
+        submitButton.setEnabled(false);
 
-            modeButton.setEnabled(!completedModes[modeIndex]);
-            modePanel.add(modeButton);
+        task3.add(centerPanel);
+
+        // 底部面板 - 包含绘图区域和返回按钮
+        JPanel bottomPanel = new JPanel(null);
+        bottomPanel.setBackground(creamyYellow);
+
+        drawingPanel = new DrawingPanel();
+        drawingPanel.setBackground(Color.WHITE);
+        bottomPanel.add(drawingPanel);
+
+        homeButton = new JButton("Home");
+        homeButton.setFont(new Font("Arial", Font.PLAIN, 14));
+        homeButton.setAlignmentX(Component.RIGHT_ALIGNMENT);
+        homeButtonPanel = new JPanel(null);
+        homeButtonPanel.setBackground(creamyYellow);
+        homeButtonPanel.add(homeButton);
+        bottomPanel.add(homeButtonPanel);
+
+        // 皮卡丘区域
+        mascotWrapper = new JPanel(null);
+        mascotWrapper.setOpaque(false);
+
+        mascotPanel = new JPanel(null);
+        mascotPanel.setOpaque(false);
+
+        // 气泡提示
+        mascotSpeech = new JLabel("<html><div style='padding:8px; background:#fff8dc; border:1px solid #ccc; border-radius:10px;'>Choose a shape to start the challenge!⚡</div></html>");
+        mascotSpeech.setFont(new Font("Comic Sans MS", Font.PLAIN, 13));
+        mascotPanel.add(mascotSpeech);
+
+        // 加载Pikachu图
+        mascotImageLabel = new JLabel("⚡");
+        try {
+            pikaIcon = new ImageIcon(getClass().getClassLoader().getResource("images/Pikachu.png"));
+            if (pikaIcon.getImageLoadStatus() == MediaTracker.COMPLETE) {
+                Image scaled = pikaIcon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
+                mascotImageLabel = new JLabel(new ImageIcon(scaled));
+            }
+        } catch (Exception ex) {
+            // 使用备用图标
         }
+        mascotPanel.add(mascotImageLabel);
 
-        // 返回主菜单按钮
-        JButton homeButton = new JButton("Return to home");
-        homeButton.setFont(new Font("Arial", Font.PLAIN, 13));
+        mascotWrapper.add(mascotPanel);
+        bottomPanel.add(mascotWrapper);
+
+        task3.add(bottomPanel);
+
+        // 按钮事件处理
+        generateButton.addActionListener(e -> start());
+        submitButton.addActionListener(e -> checkAnswer());
         homeButton.addActionListener(e -> {
+            if (countdownTimer != null) countdownTimer.stop();
             if (onReturnHome != null) onReturnHome.run();
         });
 
-        // 吉祥物区域：右下角 Totoro + 气泡
-        JPanel mascotPanel = new JPanel();
-        mascotPanel.setLayout(new BoxLayout(mascotPanel, BoxLayout.Y_AXIS));
-        mascotPanel.setOpaque(false);
-
-        JLabel mascotSpeech = new JLabel("<html><div style='padding:10px; background:#fff8dc; border:1px solid #aaa; border-radius:10px;'>Please select a mode to start!</div></html>");
-        mascotSpeech.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
-        mascotSpeech.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        JLabel mascotImageLabel;
-        try {
-            ImageIcon totoroIcon = new ImageIcon(getClass().getClassLoader().getResource("images/Totoro.png"));
-            Image scaled = totoroIcon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
-            mascotImageLabel = new JLabel(new ImageIcon(scaled));
-        } catch (Exception ex) {
-            mascotImageLabel = new JLabel("🐾");
-        }
-        mascotImageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        mascotPanel.add(Box.createVerticalStrut(10));
-        mascotPanel.add(mascotSpeech);
-        mascotPanel.add(Box.createVerticalStrut(10));
-        mascotPanel.add(mascotImageLabel);
-
-        // 吉祥物包装底部对齐
-        JPanel eastPanel = new JPanel(new BorderLayout());
-        eastPanel.setBackground(new Color(255, 242, 198));
-        eastPanel.add(Box.createVerticalGlue(), BorderLayout.CENTER);
-        eastPanel.add(mascotPanel, BorderLayout.SOUTH);
-
-        // 组装整个选择界面
-        modeSelectionPanel.add(formulaPanel, BorderLayout.WEST);
-        modeSelectionPanel.add(modePanel, BorderLayout.CENTER);
-        modeSelectionPanel.add(eastPanel, BorderLayout.EAST);
-        modeSelectionPanel.add(homeButton, BorderLayout.SOUTH);
-    }
-
-    private void createCalculationPanel() {
-        calculationPanel = new JPanel(new BorderLayout(10, 10));
-        calculationPanel.setBackground(new Color(255, 242, 198));
-
-        // 顶部区域
-        JPanel topPanel = new JPanel(new BorderLayout());
-        topPanel.setBackground(new Color(255, 242, 198));
-        scorelable = new JLabel("Score: 0");
-        scorelable.setFont(new Font("Comic Sans MS", Font.BOLD, 16));
-        questionLabel = new JLabel();
-        questionLabel.setFont(new Font("Comic Sans MS", Font.PLAIN, 16));
-        questionLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-        topPanel.add(scorelable, BorderLayout.NORTH);
-        topPanel.add(questionLabel, BorderLayout.CENTER);
-        //加计时器
-        timerLabel = new JLabel("Time: 180s");
-        timerLabel.setFont(new Font("Comic Sans MS", Font.BOLD, 16));
-        timerLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-        topPanel.add(timerLabel, BorderLayout.EAST);
-
-        // 中部输入区域
-        JPanel middlePanel = new JPanel(new GridBagLayout());
-        middlePanel.setBackground(new Color(255, 242, 198));
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-
-        input = new JTextField();
-        input.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
-        gbc.gridx = 0; gbc.gridy = 0; gbc.weightx = 0.7;
-        middlePanel.add(input, gbc);
-
-        submitButton = new JButton("Submit");
-        submitButton.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
-        gbc.gridx = 1; gbc.gridy = 0; gbc.weightx = 0.3;
-        middlePanel.add(submitButton, gbc);
-
-        feedbackLabel = new JLabel();
-        feedbackLabel.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
-        gbc.gridx = 0; gbc.gridy = 1; gbc.gridwidth = 2;
-        middlePanel.add(feedbackLabel, gbc);
-
-        formulaLabel = new JLabel();
-        formulaLabel.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
-        gbc.gridx = 0; gbc.gridy = 2;
-        middlePanel.add(formulaLabel, gbc);
-
-        // 吉祥物 + 图形区域
-        JPanel bottomWrapper = new JPanel(new BorderLayout());
-        bottomWrapper.setBackground(new Color(255, 242, 198));
-
-        drawPanel = new DrawCirclePanel();
-        drawPanel.setPreferredSize(new Dimension(300, 300));
-        drawPanel.setBackground(Color.WHITE);
-
-        // 吉祥物区域（右下角）
-        JPanel mascotPanel = new JPanel();
-        mascotPanel.setLayout(new BoxLayout(mascotPanel, BoxLayout.Y_AXIS));
-        mascotPanel.setBackground(new Color(255, 242, 198));
-
-        mascotSpeech = new JLabel("<html><div style='padding:8px;background:#fff8dc;border:1px solid #aaa;border-radius:10px;'>Let's go!</div></html>");
-        mascotSpeech.setFont(new Font("Comic Sans MS", Font.PLAIN, 13));
-        mascotSpeech.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        try {
-            ImageIcon totoro = new ImageIcon(getClass().getClassLoader().getResource("images/Totoro.png"));
-            Image scaled = totoro.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
-            mascotImage = new JLabel(new ImageIcon(scaled));
-        } catch (Exception e) {
-            mascotImage = new JLabel("Totoro");
-        }
-        mascotImage.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        mascotPanel.add(Box.createVerticalStrut(10));
-        mascotPanel.add(mascotSpeech);
-        mascotPanel.add(Box.createVerticalStrut(10));
-        mascotPanel.add(mascotImage);
-
-        // Bottom 内含绘图区域和 Totoro Panel
-        bottomWrapper.add(drawPanel, BorderLayout.CENTER);
-        bottomWrapper.add(mascotPanel, BorderLayout.EAST);
-
-        // 按钮区
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttonPanel.setBackground(new Color(255, 242, 198));
-        JButton backButton = new JButton("Back to Mode Select");
-        backButton.setFont(new Font("Comic Sans MS", Font.PLAIN, 13));
-        buttonPanel.add(backButton);
-
-        backButton.addActionListener(e -> {
-            if (isCurrentModeFailed) {
-                completeCurrentMode();
-                isCurrentModeFailed = false;
-            } else {
-                refreshModeButtons();
-                ((CardLayout) task4.getLayout()).show(task4, "modeSelection");
+        // 添加窗口尺寸监听器
+        task3.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                Dimension size = task3.getSize();
+                setComponentPositions(size.width, size.height);
             }
         });
 
-        bottomWrapper.add(buttonPanel, BorderLayout.SOUTH);
-
-        calculationPanel.add(topPanel, BorderLayout.NORTH);
-        calculationPanel.add(middlePanel, BorderLayout.CENTER);
-        calculationPanel.add(bottomWrapper, BorderLayout.SOUTH);
-
-        submitButton.addActionListener(e -> checkAnswer());
+        // 初始化布局
+        setComponentPositions(800, 600);
     }
 
+    private void setComponentPositions(int width, int height) {
+        // 百分比布局参数
+        double topPanelHeight = 0.2;
+        double centerPanelHeight = 0.25;
+        double bottomPanelHeight = 0.55;
+
+        // 顶部面板
+        int topPanelY = 0;
+        int topPanelHeightPx = (int) (height * topPanelHeight);
+
+        task3.getComponent(0).setBounds(0, topPanelY, width -20, topPanelHeightPx);
+
+        // 分数标签
+        scorelable.setBounds(10, 0, width - 20, topPanelHeightPx / 3);
+        questionLabel.setBounds(10, topPanelHeightPx /3, width - 20, topPanelHeightPx/2);
+
+        // 中间面板
+        int centerPanelY = topPanelHeightPx;
+        int centerPanelHeightPx = (int) (height * centerPanelHeight);
+        task3.getComponent(1).setBounds(0, centerPanelY, width, centerPanelHeightPx);
+
+        // 形状选择框
+        double shapeSelectorWidth = 0.6;
+        double shapeSelectorHeight = 0.2;
+        shapeSelector.setBounds(20, 0,
+                (int)(width*shapeSelectorWidth), (int)(centerPanelHeightPx*shapeSelectorHeight));
+
+        // 生成按钮
+        JButton generateButton = (JButton) centerPanel.getComponent(1);
+        generateButton.setBounds((int)(width*shapeSelectorWidth) + 20,
+                0, width - shapeSelector.getX() - shapeSelector.getWidth() - 40,  (int)(centerPanelHeightPx*shapeSelectorHeight));
+
+        // 计时器标签
+        timerLabel.setBounds(20, shapeSelector.getY() + shapeSelector.getHeight() + 10,
+                width - 40, 30);
+
+        // 输入框和提交按钮
+        double inputFieldWidth = 0.6;
+        double inputFieldHeight = 0.2;
+        inputField.setBounds(20, timerLabel.getY() + timerLabel.getHeight() + 10,
+                (int)(width*inputFieldWidth), (int)(centerPanelHeightPx*inputFieldHeight));
+        submitButton.setBounds(inputField.getWidth() + 20,
+                inputField.getY(), width - inputField.getX() - inputField.getWidth() - 40, (int)(centerPanelHeightPx*inputFieldHeight));
+
+        // 底部面板
+        int bottomPanelY = centerPanelY + centerPanelHeightPx;
+        int bottomPanelHeightPx = height - bottomPanelY;
+        task3.getComponent(2).setBounds(0, bottomPanelY, width, bottomPanelHeightPx);
+
+        // 绘图面板
+        double drawingPanelRatio = 0.9;
+        drawingPanel.setSize((int)(width*0.6), (int)(bottomPanelHeightPx*drawingPanelRatio));
+        drawingPanel.setLocation((width - drawingPanel.getWidth())/30,
+                (bottomPanelHeightPx - drawingPanel.getHeight())/2 - 40);
+
+        // 返回按钮面板
+        homeButtonPanel.setBounds(0, bottomPanelHeightPx - 50, width, 50);
+        homeButton.setBounds(width - 100, 10, 80, 30);
+
+        // 皮卡丘面板
+        int mascotWidth = (int)(width * 0.3);
+        int mascotHeight = (int)(bottomPanelHeightPx);
+        mascotWrapper.setBounds(width - mascotWidth - 40, bottomPanelHeightPx - mascotHeight-40,
+                mascotWidth, mascotHeight);
+        mascotPanel.setBounds(0, 0, mascotWidth, mascotHeight);
+
+        mascotSpeech.setBounds((int)(mascotWidth*0.1), (int)(mascotHeight*0.2), (int)(mascotWidth*0.6), (int)(mascotHeight*0.4));
+        mascotImageLabel.setBounds((int)(mascotWidth*0.3), (int)(mascotHeight*0.5), (int)(mascotWidth*0.75), (int)(mascotHeight*0.5));
+
+    }
+
+
     public void start() {
-        submitButton.setEnabled(true);  // 恢复按钮状态
-        input.setText("");
-        feedbackLabel.setText("");
-        formulaLabel.setText("");
-        drawPanel.setVisible(false);
-
-        // 清空吉祥物的提示语，恢复默认状态
-        mascotSpeech.setText("<html><div style='padding:8px;background:#fff8dc;border:1px solid #aaa;border-radius:10px;'>Let's go!</div></html>");
-
-        radius = new Random().nextInt(20) + 1;
-        attempts = 1;
-        isCurrentModeFailed = false;
-        // 重置计时器
-        timeRemaining = 180;
-        timerLabel.setText("Time: 180s");
-
-        if (countdownTimer != null) {
-            countdownTimer.stop();
+        currentShape = (String) shapeSelector.getSelectedItem();
+        if (CompletedShapes.contains(currentShape)) {
+            questionLabel.setText("You already completed " + currentShape);
+            return;
         }
 
+        Random rand = new Random();
+        param1 = rand.nextInt(20) + 1;
+        param2 = rand.nextInt(20) + 1;
+        param3 = rand.nextInt(20) + 1;
+        attemptsLeft = 3;
+        timeRemaining = 180;
+
+        switch (currentShape) {
+            case "Rectangle" -> {
+                correctAnswer = param1 * param2;
+                currentQuestionText = " Rectangle: length = " + param1 + ", width = " + param2 + ". Calculate area:";
+            }
+            case "Parallelogram" -> {
+                correctAnswer = param1 * param2;
+                currentQuestionText = " Parallelogram: base = " + param1 + ", height = " + param2 + ". Calculate area:";
+            }
+            case "Triangle" -> {
+                correctAnswer = (param1 * param2) / 2.0;
+                currentQuestionText = " Triangle: base = " + param1 + ", height = " + param2 + ". Calculate area:";
+            }
+            case "Trapezium" -> {
+                correctAnswer = ((param1 + param2) * param3) / 2.0;
+                currentQuestionText = " Trapezium: a = " + param1 + ", b = " + param2 + ", height = " + param3 + ". Calculate area:";
+            }
+        }
+        questionLabel.setText(currentQuestionText);
+
+        inputField.setText("");
+        inputField.setEnabled(true);
+        submitButton.setEnabled(true);
+        if (countdownTimer != null) countdownTimer.stop();
         countdownTimer = new Timer(1000, e -> {
             timeRemaining--;
-            timerLabel.setText("Time: " + timeRemaining + "s");
+            timerLabel.setText("Time left: " + timeRemaining + "s");
             if (timeRemaining <= 0) {
-                countdownTimer.stop();
-                handleTimeout();  // 超时逻辑处理
+                ((Timer) e.getSource()).stop();
+                attemptsLeft = 0;
+                submitButton.setEnabled(false);
+                CompletedShapes.add(currentShape);
+                questionLabel.setText("<html>" + currentQuestionText + "<br> Time's up! The correct answer is shown below.</html>");
+                showExplanation();
             }
         });
         countdownTimer.start();
-
-        String modeText = currentMode == 0 ?
-                "Area(π≈3.14)" :
-                "Circumference(π≈3.14)";
-        questionLabel.setText("The radius of a circle = " + radius + ",calculating" + modeText);
-        drawPanel.setMode(currentMode);
+        drawingPanel.repaint();
     }
 
-    private void handleTimeout() {
-        Completed++;
-        double correctValue = currentMode == 0
-                ? 3.14 * radius * radius
-                : 2 * 3.14 * radius;
-
-        feedbackLabel.setText("Time's up! Here's the correct answer.");
-        mascotSpeech.setText("<html><div style='padding:10px;background:#ffe0e0;border:1px solid #cc0000;border-radius:10px;'>Oops! Time is up! The correct formula is:<br>" +
-                formulaLabelFor(currentMode, radius, correctValue) + "</div></html>");
-
-        drawPanel.setRadius(radius);
-        drawPanel.setVisible(true);
-        isCurrentModeFailed = true;
-
-        submitButton.setEnabled(false);
-    }
-
-    public void checkAnswer() {
-        String userInput = input.getText().trim();
-        double correctValue = currentMode == 0
-                ? 3.14 * radius * radius
-                : 2 * 3.14 * radius;
-
+    private void checkAnswer() {
         try {
-            double userAnswer = Double.parseDouble(userInput);
-            double diff = Math.abs(userAnswer - correctValue);
-            if (diff <= 0.01) {
-                // int points = switch (attempts) {
-                //     case 1 -> 3;
-                //     case 2 -> 2;
-                //     case 3 -> 1;
-                //     default -> 0;
-                // };
-                // Completed++;
-                // scoreManager.addScore(points);
-
-                // scores+=points;
-                // scorelable.setText("Score: " + scores);
-                // feedbackLabel.setText("Correct! Obtaining " + points + " marks");
-
-                //completeCurrentMode();
-
-                handleCorrectAnswer(correctValue);
-
+            double userAns = Double.parseDouble(inputField.getText().trim());
+            if (Math.abs(userAns - correctAnswer) < 0.0001){
+                countdownTimer.stop();
+                int score = switch (attemptsLeft) {
+                    case 3 -> 3;
+                    case 2 -> 2;
+                    case 1 -> 1;
+                    default -> 0;
+                };
+                scoreManager.addScore(score);
+                scores += score;
+                CompletedShapes.add(currentShape);
+                checkAllShapesCompleted();
+                questionLabel.setText("<html> Great job! +" + score + " points<br>👉 Please select a new shape and click Generate Problem to continue.</html>");
+                submitButton.setEnabled(false);
+                attemptsLeft = 0;
+                showExplanation();
             } else {
-                handleWrongAnswer(correctValue);
+                attemptsLeft--;
+                if (attemptsLeft <= 0) {
+                    questionLabel.setText("<html>" + currentQuestionText + "<br> Incorrect. Attempts left: 0</html>");
+                    countdownTimer.stop();
+                    CompletedShapes.add(currentShape);
+                    submitButton.setEnabled(false);
+                    showExplanation();
+                } else {
+                    questionLabel.setText("<html>" + currentQuestionText + "<br> Incorrect. come on！！ try again！ Attempts left: " + attemptsLeft + "</html>");
+                }
             }
-        } catch (NumberFormatException e) {
-            feedbackLabel.setText("Please enter a valid number.");
+        } catch (Exception e) {
+            questionLabel.setText("<html>" + currentQuestionText + "<br>❗ Please enter a valid number.</html>");
         }
-    }
-
-    private void handleCorrectAnswer(double correctValue) {
-        int points = switch (attempts) {
-            case 1 -> 3;
-            case 2 -> 2;
-            case 3 -> 1;
-            default -> 0;
-        };
-
-        Completed++;
-        scoreManager.addScore(points);
-        scores += points;
         scorelable.setText("Score: " + scores);
-        feedbackLabel.setText("Correct! You've earned " + points + " points.");
-
-        // 🎉 显示鼓励语与退出提示
-        mascotSpeech.setText("<html><div style='padding:10px;background:#d4edda;border:1px solid #155724;border-radius:10px;'>" +
-                "Well done! You’ve mastered this. <br> You can now return and proceed to the next module.</div></html>");
-
-        // 显示公式与绘图
-        formulaLabel.setText(formulaLabelFor(currentMode, radius, correctValue));
-        drawPanel.setRadius(radius);
-        drawPanel.setVisible(true);
-
-        // 只是标记完成，不跳转界面，用户点击“Back to Mode Select”时才触发 completeCurrentMode()
-        isCurrentModeFailed = true;
-
-        submitButton.setEnabled(false); // 答对后禁用
-
-        if (countdownTimer != null) countdownTimer.stop();  // 停止计时器
     }
 
-    private void handleWrongAnswer(double correctValue) {
-        if (attempts == 3) {
-            Completed++;
-            feedbackLabel.setText("All attempts have been exhausted");
-
-            // Totoro 出来说正确答案
-            mascotSpeech.setText("<html><div style='padding:10px;background:#ffe0e0;border:1px solid #cc0000;border-radius:10px;'>Oops! The correct formula is:<br>" +
-                    formulaLabelFor(currentMode, radius, correctValue) + "</div></html>");
-
-            drawPanel.setRadius(radius);
-            drawPanel.setVisible(true);
-            isCurrentModeFailed = true; // 标记当前模式已失败
-
-            submitButton.setEnabled(false); // 完全错误后禁用
-
-            if (countdownTimer != null) countdownTimer.stop();  // 停止计时器
-
-        } else {
-            feedbackLabel.setText("Wrong, remaining attempts: " + (3 - attempts));
-            mascotSpeech.setText("<html><div style='padding:8px;background:#fff3cd;border:1px solid #ffcc00;border-radius:10px;'>Try again! You can do it </div></html>");
-            attempts++;
-        }
+    private void showExplanation() {
+        String formula = switch (currentShape) {
+            case "Rectangle" -> "Area = length × width = " + param1 + " × " + param2 + " = " + correctAnswer;
+            case "Parallelogram" -> "Area = base × height = " + param1 + " × " + param2 + " = " + correctAnswer;
+            case "Triangle" -> "Area = base × height / 2 = " + param1 + " × " + param2 + " / 2 = " + correctAnswer;
+            case "Trapezium" -> "Area = (a + b) × height / 2 = (" + param1 + " + " + param2 + ") × " + param3 + " / 2 = " + correctAnswer;
+            default -> "Unknown shape.";
+        };
+        checkAllShapesCompleted();
+        drawingPanel.repaint();
     }
 
-    private void completeCurrentMode() {
-        completedModes[currentMode] = true;
-
-        if (modeButtons[currentMode] != null) {
-            modeButtons[currentMode].setEnabled(false);
-        }
-
-        refreshModeButtons();
-
-        if (completedModes[0] && completedModes[1]) {
-            if (onComplete != null) onComplete.run();
-        }
-
-        ((CardLayout) task4.getLayout()).show(task4, "modeSelection");
-    }
-
-    private void refreshModeButtons() {
-        for (int i = 0; i < modeButtons.length; i++) {
-            if (modeButtons[i] != null) {
-                modeButtons[i].setEnabled(!completedModes[i]);
-            }
-        }
-    }
-
-    private JPanel createGuidePanel() {
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBorder(BorderFactory.createTitledBorder("Circle Formula Guide"));
-        panel.setBackground(new Color(255, 242, 198));
-
-        JLabel title = new JLabel("Basic Circle Properties");
-        title.setFont(new Font("Arial", Font.BOLD, 12));
-        title.setForeground(new Color(0, 102, 204));
-
-        panel.add(Box.createVerticalStrut(10));
-        panel.add(title);
-        panel.add(Box.createVerticalStrut(15));
-        panel.add(createFormulaLabel("Radius (r) = Diameter (D) ÷ 2", new Color(255, 140, 0)));
-        panel.add(Box.createVerticalStrut(10));
-        panel.add(createFormulaLabel("Area = π × r²", Color.DARK_GRAY));
-        panel.add(Box.createVerticalStrut(5));
-        panel.add(createFormulaLabel("Circumference = 2 × π × r", new Color(0, 102, 204)));
-        panel.add(createFormulaLabel("Circumference = π × D", new Color(0, 102, 204)));
-
-        return panel;
-    }
-
-    private JLabel createFormulaLabel(String text, Color color) {
-        JLabel label = new JLabel(text);
-        label.setFont(new Font("微软雅黑", Font.PLAIN, 14));
-        label.setForeground(color);
-        label.setAlignmentX(Component.LEFT_ALIGNMENT);
-        return label;
-    }
-
-    static class DrawCirclePanel extends JPanel {
-        private int radius = 0;
-        private int mode = 0;
-
-        public void setMode(int mode) {
-            this.mode = mode;
-            repaint();
-        }
-
-        public void setRadius(int radius) {
-            this.radius = radius;
-            repaint();
-        }
-
+    class DrawingPanel extends JPanel {
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
+            if (currentShape != null && attemptsLeft <= 0) {
+                drawShapeWithLabel(g);
+            }
+        }
+
+        private void drawShapeWithLabel(Graphics g) {
             Graphics2D g2 = (Graphics2D) g;
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.setStroke(new BasicStroke(2));
+            g2.setFont(new Font("Arial", Font.PLAIN, 12));
 
-            int centerX = getWidth() / 2;
-            int centerY = getHeight() / 2;
-            int maxRadius = Math.min(getWidth(), getHeight()) / 2 - 20;
+            int panelWidth = getWidth();
+            int panelHeight = getHeight();
+            int padding = panelWidth / 20;
+            int shapeWidth = panelWidth - 2 * padding;
+            int shapeHeight = panelHeight - 60;
 
             g2.setColor(Color.BLUE);
-            g2.drawOval(centerX - maxRadius, centerY - maxRadius, maxRadius * 2, maxRadius * 2);
+
+            switch (currentShape) {
+                case "Rectangle" -> {
+                    double baseScale = Math.min(shapeWidth / (double) param1, shapeHeight / (double) param2) / 2;
+
+                    int rectWidth = (int) (param1 * baseScale);
+                    int rectHeight = (int) (param2 * baseScale);
+
+                    int x = (panelWidth - rectWidth) / 2;
+                    int y = (panelHeight - rectHeight - 30) / 2;
+
+                    g2.drawRect(x, y, rectWidth, rectHeight);
+                    g2.setFont(new Font("Arial", Font.PLAIN, 12));
+                    g2.drawString("length: " + param1, x + rectWidth / 2 - 20, y - 5);
+                    g2.drawString("width: " + param2, x + rectWidth + 5, y + rectHeight / 2);
+                }
+                case "Parallelogram" -> {
+                    int reservedBottomSpace = 40;
+                    int availableHeight = panelHeight - reservedBottomSpace;
+
+                    double baseScale = Math.min(shapeWidth / (double) param1, availableHeight / (double) param2) / 2;
+                    int rawWidth = (int) (param1 * baseScale);
+                    int rawHeight = (int) (param2 * baseScale);
+                    int rawSkew = Math.max(rawWidth / 5, 10);
+
+                    int x = (panelWidth - rawWidth) / 2;
+                    int y = (availableHeight - rawHeight) / 2;
+
+                    int[] xPoints = {x, x + rawSkew, x + rawWidth, x + rawWidth - rawSkew};
+                    int[] yPoints = {y + rawHeight, y, y, y + rawHeight};
+
+                    g2.setColor(Color.BLUE);
+                    g2.drawPolygon(xPoints, yPoints, 4);
+
+                    int extension = 40;
+                    g2.setColor(Color.GRAY);
+                    Stroke dashed = new BasicStroke(1.2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{5}, 0);
+                    g2.setStroke(dashed);
+                    g2.drawLine(x + rawWidth - rawSkew, y + rawHeight, x + rawWidth + extension, y + rawHeight);
+                    g2.drawLine(x + rawWidth, y, x + rawWidth + extension, y);
+
+                    g2.drawLine(x + rawWidth, y, x + rawWidth, y + rawHeight);
+
+                    g2.setStroke(new BasicStroke(1.2f));
+                    g2.setColor(Color.BLUE);
+
+                    g2.setFont(new Font("Arial", Font.PLAIN, 12));
+                    g2.drawString("base: " + param1, x + rawWidth / 2 - 15, y - 5);
+                    g2.drawString("height: " + param2, x + rawWidth + 5, y + rawHeight / 2);
+                }
+
+                case "Triangle" -> {
+                    double scale = Math.min(shapeWidth / (double) param1, shapeHeight / (double) param2) / 1.5;
+                    int baseLength = (int) (param1 * scale);
+                    int triHeight = (int) (param2 * scale);
+
+                    int xBaseLeft = (panelWidth - baseLength) / 2;
+                    int xBaseRight = xBaseLeft + baseLength;
+                    int yBase = (panelHeight + triHeight) / 2;
+                    int xTop = (xBaseLeft + xBaseRight) / 2;
+                    int yTop = yBase - triHeight;
+
+                    int[] xPoints = {xBaseLeft, xBaseRight, xTop};
+                    int[] yPoints = {yBase, yBase, yTop};
+                    g2.setColor(Color.BLUE);
+                    g2.drawPolygon(xPoints, yPoints, 3);
+
+                    g2.setColor(Color.GRAY);
+                    Stroke dashed = new BasicStroke(1.5f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{5}, 0);
+                    g2.setStroke(dashed);
+                    g2.drawLine(xTop, yTop, xTop, yBase);
+
+                    g2.setStroke(new BasicStroke(1.2f));
+
+                    g2.setColor(Color.BLUE);
+                    g2.drawString("base: " + param1, xBaseLeft + baseLength / 2 - 20, yBase + 15);
+                    g2.drawString("height: " + param2, xTop + 5, (yTop + yBase) / 2);
+                }
+                case "Trapezium" -> {
+                    int reservedBottom = 40;
+                    int availableHeight = panelHeight - reservedBottom;
+
+                    double baseScale = Math.min(shapeWidth / (double) param2, availableHeight / (double) param3) / 2;
+                    int aLen = (int) (param1 * baseScale);
+                    int bLen = (int) (param2 * baseScale);
+                    int hLen = (int) (param3 * baseScale);
+
+                    int x = (panelWidth - bLen) / 2;
+                    int y = (availableHeight - hLen) / 2;
+
+                    int[] xPoints = {
+                            x + (bLen - aLen) / 2,
+                            x + (bLen - aLen) / 2 + aLen,
+                            x + bLen,
+                            x
+                    };
+                    int[] yPoints = {y, y, y + hLen, y + hLen};
+
+                    g2.setColor(Color.BLUE);
+                    g2.drawPolygon(xPoints, yPoints, 4);
+
+                    g2.setFont(new Font("Arial", Font.PLAIN, 12));
+                    g2.drawString("a: " + param1, x + bLen / 2 - 10, y - 10);
+                    g2.drawString("b: " + param2, x + bLen / 2 - 10, y + hLen + 20);
+
+                    int midX = x + bLen / 2;
+                    g2.setColor(Color.GRAY);
+                    Stroke dashed = new BasicStroke(1.5f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{5}, 0);
+                    g2.setStroke(dashed);
+                    g2.drawLine(midX, y, midX, y + hLen);
+
+                    g2.setStroke(new BasicStroke(1.2f));
+                    g2.setColor(Color.BLUE);
+                    g2.drawString("height: " + param3, midX - 40, y + hLen / 2);
+                }
+            }
+
             g2.setColor(Color.RED);
-            g2.drawLine(centerX, centerY, centerX + maxRadius, centerY);
-
-            String formula = mode == 0
-                    ? "Area = π×r² = " + String.format("%.2f", 3.14 * radius * radius)
-                    : "Circumference = 2πr = " + String.format("%.2f", 2 * 3.14 * radius);
-
-            g2.setColor(Color.BLACK);
-            g2.drawString("r = " + radius, centerX + maxRadius + 10, centerY + 5);
-            g2.drawString(formula, centerX - maxRadius, centerY + maxRadius + 20);
+            g2.drawString("Formula + Answer: " + getFormulaExplanation(), padding, panelHeight - 10);
         }
     }
 
-    private String formulaLabelFor(int mode, int radius, double correct) {
-        return mode == 0
-                ? "π × " + radius + "² = " + String.format("%.2f", correct)
-                : "2 × π × " + radius + " = " + String.format("%.2f", correct);
+    private String getFormulaExplanation() {
+        return switch (currentShape) {
+            case "Rectangle" -> param1 + " * " + param2 + " = " + String.format("%.1f", correctAnswer);
+            case "Parallelogram" -> param1 + " * " + param2 + " = " + String.format("%.1f", correctAnswer);
+            case "Triangle" -> param1 + " * " + param2 + " / 2 = " + String.format("%.1f", correctAnswer);
+            case "Trapezium" -> "(" + param1 + " + " + param2 + ") * " + param3 + " / 2 = " + String.format("%.1f", correctAnswer);
+            default -> "Unknown";
+        };
+    }
+
+    private void checkAllShapesCompleted() {
+        if (CompletedShapes.size() == 4 && onComplete != null) {
+            onComplete.run();
+        }
     }
 }
