@@ -326,7 +326,7 @@ public class Task1ShapeIdentification {
         cardLayout.show(cardPanel, MODE_SELECTION);
 
         // 检查是否已达到最大练习次数
-        if (is_played_task1[0] >= 3) {
+        if (is_played_task1[0] > 3) {
             btn2D.setEnabled(false);
             btn2D.setText("2D Shapes (Completed)");
         } else {
@@ -334,7 +334,7 @@ public class Task1ShapeIdentification {
             btn2D.setText("2D Shapes");
         }
 
-        if (is_played_task1[1] >= 3) {
+        if (is_played_task1[1] > 3) {
             btn3D.setEnabled(false);
             btn3D.setText("3D Shapes (Completed)");
         } else {
@@ -350,8 +350,8 @@ public class Task1ShapeIdentification {
     }
 
     private void selectShapeType(String type) {
-        if ((type.equals("2D") && is_played_task1[0] >= 3) ||
-                (type.equals("3D") && is_played_task1[1] >= 3)) {
+        if ((type.equals("2D") && is_played_task1[0] > 3) ||
+                (type.equals("3D") && is_played_task1[1] > 3)) {
             JOptionPane.showMessageDialog(null,
                     "<html>This module is completed.<br>Please try other modules.</html>",
                     "Prompt", JOptionPane.INFORMATION_MESSAGE);
