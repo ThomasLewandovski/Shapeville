@@ -24,3 +24,9 @@ git clone git@github.com:ThomasLewandovski/Shapeville.git
 cd Shapeville
 mvn clean compile
 mvn exec:java -Dexec.mainClass="com.shapeville.ui.MainFrame"
+```
+
+## javadocs 
+
+- 生成 **Javadocs**：在项目根目录下，打开命令行终端，执行`mvn javadoc:javadoc`命令。**Maven** 会根据项目中的代码注释生成 **Javadoc** 文档。
+- 打开文档：生成完成后，在项目的**target/site/apidocs/**目录下找到**index.html**文件，使用浏览器打开该文件，即可查看生成的 **Javadoc** 文档，了解项目的 API 接口及相关说明。
