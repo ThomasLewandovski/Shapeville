@@ -51,6 +51,46 @@
         </configuration>
       </plugin>
 
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.10.1</version>
+        <configuration>
+          <source>21</source> <!-- 匹配项目Java版本 -->
+          <target>21</target>
+          <encoding>UTF-8</encoding>
+          <show>private</show> <!-- 可选：显示private成员 -->
+          <links>
+            <link>https://docs.oracle.com/en/java/javase/21/docs/api/</link> <!-- JDK 21 API链接 -->
+          </links>
+          <!-- 其他可选配置：排除某些包、自定义标题等 -->
+          <!-- <excludePackageNames>com.shapeville.internal</excludePackageNames> -->
+          <!-- <title>Shapeville API Documentation</title> -->
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.3.1</version>
+        <configuration>
+          <resources>
+            <resource>
+              <directory>src/main/resources</directory>
+              <filtering>false</filtering>
+            </resource>
+            <resource>
+              <directory>src/main/java</directory>
+              <includes>
+                <include>**/*.png</include>
+                <include>**/*.jpg</include>
+                <!-- 如有其他资源类型，也可添加 -->
+              </includes>
+              <filtering>false</filtering>
+            </resource>
+          </resources>
+        </configuration>
+      </plugin>
+
       <!-- 编译器插件（关键修改：指定 Java 21 版本） -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
