@@ -1,0 +1,350 @@
+@startuml
+skinparam rankDirection TB
+'up to down direction
+' 设置图片分辨率
+!define PNG_DPI 300
+
+package "com.shapeville.data" {
+    class AngleData {
+        + getRandomAngle(): int
+        + classifyAngle(angle: int): String
+    }
+
+    class ShapeData {
+        static shapes2D: List<Shape2D>
+        static shapes3D: List<Shape3D>
+        + getAll2DShapes(): List<Shape2D>
+        + getAll3DShapes(): List<Shape3D>
+    }
+
+    ' ShapeData的内部类
+    class ShapeData$ShapeItem {
+        - name: String
+        - imageFilename: String
+        + ShapeItem(name: String, imageFilename: String)
+        + getName(): String
+        + getImageFilename(): String
+    }
+
+    class ShapeData$Shape2D {
+        + Shape2D(name: String, imageFilename: String)
+    }
+
+    class ShapeData$Shape3D {
+        + Shape3D(name: String, imageFilename: String)
+    }
+
+    ' 继承关系
+    ShapeData$Shape2D --|> ShapeData$ShapeItem
+    ShapeData$Shape3D --|> ShapeData$ShapeItem
+
+    ' 组合关系
+    ShapeData *-- ShapeData$Shape2D : contains
+    ShapeData *-- ShapeData$Shape3D : contains
+}
+
+package "com.shapeville.manager" {
+    class ScoreManager {
+        - score: int
+        + ScoreManager()
+        + addScore(points: int): void
+        + getScore(): int
+        + setScore(score: int): void
+        + resetScore(): void
+    }
+
+    class ArchiveManager {
+        + saveTask1State(isIdentifiedShapes: int, is_played_task1: int[], score: int, identifiedShapes: Set<String>): void
+        + saveTask2State(identifiedTypes: Set<String>, waitingForAngleInput: boolean, score: int): void
+        + saveTask3State(completedShapes: Set<String>, score: int): void
+        + saveTask4State(completedModes: boolean[], currentMode: int, radius: int, attempts: int, score: int): void
+        + saveBonus1State(completedTasks: int, completedShapes: int[], score: int): void
+        + saveBonus2State(completedTasks: int, completed: boolean[], score: int): void
+        + loadTask1State(): ArchiveManager$task1State
+        + loadTask2State(): ArchiveManager$task2State
+        + loadTask3State(): ArchiveManager$task3State
+        + loadTask4State(): ArchiveManager$task4State
+        + loadBonus1State(): ArchiveManager$bonus1State
+        + loadBonus2State(): ArchiveManager$bonus2State
+        + delete_archive(): void
+    }
+
+    ' ArchiveManager的内部类
+    class ArchiveManager$GameState {
+        - taskCompletionStatus: boolean[]
+        - is_played_task1: int[]
+        - score: int
+        - task1Progress: int
+        - task2Progress: int
+        - task3Progress: int
+        - task4Progress: int
+        - bonus1Progress: int
+        - bonus2Progress: int
+        + GameState(taskCompletionStatus: boolean[], is_played_task1: int[], score: int, task1Progress: int,
+        task2Progress: int, task3Progress: int, task4Progress: int, bonus1Progress: int, bonus2Progress: int)
+    }
+
+    class ArchiveManager$task1State {
+        - isIdentifiedShapes: int
+        - is_played_task1: int[]
+        - score: int
+        - identifiedShapes: Set<String>
+        + task1State(isIdentifiedShapes: int, is_played_task1: int[],
+        score: int, identifiedShapes: Set<String>)
+    }
+
+    class ArchiveManager$task2State {
+        - identifiedTypes: Set<String>
+        - waitingForAngleInput: boolean
+        - score: int
+        + task2State(identifiedTypes: Set<String>,
+        waitingForAngleInput: boolean, score: int)
+    }
+
+    class ArchiveManager$task3State {
+        - CompletedShapes: Set<String>
+        - score: int
+        + task3State(completedShapes:
+        Set<String>, score: int)
+    }
+
+    class ArchiveManager$task4State {
+        - completedModes: boolean[]
+        - currentMode: int
+        - radius: int
+        - attempts: int
+        - score: int
+        + task4State(completedModes: boolean[], currentMode: int,
+        radius: int, attempts: int, score: int)
+    }
+
+    class ArchiveManager$bonus1State {
+        - completedTasks: int
+        - completedShapes: int[]
+        - score: int
+        + bonus1State(completedTasks: int,
+        completedShapes: int[], score: int)
+    }
+
+    class ArchiveManager$bonus2State {
+        - completedTasks: int
+        - completed: boolean[]
+        - score: int
+        + bonus2State(completedTasks: int,
+        completed: boolean[], score: int)
+    }
+
+    ' 实现Serializable接口
+    ArchiveManager$GameState --|> "Serializable"
+    ArchiveManager$task1State --|> "Serializable"
+    ArchiveManager$task2State --|> "Serializable"
+    ArchiveManager$task3State --|> "Serializable"
+    ArchiveManager$task4State --|> "Serializable"
+    ArchiveManager$bonus1State --|> "Serializable"
+    ArchiveManager$bonus2State --|> "Serializable"
+
+    ' 内部类关系
+    ArchiveManager *-- ArchiveManager$GameState : contains
+    ArchiveManager *-- ArchiveManager$task1State : contains
+    ArchiveManager *-- ArchiveManager$task2State : contains
+    ArchiveManager *-- ArchiveManager$task3State : contains
+    ArchiveManager *-- ArchiveManager$task4State : contains
+    ArchiveManager *-- ArchiveManager$bonus1State : contains
+    ArchiveManager *-- ArchiveManager$bonus2State : contains
+}
+
+package "com.shapeville.tasks" {
+
+    class Task1ShapeIdentification {
+        - is_played_task1: int[]
+        - isIdentifiedShapes: int
+        - identifiedShapes: Set<String>
+        - scoreManager: ScoreManager
+        - scores: int
+        - onReturnHome: Runnable
+        - onComplete: Runnable
+        + Task1ShapeIdentification(ScoreManager scoreManager, int[] is_played_task1)
+        + onComplete(): void
+        + getIs_played_task1(): int[]
+    }
+
+    ' 关联关系修正
+    Task1ShapeIdentification *-- ScoreManager : composition
+    Task1ShapeIdentification "1" *-- "n" ShapeData$ShapeItem : uses
+    Task1ShapeIdentification --> ShapeData : dependency
+    Task1ShapeIdentification --> ArchiveManager : dependency
+
+    class Task2AngleIdentification {
+        - scoreManager: ScoreManager
+        - scores: int
+        - onReturnHome: Runnable
+        - onComplete: Runnable
+        - identifiedTypes: Set<String>
+        - waitingForAngleInput: boolean
+        + Task2AngleIdentification(ScoreManager scoreManager)
+        + start(): void
+        - checkCompletion(): void
+    }
+
+    ' Task2AngleIdentification的内部类
+    class Task2AngleIdentification$AngleCanvas {
+        - angle: int
+        + AngleCanvas()
+        + setAngle(int angle): void
+        # paintComponent(Graphics g): void
+    }
+
+    ' 内部类关系
+    Task2AngleIdentification *-- Task2AngleIdentification$AngleCanvas : contains
+
+    ' 关联关系
+    Task2AngleIdentification *-- ScoreManager : composition
+    Task2AngleIdentification --> AngleData : dependency
+    Task2AngleIdentification --> ArchiveManager : dependency
+
+    class Task3VolumeSurfaceCalculator {
+        - scoreManager: ScoreManager
+        - scores: int
+        - CompletedShapes: Set<String>
+        - onReturnHome: Runnable
+        - onComplete: Runnable
+        + Task3VolumeSurfaceCalculator(ScoreManager scoreManager)
+        + start(): void
+        - checkAnswer(): void
+        - checkAllShapesCompleted(): void
+    }
+
+    class Task3VolumeSurfaceCalculator$DrawingPanel {
+        # paintComponent(Graphics g): void
+        - drawShapeWithLabel(Graphics g): void
+    }
+
+    ' 继承关系
+    Task3VolumeSurfaceCalculator$DrawingPanel --|> JPanel
+
+    ' 关联关系
+    Task3VolumeSurfaceCalculator *-- ScoreManager : composition
+    Task3VolumeSurfaceCalculator --> ArchiveManager : dependency
+
+    class Task4CircleArea {
+        - completedModes: boolean[]
+        - Completed: int
+        - scores: int
+        - scoreManager: ScoreManager
+        - onReturnHome: Runnable
+        - onComplete: Runnable
+        - currentMode: int
+        - radius: int
+        - attempts: int
+        + Task4CircleArea(ScoreManager scoreManager)
+        + start(): void
+        + checkAnswer(): void
+        - completeCurrentMode(): void
+    }
+
+    class Task4CircleArea$DrawCirclePanel {
+        - radius: int
+        - mode: int
+        + setMode(int mode): void
+        + setRadius(int radius): void
+        # paintComponent(Graphics g): void
+    }
+
+    ' 继承关系
+    Task4CircleArea$DrawCirclePanel --|> JPanel
+
+    ' 关联关系
+    Task4CircleArea *-- ScoreManager : composition
+    Task4CircleArea --> ArchiveManager : dependency
+
+    class Bonus1CompoundShapeArea {
+        - scoreManager: ScoreManager
+        - scores: int
+        - completedTasks: int
+        - completedShapes: int[]
+        - onReturnHome: Runnable
+        + Bonus1CompoundShapeArea(ScoreManager scoreManager)
+        - showQuestion(int shapeId): void
+        - handleSubmit(ActionEvent e): void
+    }
+
+    ' 关联关系
+    Bonus1CompoundShapeArea *-- ScoreManager : composition
+    Bonus1CompoundShapeArea --> ArchiveManager : dependency
+
+    class Bonus2SectorAreaCalculator {
+        - scoreManager: ScoreManager
+        - scores: int
+        - completedTasks: int
+        - onReturnHome: Runnable
+        - currentShapeId: int
+        - attemptCount: int
+        - completed: boolean[]
+        + Bonus2SectorAreaCalculator(ScoreManager scoreManager)
+        - showQuestion(int shapeId): void
+        - handleSubmit(ActionEvent e): void
+        - completeCurrentShape(): void
+    }
+
+    ' 关联关系
+    Bonus2SectorAreaCalculator *-- ScoreManager : composition
+    Bonus2SectorAreaCalculator --> ArchiveManager : dependency
+}
+
+package com.shapeville.ui {
+    ' 类定义及属性、方法定义
+    class Introduction {
+        + Introduction(JFrame parentFrame)
+        + show()
+    }
+
+    class Main {
+        - scoreManager: ScoreManager
+        - taskCompletionStatus: boolean[]
+        - is_played_task1: int[]
+        - score_for_tasks: int[]
+        + main(String[] args)
+        - initializeGame()
+        - initializeTasks()
+        - updateScoreProgress()
+        - saveGameState(boolean[] taskCompletionStatus, int[] is_played_task1, int score, int task1Progress,
+        int task2Progress, int task3Progress, int task4Progress, int bonus1Progress, int bonus2Progress)
+        - loadGameState()
+        - useGameState(GameState state)
+        - useTasksState()
+    }
+
+    class score_detail {
+        - scores: int[]
+        + score_detail(int[] scores_detail, CardLayout cardLayout, JPanel cardPanel)
+        + updateScores(int[] newScores)
+    }
+
+    ' 类之间的关联关系
+    Main --> Introduction : creates
+    Main --> score_detail : creates
+    Main --> ScoreManager : composition
+    Main --> ArchiveManager$GameState : uses
+    Main --> ArchiveManager$task1State : uses
+    Main --> ArchiveManager$task2State : uses
+    Main --> ArchiveManager$task3State : uses
+    Main --> ArchiveManager$task4State : uses
+    Main --> ArchiveManager$bonus1State : uses
+    Main --> ArchiveManager$bonus2State : uses
+    Main --> Task1ShapeIdentification : has a
+    Main --> Task2AngleIdentification : has a
+    Main --> Task3VolumeSurfaceCalculator : has a
+    Main --> Task4CircleArea : has a
+    Main --> Bonus1CompoundShapeArea : has a
+    Main --> Bonus2SectorAreaCalculator : has a
+}
+
+' 跨包关联关系
+Task1ShapeIdentification --> ArchiveManager : dependency
+Task2AngleIdentification --> ArchiveManager : dependency
+Task3VolumeSurfaceCalculator --> ArchiveManager : dependency
+Task4CircleArea --> ArchiveManager : dependency
+Bonus1CompoundShapeArea --> ArchiveManager : dependency
+Bonus2SectorAreaCalculator --> ArchiveManager : dependency
+
+@enduml
