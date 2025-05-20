@@ -559,7 +559,8 @@ public class Main {
         saveTask1State(
                 task1.isIdentifiedShapes,
                 task1.getIs_played_task1(),
-                task1.scores
+                task1.scores,
+                task1.identifiedShapes
         );
         saveTask2State(
                 task2.identifiedTypes,
@@ -679,6 +680,7 @@ public class Main {
         task1.isIdentifiedShapes = state.isIdentifiedShapes;
         task1.is_played_task1 = state.is_played_task1.clone();
         task1.scoreManager.setScore(scoreManager.getScore());
+        task1.identifiedShapes = state.identifiedShapes;
         task1.scorelabel.setText("points: " + state.score);
 
         // 检查任务是否完成

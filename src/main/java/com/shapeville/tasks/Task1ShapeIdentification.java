@@ -9,13 +9,13 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 import java.util.List;
 
 public class Task1ShapeIdentification {
     public int[] is_played_task1;
     public int isIdentifiedShapes;
+    public Set<String> identifiedShapes = new HashSet<>();
     private final String[] encouragements = {
             "Well done!",
             "Excellent!",
@@ -363,28 +363,48 @@ public class Task1ShapeIdentification {
         // 更新Home按钮文本为返回
         goHomeButton.setText("🔙 Back to Selection");
     }
-
-    private void startSubtask(String type) {
+        private void startSubtask(String type) {
+        // 获取所有对应类型的形状（2D或3D）
         currentShapes = new ArrayList<>(type.equals("2D") ? ShapeData.getAll2DShapes() : ShapeData.getAll3DShapes());
-        Collections.shuffle(currentShapes);
-        isAdvanced = type.equals("3D");
+
+
+        // 过滤掉已识别的形状（保留未在 identifiedShapes 中的项）
+        List<ShapeItem> filteredShapes = new ArrayList<>();
+        for (ShapeItem shape : currentShapes) {
+            if (!identifiedShapes.contains(shape.getName())) { // 使用相同的唯一标识判断
+                filteredShapes.add(shape);
+            }
+        }
+
+        // 处理剩余可选择的形状
+        currentShapes = new ArrayList<>(filteredShapes);
+        Collections.shuffle(currentShapes); // 打乱顺序
+
+        // 计算最大问题数（未完成的次数）
+        int maxQuestions = type.equals("2D") ?
+                4 - is_played_task1[0] : 4 - is_played_task1[1];
+
+        // 截取到最大问题数，但需确保不超过过滤后的数量
+        int actualMax = Math.min(currentShapes.size(), maxQuestions);
+        if (currentShapes.size() > actualMax) {
+            currentShapes = currentShapes.subList(0, actualMax);
+        }
+
+        // 初始化当前索引和形状
         currentIndex = 0;
         attempt = 1;
         isSubtaskStarted = true;
         isSubtaskCompleted = false;
-
-        int maxQuestions = type.equals("2D") ?
-                4 - is_played_task1[0] : 4 - is_played_task1[1];
-
-        if (currentShapes.size() > maxQuestions) {
-            currentShapes = currentShapes.subList(0, maxQuestions);
-        }
 
         if (!currentShapes.isEmpty()) {
             currentShape = currentShapes.get(currentIndex);
             showShape();
             cardLayout.show(cardPanel, QUESTION);
         } else {
+            // 无可用形状时提示或结束任务
+            JOptionPane.showMessageDialog(null,
+                    "No new shapes available for this type!",
+                    "Info", JOptionPane.INFORMATION_MESSAGE);
             finishTask();
         }
     }
@@ -436,6 +456,7 @@ public class Task1ShapeIdentification {
             output.setText("<html><div style='padding:5px;border:2px solid rgb(255,239,190);background:#fff;border-radius:10px;'>"
                     + "Correct! +" + points + " points<br>" + getRandomEncouragement() + "</div></html>");
             input.setEnabled(false);
+            identifiedShapes.add(currentShape.getName()); // 假设名称唯一，可替换为ID或其他唯一属性
             isIdentifiedShapes++;
             nextButton.setVisible(true);
         } else {
@@ -450,6 +471,8 @@ public class Task1ShapeIdentification {
                 input.setEnabled(false);
                 nextButton.setVisible(true);
                 isIdentifiedShapes++;
+                identifiedShapes.add(currentShape.getName()); // 假设名称唯一，可替换为ID或其他唯一属性
+
             }
         }
     }

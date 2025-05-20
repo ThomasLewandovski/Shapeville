@@ -53,17 +53,20 @@ public class ArchiveManager {
         public int isIdentifiedShapes;
         public int[] is_played_task1;
         public int score;
+        public Set<String> identifiedShapes;
 
         public task1State(
                 int isIdentifiedShapes,
                 int[] is_played_task1,
-                int score
+                int score,
+                Set<String> identifiedShapes
 
         ) {
 
             this.isIdentifiedShapes = isIdentifiedShapes;
             this.is_played_task1 = is_played_task1.clone();
             this.score = score;
+            this.identifiedShapes = identifiedShapes;
 
         }
     }
@@ -149,7 +152,8 @@ public class ArchiveManager {
     public static void saveTask1State(
             int isIdentifiedShapes,
             int[] is_played_task1,
-            int score
+            int score,
+            Set<String> identifiedShapes
 
     ) {
         try (ObjectOutputStream oos = new ObjectOutputStream(
@@ -157,7 +161,8 @@ public class ArchiveManager {
             task1State state = new task1State(
                     isIdentifiedShapes,
                     is_played_task1,
-                    score
+                    score,
+                    identifiedShapes
             );
             oos.writeObject(state);
         } catch (IOException ex) {
