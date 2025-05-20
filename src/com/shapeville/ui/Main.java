@@ -18,7 +18,7 @@ import java.util.HashSet;
 
 public class Main {
     // 定义存档文件名
-    private static final String SAVE_FILE = "src/main/resources/Archive/shapeville_save.dat";
+    private static final String SAVE_FILE = "resources/Archive/shapeville_save.dat";
 
     // 成员变量定义
     private JLabel counter2 = new JLabel();

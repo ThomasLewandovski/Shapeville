@@ -11,13 +11,13 @@ import java.util.List;
 import java.util.Set;
 
 public class ArchiveManager {
-    private static final String SHAPEVILLE_SAVE_FILE = "src/main/resources/Archive/shapeville_save.dat";
-    private static final String TASK1_SAVE_FILE = "src/main/resources/Archive/task1_saved_file.dat";
-    private static final String TASK2_SAVE_FILE = "src/main/resources/Archive/task2_saved_file.dat";
-    private static final String TASK3_SAVE_FILE = "src/main/resources/Archive/task3_saved_file.dat";
-    private static final String TASK4_SAVE_FILE = "src/main/resources/Archive/task4_saved_file.dat";
-    private static final String BONUS1_SAVE_FILE = "src/main/resources/Archive/bonus1_saved_file.dat";
-    private static final String BONUS2_SAVE_FILE = "src/main/resources/Archive/bonus2_saved_file.dat";
+    private static final String SHAPEVILLE_SAVE_FILE = "resources/Archive/shapeville_save.dat";
+    private static final String TASK1_SAVE_FILE = "resources/Archive/task1_saved_file.dat";
+    private static final String TASK2_SAVE_FILE = "resources/Archive/task2_saved_file.dat";
+    private static final String TASK3_SAVE_FILE = "resources/Archive/task3_saved_file.dat";
+    private static final String TASK4_SAVE_FILE = "resources/Archive/task4_saved_file.dat";
+    private static final String BONUS1_SAVE_FILE = "resources/Archive/bonus1_saved_file.dat";
+    private static final String BONUS2_SAVE_FILE = "resources/Archive/bonus2_saved_file.dat";
 
     public static class GameState implements Serializable {
         private static final long serialVersionUID = 1L;
