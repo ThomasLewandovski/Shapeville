@@ -46,7 +46,7 @@ public class Task4CircleArea {
         this.completedModes = new boolean[2];
 
         task4 = new JPanel(new CardLayout());
-        task4.setBackground(new Color(255, 250, 205)); // 米黄色背景
+        task4.setBackground(new Color(255, 242, 198)); // 米黄色背景
 
         createModeSelectionPanel();
         createCalculationPanel();
@@ -60,16 +60,16 @@ public class Task4CircleArea {
     private void createModeSelectionPanel() {
         // 整体背景为米黄色
         modeSelectionPanel = new JPanel(new BorderLayout());
-        modeSelectionPanel.setBackground(new Color(255, 250, 205));
+        modeSelectionPanel.setBackground(new Color(255, 242, 198));
 
         // 左侧公式面板
         JPanel formulaPanel = createGuidePanel();
         formulaPanel.setPreferredSize(new Dimension(250, 400));
-        formulaPanel.setBackground(new Color(255, 250, 205)); // 米黄色
+        formulaPanel.setBackground(new Color(255, 242, 198)); // 米黄色
 
         // 中间按钮区
         JPanel modePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
-        modePanel.setBackground(new Color(255, 250, 205));
+        modePanel.setBackground(new Color(255, 242, 198));
 
         for (int i = 0; i < MODES.length; i++) {
             JButton modeButton = new JButton(MODES[i]);
@@ -124,7 +124,7 @@ public class Task4CircleArea {
 
         // 吉祥物包装底部对齐
         JPanel eastPanel = new JPanel(new BorderLayout());
-        eastPanel.setBackground(new Color(255, 250, 205));
+        eastPanel.setBackground(new Color(255, 242, 198));
         eastPanel.add(Box.createVerticalGlue(), BorderLayout.CENTER);
         eastPanel.add(mascotPanel, BorderLayout.SOUTH);
 
@@ -137,11 +137,11 @@ public class Task4CircleArea {
 
     private void createCalculationPanel() {
         calculationPanel = new JPanel(new BorderLayout(10, 10));
-        calculationPanel.setBackground(new Color(255, 250, 205));
+        calculationPanel.setBackground(new Color(255, 242, 198));
 
         // 顶部区域
         JPanel topPanel = new JPanel(new BorderLayout());
-        topPanel.setBackground(new Color(255, 250, 205));
+        topPanel.setBackground(new Color(255, 242, 198));
         scorelable = new JLabel("Score: 0");
         scorelable.setFont(new Font("Comic Sans MS", Font.BOLD, 16));
         questionLabel = new JLabel();
@@ -157,7 +157,7 @@ public class Task4CircleArea {
 
         // 中部输入区域
         JPanel middlePanel = new JPanel(new GridBagLayout());
-        middlePanel.setBackground(new Color(255, 250, 205));
+        middlePanel.setBackground(new Color(255, 242, 198));
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -184,7 +184,7 @@ public class Task4CircleArea {
 
         // 吉祥物 + 图形区域
         JPanel bottomWrapper = new JPanel(new BorderLayout());
-        bottomWrapper.setBackground(new Color(255, 250, 205));
+        bottomWrapper.setBackground(new Color(255, 242, 198));
 
         drawPanel = new DrawCirclePanel();
         drawPanel.setPreferredSize(new Dimension(300, 300));
@@ -193,7 +193,7 @@ public class Task4CircleArea {
         // 吉祥物区域（右下角）
         JPanel mascotPanel = new JPanel();
         mascotPanel.setLayout(new BoxLayout(mascotPanel, BoxLayout.Y_AXIS));
-        mascotPanel.setBackground(new Color(255, 250, 205));
+        mascotPanel.setBackground(new Color(255, 242, 198));
 
         mascotSpeech = new JLabel("<html><div style='padding:8px;background:#fff8dc;border:1px solid #aaa;border-radius:10px;'>Let's go!</div></html>");
         mascotSpeech.setFont(new Font("Comic Sans MS", Font.PLAIN, 13));
@@ -219,7 +219,7 @@ public class Task4CircleArea {
 
         // 按钮区
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttonPanel.setBackground(new Color(255, 250, 205));
+        buttonPanel.setBackground(new Color(255, 242, 198));
         JButton backButton = new JButton("Back to Mode Select");
         backButton.setFont(new Font("Comic Sans MS", Font.PLAIN, 13));
         buttonPanel.add(backButton);
@@ -416,7 +416,7 @@ public class Task4CircleArea {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBorder(BorderFactory.createTitledBorder("Circle Formula Guide"));
-        panel.setBackground(new Color(245, 245, 245));
+        panel.setBackground(new Color(255, 242, 198));
 
         JLabel title = new JLabel("Basic Circle Properties");
         title.setFont(new Font("Arial", Font.BOLD, 12));
