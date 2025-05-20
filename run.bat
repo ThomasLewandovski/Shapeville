@@ -1,12 +1,16 @@
 @echo off
-set JAVA_FX_PATH=lib
-set FX_MODULES=javafx.controls,javafx.fxml
-
-:: 编译所有源代码（包括子文件夹）
 echo Compiling...
-javac --module-path %JAVA_FX_PATH% --add-modules %FX_MODULES% -d out src/com/shapeville/**/*.java
 
-:: 运行程序
+setlocal enabledelayedexpansion
+set CP=.;lib\*
+
+if not exist bin mkdir bin
+del /s /q bin\*.class >nul 2>&1
+
+for /r src %%f in (*.java) do (
+    javac -d bin -cp "!CP!" "%%f"
+)
+
 echo Running...
-java --module-path %JAVA_FX_PATH% --add-modules %FX_MODULES% -cp out com.shapeville.ui.Main
+java -cp "bin;lib\*" com.shapeville.ui.Main
 pause
