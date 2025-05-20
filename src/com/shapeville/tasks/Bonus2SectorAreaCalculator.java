@@ -178,7 +178,7 @@ public class Bonus2SectorAreaCalculator {
         questionPanel = new JPanel(new BorderLayout());
         questionPanel.setBackground(new Color(255, 250, 205));
 
-        // ✅ 修复：使用嵌套面板和强制最小尺寸
+        // 修复：使用嵌套面板和强制最小尺寸
         JPanel scoreContainer = new JPanel(new BorderLayout());
         scoreContainer.setBackground(new Color(255, 250, 205));
         scoreContainer.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -300,7 +300,7 @@ public class Bonus2SectorAreaCalculator {
         startCountdownTimer();
         currentShapeId = shapeId;
         attemptCount = 0;
-        submitButton.setEnabled(true); // ✅ 这里确保按钮重新启用
+        submitButton.setEnabled(true); // 这里确保按钮重新启用
         answerField.setText("");
         feedbackLabel.setText("");
         mascotSpeechBubble.setText("<html><div style='padding:10px; background:#fff8dc; border-radius:10px; border:1px solid #ccc;'>Let's take a look at this question!🐰</div></html>");
@@ -317,10 +317,10 @@ public class Bonus2SectorAreaCalculator {
         }
 
         //for (Component comp : bottomPanel.getComponents()) {
-            // if (comp instanceof JButton && ((JButton) comp).getText().equals("Back")) {
-            //     comp.setVisible(false);
-            //     break;
-            // }
+        // if (comp instanceof JButton && ((JButton) comp).getText().equals("Back")) {
+        //     comp.setVisible(false);
+        //     break;
+        // }
         //}
 
         ((CardLayout) taskPanel.getLayout()).show(taskPanel, "question");
@@ -334,20 +334,20 @@ public class Bonus2SectorAreaCalculator {
         countdownTimer = new Timer(1000, e -> {
             timeRemaining--;
 
-            // ✅ 更新倒计时标签
+            // 更新倒计时标签
             int minutes = timeRemaining / 60;
             int seconds = timeRemaining % 60;
             String timeFormatted = String.format("Time Left: %02d:%02d", minutes, seconds);
             timerLabel.setText(timeFormatted);
 
-            // ✅ 超时处理
+            // 超时处理
             if (timeRemaining <= 0) {
                 countdownTimer.stop();
 
                 if (submitButton.isEnabled()) {
                     submitButton.setEnabled(false);
                     answerField.setEnabled(false);
-                    feedbackLabel.setText("⏰ Time is up! Let's see the solution:");
+                    feedbackLabel.setText("Time is up! Let's see the solution:");
 
                     String explanation = explanations.get(currentShapeId).replace("\n", "<br>");
                     mascotSpeechBubble.setText("<html><div style='padding:10px; background:#ffe0e0;'>Time's up!<br>" + explanation + "</div></html>");
@@ -377,10 +377,10 @@ public class Bonus2SectorAreaCalculator {
                 if (countdownTimer != null && countdownTimer.isRunning()) {
                     countdownTimer.stop();// 停止计时器
                 }
-                submitButton.setEnabled(false);  // ✅ 禁用 submitButton
+                submitButton.setEnabled(false);  // 禁用 submitButton
                 scoreManager.addScore(score);
                 scores+=score;
-                feedbackLabel.setText("✅ Correct! +" + score + " points");
+                feedbackLabel.setText("Correct! +" + score + " points");
                 mascotSpeechBubble.setText("<html><div style='padding:10px; background:#e0ffe0; border-radius:10px; border:1px solid #8bc34a;'>Great! You got it right!🎉</div></html>");
                 completeCurrentShape();
             } else {
@@ -390,23 +390,23 @@ public class Bonus2SectorAreaCalculator {
                         countdownTimer.stop();// 停止计时器
                     }
                     submitButton.setEnabled(false);
-                    //feedbackLabel.setText("❌ Incorrect. " + explanations.get(currentShapeId));
+                    //feedbackLabel.setText("Incorrect. " + explanations.get(currentShapeId));
                     //mascotSpeechBubble.setText("<html><div style='padding:10px; background:#ffe0e0; border-radius:10px; border:1px solid #e57373;'>Never mind, the correct answer is: " + explanations.get(currentShapeId) + " 🐰</div></html>");
                     feedbackLabel.setText("Oops! Not quite right, but don't worry—we'll figure it out!");
-                     // ✅ 显示换行格式的分步解析
+                    // 显示换行格式的分步解析
                     String explanation = explanations.get(currentShapeId).replace("\n", "<br>");
                     mascotSpeechBubble.setText("<html><div style='padding:10px; background:#ffe0e0;'>Here's the solution:<br>" + explanation + "</div></html>");
-                    
+
                     completeCurrentShape();
                 } else {
-                    feedbackLabel.setText("❌ Try again. Attempts left: " + (3 - attemptCount));
+                    feedbackLabel.setText("Try again. Attempts left: " + (3 - attemptCount));
                     mascotSpeechBubble.setText("<html><div style='padding:10px; background:#fff3cd; border-radius:10px; border:1px solid #ffeb3b;'>Think again! You can do it!🌟</div></html>");
                 }
             }
             scoreLabel.setText("Score: " + scores); // 更新分数显示
             scorelable.setText("Score: " + scores);
         } catch (Exception ex) {
-            feedbackLabel.setText("❌ Please enter a valid number.");
+            feedbackLabel.setText("Please enter a valid number.");
             mascotSpeechBubble.setText("<html><div style='padding:10px; background:#ffe0e0; border-radius:10px; border:1px solid #e57373;'>Please enter a valid number. 🐰</div></html>");
         }
     }

@@ -18,7 +18,7 @@ import java.util.HashSet;
 
 public class Main {
     // 定义存档文件名
-    private static final String SAVE_FILE = "resources/Archive/shapeville_save.dat";
+    private static final String SAVE_FILE = "src/main/resources/Archive/shapeville_save.dat";
 
     // 成员变量定义
     private JLabel counter2 = new JLabel();
@@ -387,7 +387,7 @@ public class Main {
             updateScoreProgress(); // 更新积分进度条
 
             // 检查任务是否完成
-            if (task1.is_played_task1[0] ==4 && task1.is_played_task1[1] == 4) {
+            if (task1.is_played_task1[0] == 4 && task1.is_played_task1[1] == 4) {
                 taskCompletionStatus[0] = true;
                 task1Button.setBackground(new Color(144, 238, 144));
                 task1Button.setEnabled(false);
@@ -395,7 +395,7 @@ public class Main {
         };
 
         task1Button.addActionListener(e -> {
-            if (is_played_task1[0] == 0 || is_played_task1[1] == 0) {
+            if (is_played_task1[0] != 4 || is_played_task1[1] != 4) {
                 cardLayout.show(cardPanel, "task1");
             }
         });

@@ -38,6 +38,7 @@ public class Task1ShapeIdentification {
     public JLabel scorelabel;
     private KeyAdapter keyAdapter;
     public Runnable onComplete;
+    public JButton submitButton;
 
     public List<ShapeItem> currentShapes;
     public ShapeItem currentShape;
@@ -148,7 +149,7 @@ public class Task1ShapeIdentification {
         bottomPanel.add(goHomeButton, gbcBottom);
 
         // 下一题按钮
-        nextButton = new JButton("Next Question ▶");
+        nextButton = new JButton("Next Question");
         styleButton(nextButton);
         //nextButton.setFont(new Font("Arial", Font.PLAIN, 14));
         nextButton.setVisible(false);
@@ -298,6 +299,29 @@ public class Task1ShapeIdentification {
         panel.add(input, BorderLayout.SOUTH);
 
         cardPanel.add(panel, QUESTION);
+
+        // 创建提交按钮
+        submitButton = new JButton("Submit");
+        submitButton.setFont(new Font("Arial", Font.BOLD, 14));
+        submitButton.setBackground(new Color(255, 228, 196));
+        submitButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        submitButton.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+
+        // 添加点击事件
+        submitButton.addActionListener(e -> {
+            if (isSubtaskStarted && !isSubtaskCompleted) {
+                handleShapeAnswer();
+            }
+        });
+
+        // 将输入框和提交按钮一起放入一个面板
+        JPanel inputPanel = new JPanel(new BorderLayout());
+        inputPanel.setBackground(new Color(255, 239, 190));
+        inputPanel.add(input, BorderLayout.CENTER);
+        inputPanel.add(submitButton, BorderLayout.EAST);
+
+        // 加入主面板底部
+        panel.add(inputPanel, BorderLayout.SOUTH);
     }
 
     private void initResultPanel() {
@@ -361,9 +385,9 @@ public class Task1ShapeIdentification {
         startSubtask(type);
 
         // 更新Home按钮文本为返回
-        goHomeButton.setText("🔙 Back to Selection");
+        goHomeButton.setText("Back to Selection");
     }
-        private void startSubtask(String type) {
+    private void startSubtask(String type) {
         // 获取所有对应类型的形状（2D或3D）
         currentShapes = new ArrayList<>(type.equals("2D") ? ShapeData.getAll2DShapes() : ShapeData.getAll3DShapes());
 
@@ -410,6 +434,7 @@ public class Task1ShapeIdentification {
     }
 
     private void showShape() {
+        submitButton.setEnabled(true);
         String imgPath = "images/" + currentShape.getImageFilename();
         URL imageUrl = getClass().getClassLoader().getResource(imgPath);
 
@@ -447,6 +472,7 @@ public class Task1ShapeIdentification {
         input.setText("");
 
         if (checkAnswer(answer, currentShape.getName())) {
+            submitButton.setEnabled(false); // 答对或答错三次后禁用
             updatePlayCount();
             int points = calculatePoints();
             scoreManager.addScore(points);
@@ -465,6 +491,7 @@ public class Task1ShapeIdentification {
                 output.setText("<html><div style='padding:5px;border:2px solid rgb(255,239,190);background:#fff;border-radius:10px;'>"
                         + "Incorrect. Try again.</div></html>");
             } else {
+                submitButton.setEnabled(false); // 答对或答错三次后禁用
                 updatePlayCount();
                 output.setText("<html><div style='padding:5px;border:2px solid rgb(255,239,190);background:#fff;border-radius:10px;'>"
                         + "The correct answer was: <b>" + currentShape.getName() + "</b></div></html>");

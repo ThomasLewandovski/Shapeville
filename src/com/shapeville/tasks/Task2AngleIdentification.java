@@ -12,14 +12,14 @@ import java.util.Set;
 public class Task2AngleIdentification {
     public ScoreManager scoreManager;
     private final String[] encouragements = {
-    "Well done!",
-    "Great job!",
-    "You're getting better!",
-    "Excellent thinking!",
-    "Smart answer!"
+            "Well done!",
+            "Great job!",
+            "You're getting better!",
+            "Excellent thinking!",
+            "Smart answer!"
     };
 
-    private JButton nextButton;  // ⏭️ 下一题按钮
+    private JButton nextButton;  // 下一题按钮
     public JPanel task2;
     private JLabel questionLabel;
     private JTextField inputField;
@@ -108,7 +108,7 @@ public class Task2AngleIdentification {
         gbcBottom.gridx = 0;
         bottomPanel.add(goHomeButton, gbcBottom);
 
-        nextButton = new JButton("Next ▶");
+        nextButton = new JButton("Next");
         nextButton.setFont(new Font("Comic Sans MS", Font.BOLD, 16));
         nextButton.setVisible(false);
         gbcBottom.gridx = 0;
@@ -120,7 +120,7 @@ public class Task2AngleIdentification {
 
         task2.add(bottomPanel, BorderLayout.SOUTH);
 
-        // ✅ 右侧狐狸吉祥物区域
+        // 右侧狐狸吉祥物区域
         JPanel mascotWrapper = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         mascotWrapper.setBackground(new Color(255, 250, 205));
 
@@ -213,7 +213,7 @@ public class Task2AngleIdentification {
             String correct = AngleData.classifyAngle(currentAngle);
 
             // if (userAnswer.equalsIgnoreCase(correct)) {
-            //     questionLabel.setText("✅ Correct! It was a " + correct + " angle.");
+            //     questionLabel.setText("Correct! It was a " + correct + " angle.");
             //     int points = switch (attempt) {
             //         case 1 -> 3;
             //         case 2 -> 2;
@@ -248,7 +248,7 @@ public class Task2AngleIdentification {
 
                 inputField.setVisible(false);
                 submitButton.setVisible(false);
-                nextButton.setVisible(true);  // ⏭️ 等待点击“下一题”
+                nextButton.setVisible(true);  // 等待点击“下一题”
             }
             else {
                 attempt++;
@@ -263,7 +263,7 @@ public class Task2AngleIdentification {
 
                     inputField.setVisible(false);
                     submitButton.setVisible(false);
-                    nextButton.setVisible(true);  // ⏭️ 等待点击“下一题”
+                    nextButton.setVisible(true);  // 等待点击“下一题”
                 } else {
                     questionLabel.setText("Incorrect. Try again. What type of angle? (Acute / Right / Obtuse / Reflex / Straight / Full)");
                     mascotSpeechBubble.setText("<html><div style='padding:10px; background:#fff3cd; border-radius:10px; border:1px solid #ffeb3b;'>Hmm... not quite! Guess again! </div></html>");
@@ -293,7 +293,7 @@ public class Task2AngleIdentification {
         private int angle = -1;
 
         public AngleCanvas() {
-            setBackground(new Color(255, 250, 220)); // ✅ 设置画布背景为白色
+            setBackground(new Color(255, 250, 220)); // 设置画布背景为白色
         }
 
         public void setAngle(int angle) {
@@ -303,31 +303,31 @@ public class Task2AngleIdentification {
 
         @Override
         protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        Graphics2D g2 = (Graphics2D) g;
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setStroke(new BasicStroke(3));
+            super.paintComponent(g);
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setStroke(new BasicStroke(3));
 
-        // 计算中心和半径，适应面板大小
-        int centerX = getWidth() / 2;
-        int centerY = getHeight() / 2;
-        int radius = Math.min(getWidth(), getHeight()) / 3;
+            // 计算中心和半径，适应面板大小
+            int centerX = getWidth() / 2;
+            int centerY = getHeight() / 2;
+            int radius = Math.min(getWidth(), getHeight()) / 3;
 
-        // 绘制基线
-        g2.setColor(Color.BLACK);
-        g2.drawLine(centerX, centerY, centerX + radius, centerY);
+            // 绘制基线
+            g2.setColor(Color.BLACK);
+            g2.drawLine(centerX, centerY, centerX + radius, centerY);
 
-        // 如果有角度值，绘制角度线
-        if (angle >= 0) {
-            double rad = Math.toRadians(angle);
-            int x = centerX + (int) (radius * Math.cos(rad));
-            int y = centerY - (int) (radius * Math.sin(rad));
-            g2.setColor(Color.RED);
-            g2.drawLine(centerX, centerY, x, y);
+            // 如果有角度值，绘制角度线
+            if (angle >= 0) {
+                double rad = Math.toRadians(angle);
+                int x = centerX + (int) (radius * Math.cos(rad));
+                int y = centerY - (int) (radius * Math.sin(rad));
+                g2.setColor(Color.RED);
+                g2.drawLine(centerX, centerY, x, y);
 
-            // 绘制角度弧线
-            g2.setColor(Color.BLUE);
-            g2.drawArc(centerX - radius/4, centerY - radius/4, radius/2, radius/2, 0, angle);
+                // 绘制角度弧线
+                g2.setColor(Color.BLUE);
+                g2.drawArc(centerX - radius/4, centerY - radius/4, radius/2, radius/2, 0, angle);
             }
         }
     }

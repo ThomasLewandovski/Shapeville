@@ -20,12 +20,12 @@ public class score_detail {
 
     // 吉祥物图片路径
     private String[] mascotPaths = {
-            "resources/images/Raccoon.png",
-            "resources/images/Kuromi.png",
-            "resources/images/Pikachu.png",
-            "resources/images/Totoro.png",
-            "resources/images/Fox.png",
-            "resources/images/Bunny.png"
+            "src/main/resources/images/Raccoon.png",
+            "src/main/resources/images/Kuromi.png",
+            "src/main/resources/images/Pikachu.png",
+            "src/main/resources/images/Totoro.png",
+            "src/main/resources/images/Fox.png",
+            "src/main/resources/images/Bunny.png"
     };
 
     // 吉祥物名称

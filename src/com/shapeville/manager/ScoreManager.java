@@ -31,11 +31,11 @@ public class ScoreManager {
     // 可选方法：打印鼓励语
     private void printPraise() {
         String[] praises = {
-            "🎉 Great job!",
-            "🌟 Well done!",
-            "👏 Keep it up!",
-            "👍 You're doing great!",
-            "✅ Correct! Keep going!"
+                "🎉 Great job!",
+                "🌟 Well done!",
+                "👏 Keep it up!",
+                "👍 You're doing great!",
+                "✅ Correct! Keep going!"
         };
         System.out.println(praises[random.nextInt(praises.length)]);
     }

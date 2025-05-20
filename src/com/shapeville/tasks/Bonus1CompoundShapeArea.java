@@ -154,7 +154,7 @@ public class Bonus1CompoundShapeArea {
         rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
         rightPanel.setBackground(new Color(255, 250, 205));
 
-        // 🟢 Back 按钮单独置底
+        // Back 按钮单独置底
         JPanel backPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         backPanel.setOpaque(false);
         backButton = new JButton("Back");
@@ -275,7 +275,7 @@ public class Bonus1CompoundShapeArea {
         if (explanationImg != null) {
             imageLabel.setIcon(new ImageIcon(getScaledImage(explanationImg, 400, 300)));
         }
-        feedbackLabel.setText("⏰ Time's up!");
+        feedbackLabel.setText("Time's up!");
         mascotSpeechBubble.setText("<html><div style='padding:10px; background:#ffe0e0; border-radius:10px; border:1px solid #e57373;'>Oops! Time is up. The correct answer is " + correct + " 🦊</div></html>");
 
         completedTasks++;
@@ -290,7 +290,7 @@ public class Bonus1CompoundShapeArea {
         if (originalImage != null) {
             imageLabel.setIcon(new ImageIcon(getScaledImage(originalImage, 400, 300)));
         } else {
-            imageLabel.setText("❌ Image not found");
+            imageLabel.setText("Image not found");
         }
 
         answerField.setText("");
@@ -314,7 +314,7 @@ public class Bonus1CompoundShapeArea {
                     case 2 -> 2;
                     default -> 0;
                 };
-                feedbackLabel.setText("✅ Correct! +" + points + " points");
+                feedbackLabel.setText("Correct! +" + points + " points");
                 mascotSpeechBubble.setText("<html><div style='padding:10px; background:#e0ffe0; border-radius:10px; border:1px solid #8bc34a;'>Yay! That’s correct! 🎉🦊</div></html>");
                 scoreManager.addScore(points);
                 scores+=points;
@@ -325,7 +325,7 @@ public class Bonus1CompoundShapeArea {
 
                 stopTimer();// 停止计时器
 
-                // ✅ 新增：显示答案解析图
+                // 新增：显示答案解析图
                 Image explanationImg = answerImages.get(currentShapeId);
                 if (explanationImg != null) {
                     imageLabel.setIcon(new ImageIcon(getScaledImage(explanationImg, 400, 300)));
@@ -340,19 +340,19 @@ public class Bonus1CompoundShapeArea {
                     if (explanationImg != null) {
                         imageLabel.setIcon(new ImageIcon(getScaledImage(explanationImg, 400, 300)));
                     }
-                    feedbackLabel.setText("❌ Incorrect.");
+                    feedbackLabel.setText("Incorrect.");
                     mascotSpeechBubble.setText("<html><div style='padding:10px; background:#ffe0e0; border-radius:10px; border:1px solid #e57373;'>Oops! The correct answer is " + correct + " 🦊</div></html>");
                     completedTasks++;
                     updateButtonState(currentShapeId);
                     backButton.setVisible(true);
                     submitButton.setEnabled(false);
                 } else {
-                    feedbackLabel.setText("❌ Try again. Attempts left: " + (3 - attemptCount));
+                    feedbackLabel.setText("Try again. Attempts left: " + (3 - attemptCount));
                     mascotSpeechBubble.setText("<html><div style='padding:10px; background:#fff3cd; border-radius:10px; border:1px solid #ffeb3b;'>Almost there! Try once more! 🦊</div></html>");
                 }
             }
         } catch (Exception ex) {
-            feedbackLabel.setText("❌ Please enter a valid number.");
+            feedbackLabel.setText("Please enter a valid number.");
             mascotSpeechBubble.setText("<html><div style='padding:10px; background:#ffe0e0; border-radius:10px; border:1px solid #e57373;'>Only numbers please! 🦊</div></html>");
         }
         scorelable.setText("Score: " + scores);
