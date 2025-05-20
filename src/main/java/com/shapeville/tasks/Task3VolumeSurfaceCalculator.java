@@ -45,7 +45,7 @@ public class Task3VolumeSurfaceCalculator {
     public Runnable onComplete;
 
     public Task3VolumeSurfaceCalculator(ScoreManager scoreManager) {
-        Color creamyYellow = new Color(255, 250, 205);
+        Color creamyYellow = new Color(255, 242, 198);
         this.scoreManager = scoreManager;
         this.CompletedShapes = new HashSet<>();
 
@@ -74,28 +74,28 @@ public class Task3VolumeSurfaceCalculator {
 
         shapeSelector = new JComboBox<>(new String[]{"Rectangle", "Parallelogram", "Triangle", "Trapezium"});
         shapeSelector.setFont(new Font("Arial", Font.PLAIN, 14));
-        shapeSelector.setBackground(new Color(255, 250, 220));
+        shapeSelector.setBackground(new Color(255, 242, 198));
         centerPanel.add(shapeSelector);
 
         JButton generateButton = new JButton("Generate Problem");
         generateButton.setFont(new Font("Arial", Font.PLAIN, 14));
-        generateButton.setBackground(new Color(255, 250, 220));
+        generateButton.setBackground(new Color(255, 242, 198));
         centerPanel.add(generateButton);
 
         timerLabel = new JLabel("Time left: 180s");
         timerLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-        timerLabel.setBackground(new Color(255, 250, 220));
+        timerLabel.setBackground(new Color(255, 242, 198));
         centerPanel.add(timerLabel);
 
         inputField = new JTextField();
         inputField.setFont(new Font("Arial", Font.PLAIN, 14));
-        inputField.setBackground(new Color(255, 250, 220));
+        inputField.setBackground(new Color(255, 242, 198));
         centerPanel.add(inputField);
         inputField.setEnabled(false);
 
         submitButton = new JButton("Submit");
         submitButton.setFont(new Font("Arial", Font.PLAIN, 14));
-        submitButton.setBackground(new Color(255, 250, 220));
+        submitButton.setBackground(new Color(255, 242, 198));
         centerPanel.add(submitButton);
         submitButton.setEnabled(false);
 
