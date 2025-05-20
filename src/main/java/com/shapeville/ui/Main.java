@@ -395,7 +395,7 @@ public class Main {
         };
 
         task1Button.addActionListener(e -> {
-            if (is_played_task1[0] == 0 || is_played_task1[1] == 0) {
+            if (is_played_task1[0] != 4 || is_played_task1[1] != 4) {
                 cardLayout.show(cardPanel, "task1");
             }
         });
