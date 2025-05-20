@@ -73,7 +73,7 @@ public class Bonus1CompoundShapeArea {
 
         for (int i = 1; i <= 6; i++) {
             try {
-                Image img = new ImageIcon(getClass().getClassLoader().getResource("images/Bonus1Answer" + i + ".png")).getImage();
+                Image img = new ImageIcon(getClass().getClassLoader().getResource("resouces/images/Bonus1Answer" + i + ".png")).getImage();
                 answerImages.put(i, img);
             } catch (Exception e) {
                 System.err.println("Missing Bonus1Answer" + i + ".png");
@@ -100,7 +100,7 @@ public class Bonus1CompoundShapeArea {
         for (int i = 1; i <= 6; i++) {
             int shapeId = i;
             try {
-                ImageIcon rawIcon = new ImageIcon(getClass().getClassLoader().getResource("images/Shape" + i + ".png"));
+                ImageIcon rawIcon = new ImageIcon(getClass().getClassLoader().getResource("resouces/images/Shape" + i + ".png"));
                 originalImages.put(shapeId, rawIcon.getImage());
 
                 JButton btn = new JButton(new ImageIcon(getScaledImage(rawIcon.getImage(), 200, 130)));
@@ -205,7 +205,7 @@ public class Bonus1CompoundShapeArea {
         mascotSpeechBubble.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         try {
-            ImageIcon foxIcon = new ImageIcon(getClass().getClassLoader().getResource("images/Fox.png"));
+            ImageIcon foxIcon = new ImageIcon(getClass().getClassLoader().getResource("resouces/images/Fox.png"));
             Image scaled = foxIcon.getImage().getScaledInstance(140, 140, Image.SCALE_SMOOTH);
             mascotImageLabel = new JLabel(new ImageIcon(scaled));
         } catch (Exception ex) {

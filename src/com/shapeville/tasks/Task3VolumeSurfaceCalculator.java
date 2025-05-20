@@ -132,7 +132,7 @@ public class Task3VolumeSurfaceCalculator {
         // 加载Pikachu图
         mascotImageLabel = new JLabel("⚡");
         try {
-            pikaIcon = new ImageIcon(getClass().getClassLoader().getResource("images/Pikachu.png"));
+            pikaIcon = new ImageIcon(getClass().getClassLoader().getResource("resouces/images/Pikachu.png"));
             if (pikaIcon.getImageLoadStatus() == MediaTracker.COMPLETE) {
                 Image scaled = pikaIcon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
                 mascotImageLabel = new JLabel(new ImageIcon(scaled));

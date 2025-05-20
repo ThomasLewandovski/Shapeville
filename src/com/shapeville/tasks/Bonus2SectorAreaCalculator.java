@@ -142,7 +142,7 @@ public class Bonus2SectorAreaCalculator {
             int id = i;
             JButton btn;
             try {
-                ImageIcon rawIcon = new ImageIcon(getClass().getClassLoader().getResource("images/circle" + i + ".png"));
+                ImageIcon rawIcon = new ImageIcon(getClass().getClassLoader().getResource("resouces/images/circle" + i + ".png"));
                 Image scaledImg = rawIcon.getImage().getScaledInstance(160, 120, Image.SCALE_SMOOTH);
                 btn = new JButton(new ImageIcon(scaledImg));
             } catch (Exception ex) {
@@ -275,7 +275,7 @@ public class Bonus2SectorAreaCalculator {
         mascotSpeechBubble.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         try {
-            ImageIcon bunnyIcon = new ImageIcon(getClass().getClassLoader().getResource("images/Bunny.png"));
+            ImageIcon bunnyIcon = new ImageIcon(getClass().getClassLoader().getResource("resouces/images/Bunny.png"));
             Image scaled = bunnyIcon.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
             mascotImageLabel = new JLabel(new ImageIcon(scaled));
         } catch (Exception ex) {
@@ -309,7 +309,7 @@ public class Bonus2SectorAreaCalculator {
         answerField.setEnabled(true);
 
         try {
-            ImageIcon rawIcon = new ImageIcon(getClass().getClassLoader().getResource("images/circle" + shapeId + ".png"));
+            ImageIcon rawIcon = new ImageIcon(getClass().getClassLoader().getResource("resouces/images/circle" + shapeId + ".png"));
             Image scaledImage = rawIcon.getImage().getScaledInstance(300, 250, Image.SCALE_SMOOTH);
             imageLabel.setIcon(new ImageIcon(scaledImage));
         } catch (Exception ex) {

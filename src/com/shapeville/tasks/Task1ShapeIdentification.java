@@ -92,7 +92,7 @@ public class Task1ShapeIdentification {
         task1.add(topPanel, BorderLayout.NORTH);
 
         JLabel mascot = new JLabel();
-        ImageIcon raccoonIcon = new ImageIcon(getClass().getClassLoader().getResource("images/Raccoon.png"));
+        ImageIcon raccoonIcon = new ImageIcon(getClass().getClassLoader().getResource("resouces/images/Raccoon.png"));
         Image raccoonImage = raccoonIcon.getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
         //mascot.setIcon(new ImageIcon(raccoonImage));
         //mascot.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
@@ -212,7 +212,7 @@ public class Task1ShapeIdentification {
         // 左侧吉祥物
         JLabel mascot = new JLabel();
         mascot.setIcon(new ImageIcon(
-                new ImageIcon(getClass().getClassLoader().getResource("images/Raccoon.png"))
+                new ImageIcon(getClass().getClassLoader().getResource("resouces/images/Raccoon.png"))
                         .getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH)
         ));
         gbc.gridx = 0;
@@ -272,7 +272,7 @@ public class Task1ShapeIdentification {
 
         mascotLabel = new JLabel();
         mascotLabel.setIcon(new ImageIcon(
-                new ImageIcon(getClass().getClassLoader().getResource("images/Raccoon.png"))
+                new ImageIcon(getClass().getClassLoader().getResource("resouces/images/Raccoon.png"))
                         .getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH)));
         mascotLabel.setHorizontalAlignment(SwingConstants.LEFT);
 
@@ -435,7 +435,7 @@ public class Task1ShapeIdentification {
 
     private void showShape() {
         submitButton.setEnabled(true);
-        String imgPath = "images/" + currentShape.getImageFilename();
+        String imgPath = "resouces/images/" + currentShape.getImageFilename();
         URL imageUrl = getClass().getClassLoader().getResource(imgPath);
 
         if (imageUrl != null) {

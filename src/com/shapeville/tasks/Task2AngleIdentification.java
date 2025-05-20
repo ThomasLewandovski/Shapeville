@@ -133,7 +133,7 @@ public class Task2AngleIdentification {
         mascotSpeechBubble.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         try {
-            ImageIcon KuromiIcon = new ImageIcon(getClass().getClassLoader().getResource("images/Kuromi.png"));
+            ImageIcon KuromiIcon = new ImageIcon(getClass().getClassLoader().getResource(resouces/images/Kuromi.png"));
             Image scaledKuromi = KuromiIcon.getImage().getScaledInstance(160, 120, Image.SCALE_SMOOTH);
             mascotImageLabel = new JLabel(new ImageIcon(scaledKuromi));
         } catch (Exception ex) {

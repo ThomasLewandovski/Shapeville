@@ -109,7 +109,7 @@ public class Task4CircleArea {
 
         JLabel mascotImageLabel;
         try {
-            ImageIcon totoroIcon = new ImageIcon(getClass().getClassLoader().getResource("images/Totoro.png"));
+            ImageIcon totoroIcon = new ImageIcon(getClass().getClassLoader().getResource("resouces/images/Totoro.png"));
             Image scaled = totoroIcon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
             mascotImageLabel = new JLabel(new ImageIcon(scaled));
         } catch (Exception ex) {
@@ -200,7 +200,7 @@ public class Task4CircleArea {
         mascotSpeech.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         try {
-            ImageIcon totoro = new ImageIcon(getClass().getClassLoader().getResource("images/Totoro.png"));
+            ImageIcon totoro = new ImageIcon(getClass().getClassLoader().getResource("resouces/images/Totoro.png"));
             Image scaled = totoro.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
             mascotImage = new JLabel(new ImageIcon(scaled));
         } catch (Exception e) {

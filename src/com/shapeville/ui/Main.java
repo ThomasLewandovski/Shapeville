@@ -77,7 +77,7 @@ public class Main {
         // 创建第一个界面：主界面
         // 自定义带背景图的主界面面板
         JPanel mainpanel = new JPanel(null) {
-            Image bg = new ImageIcon(getClass().getClassLoader().getResource("images/initial_background.png")).getImage();
+            Image bg = new ImageIcon(getClass().getClassLoader().getResource("resouces/images/initial_background.png")).getImage();
 
             @Override
             protected void paintComponent(Graphics g) {
@@ -107,7 +107,7 @@ public class Main {
 
         // 创建第二个界面：关卡选择
         JPanel startpanel = new JPanel(null) {
-            Image bg = new ImageIcon(getClass().getClassLoader().getResource("images/startpanel_background.png")).getImage();
+            Image bg = new ImageIcon(getClass().getClassLoader().getResource("resouces/images/startpanel_background.png")).getImage();
 
             @Override
             protected void paintComponent(Graphics g) {
