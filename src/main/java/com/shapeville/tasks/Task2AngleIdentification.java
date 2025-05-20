@@ -19,7 +19,7 @@ public class Task2AngleIdentification {
     "Smart answer!"
     };
 
-    private JButton nextButton;  // ⏭️ 下一题按钮
+    private JButton nextButton;  // 下一题按钮
     public JPanel task2;
     private JLabel questionLabel;
     private JTextField inputField;
@@ -108,7 +108,7 @@ public class Task2AngleIdentification {
         gbcBottom.gridx = 0;
         bottomPanel.add(goHomeButton, gbcBottom);
 
-        nextButton = new JButton("Next ▶");
+        nextButton = new JButton("Next");
         nextButton.setFont(new Font("Comic Sans MS", Font.BOLD, 16));
         nextButton.setVisible(false);
         gbcBottom.gridx = 0;
@@ -120,7 +120,7 @@ public class Task2AngleIdentification {
 
         task2.add(bottomPanel, BorderLayout.SOUTH);
 
-        // ✅ 右侧狐狸吉祥物区域
+        // 右侧狐狸吉祥物区域
         JPanel mascotWrapper = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         mascotWrapper.setBackground(new Color(255, 250, 205));
 
@@ -213,7 +213,7 @@ public class Task2AngleIdentification {
             String correct = AngleData.classifyAngle(currentAngle);
 
             // if (userAnswer.equalsIgnoreCase(correct)) {
-            //     questionLabel.setText("✅ Correct! It was a " + correct + " angle.");
+            //     questionLabel.setText("Correct! It was a " + correct + " angle.");
             //     int points = switch (attempt) {
             //         case 1 -> 3;
             //         case 2 -> 2;
@@ -248,7 +248,7 @@ public class Task2AngleIdentification {
 
                 inputField.setVisible(false);
                 submitButton.setVisible(false);
-                nextButton.setVisible(true);  // ⏭️ 等待点击“下一题”
+                nextButton.setVisible(true);  // 等待点击“下一题”
             }
             else {
                 attempt++;
@@ -263,7 +263,7 @@ public class Task2AngleIdentification {
 
                     inputField.setVisible(false);
                     submitButton.setVisible(false);
-                    nextButton.setVisible(true);  // ⏭️ 等待点击“下一题”
+                    nextButton.setVisible(true);  // 等待点击“下一题”
                 } else {
                     questionLabel.setText("Incorrect. Try again. What type of angle? (Acute / Right / Obtuse / Reflex / Straight / Full)");
                     mascotSpeechBubble.setText("<html><div style='padding:10px; background:#fff3cd; border-radius:10px; border:1px solid #ffeb3b;'>Hmm... not quite! Guess again! </div></html>");
@@ -293,7 +293,7 @@ public class Task2AngleIdentification {
         private int angle = -1;
 
         public AngleCanvas() {
-            setBackground(new Color(255, 250, 220)); // ✅ 设置画布背景为白色
+            setBackground(new Color(255, 250, 220)); // 设置画布背景为白色
         }
 
         public void setAngle(int angle) {
